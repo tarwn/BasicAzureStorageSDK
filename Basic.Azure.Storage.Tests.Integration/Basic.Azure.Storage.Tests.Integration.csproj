@@ -7,8 +7,8 @@
     <ProjectGuid>{696FFAC8-65ED-4661-8066-58F78EEF7CA2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Basic.Azure.Storage.Tests</RootNamespace>
-    <AssemblyName>Basic.Azure.Storage.Tests</AssemblyName>
+    <RootNamespace>Basic.Azure.Storage.Tests.Integration</RootNamespace>
+    <AssemblyName>Basic.Azure.Storage.Tests.Integration</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

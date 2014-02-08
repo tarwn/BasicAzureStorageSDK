@@ -39,6 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communications\Core\AuthenticationMethod.cs" />
+    <Compile Include="Communications\Core\ProtocolConstants.cs" />
+    <Compile Include="Communications\Core\SignedAuthorization.cs" />
     <Compile Include="Communications\Core\RequestBase.cs" />
     <Compile Include="Communications\Core\RequestUriBuilder.cs" />
     <Compile Include="Communications\Core\Response.cs" />
@@ -47,7 +50,7 @@
     <Compile Include="Communications\EmptyResponsePayload.cs" />
     <Compile Include="QueueServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StorageAccount.cs" />
+    <Compile Include="StorageAccountSettings.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

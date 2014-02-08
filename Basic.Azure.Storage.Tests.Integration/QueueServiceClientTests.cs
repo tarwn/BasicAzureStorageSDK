@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basic.Azure.Storage.Tests
+namespace Basic.Azure.Storage.Tests.Integration
 {
 	[TestFixture]
     public class QueueServiceClientTests
