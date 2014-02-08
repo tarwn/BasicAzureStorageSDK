@@ -29,12 +29,12 @@ namespace Basic.Azure.Storage.Communications.QueueService
             return builder;
         }
 
-        protected override void ApplyRequiredHeaders(HttpWebRequest request)
+        protected override void ApplyRequiredHeaders(WebRequest request)
         {
 
         }
 
-        protected override void ApplyOptionalHeaders(HttpWebRequest request)
+        protected override void ApplyOptionalHeaders(WebRequest request)
         {
 
         }

@@ -27,7 +27,7 @@ namespace Basic.Azure.Storage.Communications.Core
         private string GetSegmentWithoutTrailingSlash(string urlSegment)
         {
             if (urlSegment.EndsWith("/"))
-                return urlSegment.Substring(0, _baseUrl.Length - 1);
+                return urlSegment.Substring(0, urlSegment.Length - 1);
             else
                 return urlSegment;
         }

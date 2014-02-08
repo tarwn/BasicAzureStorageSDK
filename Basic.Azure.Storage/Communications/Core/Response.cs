@@ -16,6 +16,7 @@ namespace Basic.Azure.Storage.Communications.Core
         public Response(HttpWebResponse httpWebResponse)
         {
             _payload = new T();
+            Status = httpWebResponse.StatusCode;
 
             var responseStream = httpWebResponse.GetResponseStream();
             if (_payload.ExpectsResponseBody)
@@ -24,6 +25,10 @@ namespace Basic.Azure.Storage.Communications.Core
                 ReadResponseToNull(responseStream);
         }
 
+        public HttpStatusCode Status { get; private set; }
+
+        public int NumberOfAttempts { get; set; }
+
         private void ReadResponseToNull(Stream stream)
         {
             using (var sr = new StreamReader(stream))
@@ -31,5 +36,7 @@ namespace Basic.Azure.Storage.Communications.Core
                 sr.ReadToEnd();
             }
         }
+
+
     }
 }

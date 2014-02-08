@@ -16,7 +16,7 @@ namespace Basic.Azure.Storage.Communications.Core
             return "";
         }
 
-        public static string GenerateSharedKeySignatureString(HttpWebRequest request, Dictionary<string,string> queryStringParameters, StorageAccountSettings settings)
+        public static string GenerateSharedKeySignatureString(WebRequest request, Dictionary<string,string> queryStringParameters, StorageAccountSettings settings)
         {
             var canonicalizedHeaders = request.Headers.AllKeys
                 .Where(k => k.StartsWith("x-ms-"))

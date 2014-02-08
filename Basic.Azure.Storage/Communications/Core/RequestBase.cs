@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Practices.TransientFaultHandling;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -18,25 +19,34 @@ namespace Basic.Azure.Storage.Communications.Core
         public RequestBase(StorageAccountSettings settings)
         {
             _settings = settings;
+            RetryPolicy = new RetryPolicy<ExceptionRetryStrategy>(RetryStrategy.DefaultExponential);
         }
+
+        public RetryPolicy RetryPolicy { get; set; }
 
         protected StorageAccountSettings Settings { get { return _settings; } }
 
         protected abstract RequestUriBuilder GetUriBase();
         protected abstract string HttpMethod { get; }
         protected abstract AuthenticationMethod AuthenticationMethod { get; }
-        protected abstract void ApplyRequiredHeaders(HttpWebRequest request);
-        protected abstract void ApplyOptionalHeaders(HttpWebRequest request);
+        protected abstract void ApplyRequiredHeaders(WebRequest request);
+        protected abstract void ApplyOptionalHeaders(WebRequest request);
 
         public Response<TPayload> Execute()
         {
             // create web request
             var requestUri = GetUriBase();
-            var request = (HttpWebRequest)WebRequest.Create(requestUri.GetUri());
+            var request = WebRequest.Create(requestUri.GetUri());
 
             request.Method = HttpMethod;
-            request.UserAgent = "BasicAzureStorage/1.0.0";
             request.ContentLength = 0;
+
+            // hacky workaround area - can't test against HttpWebRequest and UserAgent property requires you use the named property
+            { 
+                if(request is HttpWebRequest)
+                    ((HttpWebRequest)request).UserAgent = "Basic.Azure.Storage/1.0.0";
+            }
+
 
             // apply required headers
             request.Headers.Add(ProtocolConstants.Headers.StorageVersion, TargetStorageVersion);
@@ -50,10 +60,10 @@ namespace Basic.Azure.Storage.Communications.Core
             ApplyAuthorizationHeader(AuthenticationMethod, request, requestUri.GetParameters(), _settings);
 
             // send web request
-            return SendRequestAsync(request).Result;
+            return SendRequestWithRetry(() => SendRequestAsync(request));
         }
 
-        private static void ApplyAuthorizationHeader(AuthenticationMethod authMethod, HttpWebRequest request, Dictionary<string,string> queryStringParameters, StorageAccountSettings settings)
+        private static void ApplyAuthorizationHeader(AuthenticationMethod authMethod, WebRequest request, Dictionary<string,string> queryStringParameters, StorageAccountSettings settings)
         {
             switch (authMethod)
             { 
@@ -66,7 +76,26 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        private Task<Response<TPayload>> SendRequestAsync(HttpWebRequest request)
+        private Response<TPayload> SendRequestWithRetry(Func<Task<Response<TPayload>>> sendRequest) 
+        {
+            Response<TPayload> response = null;
+            int numberOfAttempts = 0;
+            try
+            {
+                RetryPolicy.ExecuteAction(() => {
+                    numberOfAttempts++;
+                    response = sendRequest().Result;
+                    response.NumberOfAttempts = numberOfAttempts;
+                });
+            }
+            catch
+            {
+                throw;
+            }
+            return response;
+        }
+
+        private Task<Response<TPayload>> SendRequestAsync(WebRequest request)
         {
             var task = Task.Factory.FromAsync(
                 request.BeginGetResponse,

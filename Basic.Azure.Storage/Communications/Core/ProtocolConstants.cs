@@ -16,6 +16,8 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string Date = "x-ms-date";
 
             public const string Authorization = "Authorization";
+
+            public const string UserAgent = "User-Agent";
         }
 
     }
