@@ -1,10 +1,12 @@
 ﻿using Basic.Azure.Storage.Communications;
 using Basic.Azure.Storage.Communications.Core;
+using Microsoft.Practices.TransientFaultHandling;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using TestableHttpWebResponse;
@@ -71,6 +73,100 @@ namespace Basic.Azure.Storage.Tests.Communications.Core
 
             Assert.AreEqual(2, response.NumberOfAttempts);
         }
+
+        [Test]
+        public void Execute_TimeoutException_AttemptsToRetry()
+        {
+            var expectedUri = "test://queue.abc/whatever/";
+            var expectedRawRequest = new TestableWebRequest(new Uri(expectedUri))
+                                        .EnqueueResponse(new TimeoutException("message"))
+                                        .EnqueueResponse(HttpStatusCode.OK, "Success", "Even More Success", false);
+            TestableWebRequestCreateFactory.GetFactory().AddRequest(expectedRawRequest);
+            var request = new RequestWithEmptyPayload(new SettingsFake(), expectedUri, "GET");
+
+            var response = request.Execute();
+
+            Assert.AreEqual(2, response.NumberOfAttempts);
+        }
+
+        [Test]
+        public void Execute_ConnectFailureException_AttemptsToRetry()
+        {
+            var expectedUri = "test://queue.abc/whatever/";
+            var expectedRawRequest = new TestableWebRequest(new Uri(expectedUri))
+                                        .EnqueueResponse(new WebException("Could not connect because Azure crashed", new SocketException(1), WebExceptionStatus.ConnectFailure, null))
+                                        .EnqueueResponse(HttpStatusCode.OK, "Success", "Even More Success", false);
+            TestableWebRequestCreateFactory.GetFactory().AddRequest(expectedRawRequest);
+            var request = new RequestWithEmptyPayload(new SettingsFake(), expectedUri, "GET");
+
+            var response = request.Execute();
+
+            Assert.AreEqual(2, response.NumberOfAttempts);
+        }
+
+        [Test]
+        public void Execute_ReceiveFailureException_AttemptsToRetry()
+        {
+            var expectedUri = "test://queue.abc/whatever/";
+            var expectedRawRequest = new TestableWebRequest(new Uri(expectedUri))
+                                        .EnqueueResponse(new WebException("Azure hung up after the initial request", new SocketException(1), WebExceptionStatus.ReceiveFailure, null))
+                                        .EnqueueResponse(HttpStatusCode.OK, "Success", "Even More Success", false);
+            TestableWebRequestCreateFactory.GetFactory().AddRequest(expectedRawRequest);
+            var request = new RequestWithEmptyPayload(new SettingsFake(), expectedUri, "GET");
+
+            var response = request.Execute();
+
+            Assert.AreEqual(2, response.NumberOfAttempts);
+        }
+
+        [Test]
+        [ExpectedException()]
+        public void Execute_FailsUntilRetryCountExceeded_ThenGivesUp()
+        {
+                var expectedUri = "test://queue.abc/whatever/";
+                var expectedRawRequest = new TestableWebRequest(new Uri(expectedUri))
+                                                .EnqueueResponse(new TimeoutException("message 1"))
+                                                .EnqueueResponse(new TimeoutException("message 2"))
+                                                .EnqueueResponse(new TimeoutException("message 3"))
+                                                .EnqueueResponse(HttpStatusCode.OK, "Success", "Should give up before it gets this one", false);
+                TestableWebRequestCreateFactory.GetFactory().AddRequest(expectedRawRequest);
+                var request = new RequestWithEmptyPayload(new SettingsFake(), expectedUri, "GET");
+                request.RetryPolicy = new RetryPolicy<ExceptionRetryStrategy>(2, TimeSpan.FromMilliseconds(1));
+
+                var response = request.Execute();
+
+            // expecting an exception
+        }
+
+        //[Test]
+        //public void Execute_FailsUntilRetryCountExceeded_ThrowsRetriedExceptionWithRetryCountInfo()
+        //{
+        //    // sorry, this one is a little bit of a mess because I wanted to verify an internal property on the exception
+        //    try
+        //    {
+        //        // arrange
+        //        var expectedUri = "test://queue.abc/whatever/";
+        //        var expectedRequest = new TestableWebRequest(uri)
+        //                                    .EnqueueResponse(new TimeoutException("message"))
+        //                                    .EnqueueResponse(new TimeoutException("message"))
+        //                                    .EnqueueResponse(new TimeoutException("message"));
+        //        TestableWebRequestCreateFactory.GetFactory().AddRequest(expectedRawRequest);
+        //        var request = new RequestWithEmptyPayload(new SettingsFake(), expectedUri, "GET");
+        //        request.RetryPolicy = new RetryPolicy<ExceptionRetryStrategy>(2, TimeSpan.FromMilliseconds(1));
+
+        //        // act
+        //        var response = request.Execute();
+        //    }
+        //    catch (Exception exc)
+        //    {
+        //        //assert
+        //        Assert.IsAssignableFrom<RetriedException>(exc);
+        //        Assert.AreEqual(3, ((RetriedException)exc).RetryCount);
+
+        //        return;
+        //    }
+        //    Assert.Fail("Did not receive expected exception");
+        //}
 
         #endregion
 

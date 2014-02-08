@@ -45,6 +45,7 @@
     <Compile Include="Communications\Core\AuthenticationMethod.cs" />
     <Compile Include="Communications\Core\ExceptionRetryStrategy.cs" />
     <Compile Include="Communications\Core\ProtocolConstants.cs" />
+    <Compile Include="Communications\Core\RetriedException.cs" />
     <Compile Include="Communications\Core\SignedAuthorization.cs" />
     <Compile Include="Communications\Core\RequestBase.cs" />
     <Compile Include="Communications\Core\RequestUriBuilder.cs" />

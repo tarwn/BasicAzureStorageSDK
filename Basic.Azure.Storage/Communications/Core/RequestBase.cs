@@ -34,6 +34,11 @@ namespace Basic.Azure.Storage.Communications.Core
 
         public Response<TPayload> Execute()
         {
+            return ExecuteAsync().Result;
+        }
+        
+        public Task<Response<TPayload>> ExecuteAsync()
+        { 
             // create web request
             var requestUri = GetUriBase();
             var request = WebRequest.Create(requestUri.GetUri());
@@ -41,12 +46,11 @@ namespace Basic.Azure.Storage.Communications.Core
             request.Method = HttpMethod;
             request.ContentLength = 0;
 
-            // hacky workaround area - can't test against HttpWebRequest and UserAgent property requires you use the named property
-            { 
-                if(request is HttpWebRequest)
+            {
+                // hacky workaround area - can't test against HttpWebRequest and UserAgent property requires you use the named property
+                if (request is HttpWebRequest)
                     ((HttpWebRequest)request).UserAgent = "Basic.Azure.Storage/1.0.0";
             }
-
 
             // apply required headers
             request.Headers.Add(ProtocolConstants.Headers.StorageVersion, TargetStorageVersion);
@@ -60,7 +64,7 @@ namespace Basic.Azure.Storage.Communications.Core
             ApplyAuthorizationHeader(AuthenticationMethod, request, requestUri.GetParameters(), _settings);
 
             // send web request
-            return SendRequestWithRetry(() => SendRequestAsync(request));
+            return SendRequestWithRetryAsync(request);
         }
 
         private static void ApplyAuthorizationHeader(AuthenticationMethod authMethod, WebRequest request, Dictionary<string,string> queryStringParameters, StorageAccountSettings settings)
@@ -76,23 +80,27 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        private Response<TPayload> SendRequestWithRetry(Func<Task<Response<TPayload>>> sendRequest) 
+        private Task<Response<TPayload>> SendRequestWithRetryAsync(WebRequest request) 
         {
-            Response<TPayload> response = null;
             int numberOfAttempts = 0;
-            try
+            return RetryPolicy.ExecuteAsync<Response<TPayload>>(() =>
             {
-                RetryPolicy.ExecuteAction(() => {
-                    numberOfAttempts++;
-                    response = sendRequest().Result;
-                    response.NumberOfAttempts = numberOfAttempts;
+                numberOfAttempts++;
+                var responseTask = SendRequestAsync(request);
+                responseTask.ContinueWith((t) =>
+                {
+                    if (!t.IsFaulted)
+                        t.Result.NumberOfAttempts = numberOfAttempts;
                 });
-            }
-            catch
+                return responseTask;
+            })
+            .ContinueWith<Response<TPayload>>((t) =>
             {
-                throw;
-            }
-            return response;
+                if (t.IsFaulted && numberOfAttempts > 1)
+                    throw new RetriedException(t.Exception, numberOfAttempts);
+                else
+                    return t.Result;
+            });
         }
 
         private Task<Response<TPayload>> SendRequestAsync(WebRequest request)
