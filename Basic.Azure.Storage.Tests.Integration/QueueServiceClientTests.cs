@@ -37,6 +37,8 @@ namespace Basic.Azure.Storage.Tests.Integration
             }
         }
 
+        #region Queue Operations Tests
+
         [Test]
         public void CreateQueue_ValidName_CreatesQueue()
         {
@@ -88,6 +90,25 @@ namespace Basic.Azure.Storage.Tests.Integration
             // expects exception
         }
 
+        #endregion
+
+        #region Message Operations Tests
+
+        [Test]
+        public void PutMessage_ValidMessage_AddsMessageToQueue()
+        {
+            var client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            string message = "Unit Test Message";
+
+            client.PutMessage(queueName, message);
+
+            AssertQueueHasMessage(queueName);
+        }
+
+        #endregion
+
         #region Assertions
 
         private void AssertQueueExists(string queueName)
@@ -97,6 +118,22 @@ namespace Basic.Azure.Storage.Tests.Integration
             if (!queue.Exists())
             {
                 Assert.Fail(String.Format("The queue '{0}' does not exist", queueName));
+            }
+        }
+
+        private void AssertQueueHasMessage(string queueName)
+        {
+            var client = _storageAccount.CreateCloudQueueClient();
+            var queue = client.GetQueueReference(queueName);
+            if (!queue.Exists())
+            {
+                Assert.Fail(String.Format("The queue '{0}' does not exist", queueName));
+            }
+
+            var msg = queue.PeekMessage();
+            if (msg == null)
+            {
+                Assert.Fail(String.Format("The queue '{0}' does not have any messages", queueName));
             }
         }
 

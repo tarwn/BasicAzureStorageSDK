@@ -32,21 +32,36 @@ namespace Basic.Azure.Storage.Communications.Core
                     String.Join("\n", queryStrings);
             canonicalizedResource = canonicalizedResource.TrimEnd(new char[] { '\n' });
 
-            string stringToSign =
-                    request.Method + "\n"
-                    /* Content-Encoding */ + "\n"
-                    /* Content-Language */ + "\n"
-                    /* Content-Length */ + "0\n"
-                    /* Content-MD5 */ + "\n"
-                    /* Content-Type */ + "\n"
-                    /* Date */ + "\n"
-                    /* If-Modified-Since */ + "\n"
-                    /* If-Match */ + "\n"
-                    /* If-None-Match */ + "\n"
-                    /* If-Unmodified-Since */ + "\n"
-                    /* Range */ + "\n"
-                    + String.Join("\n", canonicalizedHeaders) + "\n"
-                    + canonicalizedResource;
+            string stringToSign = String.Format(
+                /* Method */ "{0}\n"
+                /* Content-Encoding */ + "{1}\n"
+                /* Content-Language */ + "{2}\n"
+                /* Content-Length */ + "{3}\n"
+                /* Content-MD5 */ + "{4}\n"
+                /* Content-Type */ + "{5}\n"
+                /* Date */ + "{6}\n"
+                /* If-Modified-Since */ + "{7}\n"
+                /* If-Match */ + "{8}\n"
+                /* If-None-Match */ + "{9}\n"
+                /* If-Unmodified-Since */ + "{10}\n"
+                /* Range */ + "{11}\n"
+                /* Canonicalized Headers */ + "{12}\n"
+                /* Canonicalilzed Resource */ + "{13}",
+                request.Method,
+                "",
+                "",
+                request.ContentLength,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                String.Join("\n", canonicalizedHeaders),
+                canonicalizedResource);
+
 
             return settings.ComputeMacSha256(stringToSign);
         }

@@ -21,5 +21,11 @@ namespace Basic.Azure.Storage
 			var request = new CreateQueueRequest(_account, queueName, metadata);
 			request.Execute();
 		}
-	}
+
+        public void PutMessage(string queueName, string messageData)
+        {
+            var request = new PutMessageRequest(_account, queueName, messageData);
+            request.Execute();
+        }
+    }
 }

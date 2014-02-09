@@ -33,6 +33,14 @@ namespace Basic.Azure.Storage.Communications.Core
         protected abstract void ApplyRequiredHeaders(WebRequest request);
         protected abstract void ApplyOptionalHeaders(WebRequest request);
 
+        private bool HasContentToSend
+        {
+            get
+            {
+                return typeof(ISendDataWithRequest).IsAssignableFrom(this.GetType());
+            }
+        }
+
         public Response<TPayload> Execute()
         {
             try
@@ -52,7 +60,10 @@ namespace Basic.Azure.Storage.Communications.Core
             var request = WebRequest.Create(requestUri.GetUri());
 
             request.Method = HttpMethod;
-            request.ContentLength = 0;
+            if (HasContentToSend)
+                request.ContentLength = ((ISendDataWithRequest)this).GetContentLength();
+            else
+                request.ContentLength = 0;
 
             {
                 // hacky workaround area 
@@ -126,11 +137,47 @@ namespace Basic.Azure.Storage.Communications.Core
 
         private Task<Response<TPayload>> SendRequestAsync(WebRequest request)
         {
-            var task = Task.Factory.FromAsync(
-                request.BeginGetResponse,
-                asyncResult => request.EndGetResponse(asyncResult),
-                null);
+            Task<WebResponse> task;
+            if (HasContentToSend)
+            {
+                task = Task.Factory.FromAsync(
+                    request.BeginGetRequestStream,
+                    asyncResult => request.EndGetRequestStream(asyncResult),
+                    null)
+               .ContinueWith((t) => {
+                    if (t.IsFaulted)
+                        throw t.Exception;
 
+                    var stream = t.Result;
+                   var content = ((ISendDataWithRequest)this).GetContentToSend();
+                   return Task.Factory.FromAsync(
+                       stream.BeginWrite,
+                       stream.EndWrite,
+                       content,
+                       0,
+                       content.Length,
+                       null);
+               })
+               .Unwrap()
+               .ContinueWith((t) =>
+               {
+                    if (t.IsFaulted)
+                        throw t.Exception;
+
+                    return Task.Factory.FromAsync(
+                        request.BeginGetResponse,
+                        asyncResult => request.EndGetResponse(asyncResult),
+                        null);
+               })
+               .Unwrap();
+            }
+            else
+            {
+                task = Task.Factory.FromAsync(
+                    request.BeginGetResponse,
+                    asyncResult => request.EndGetResponse(asyncResult),
+                    null);
+            }
             return task.ContinueWith(t => ReceiveResponse((HttpWebResponse)t.Result));
         }
 
