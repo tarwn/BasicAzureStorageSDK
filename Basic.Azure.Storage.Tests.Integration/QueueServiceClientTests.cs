@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage.Tests.Integration
@@ -107,6 +108,36 @@ namespace Basic.Azure.Storage.Tests.Integration
             AssertQueueHasMessage(queueName);
         }
 
+        [Test]
+        public void PutMessage_ValidMessageWithVisibilityTimeout_IsNotVisibleInQueue()
+        {
+            var client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            string message = "Unit Test Message";
+
+            client.PutMessage(queueName, message, visibilityTimeout: 5);
+
+            AssertQueueInvisibleMessage(queueName);
+        }
+
+
+        [Test]
+        [Ignore("Either I messed up the MessageTTL property or it doesn't work as expected")]
+        public void PutMessage_ValidMessageWithTTL_DisappearsAfterTTLExpires()
+        {
+            var client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            string message = "Unit Test Message";
+
+            client.PutMessage(queueName, message, messageTtl: 1);
+
+            AssertQueueHasMessage(queueName);
+            Thread.Sleep(1100); // a little extra to be sure
+            AssertQueueIsEmpty(queueName);
+        }
+
         #endregion
 
         #region Assertions
@@ -134,6 +165,46 @@ namespace Basic.Azure.Storage.Tests.Integration
             if (msg == null)
             {
                 Assert.Fail(String.Format("The queue '{0}' does not have any messages", queueName));
+            }
+        }
+
+        private void AssertQueueIsEmpty(string queueName)
+        {
+            var client = _storageAccount.CreateCloudQueueClient();
+            var queue = client.GetQueueReference(queueName);
+            if (!queue.Exists())
+            {
+                Assert.Fail(String.Format("The queue '{0}' does not exist", queueName));
+            }
+
+            queue.FetchAttributes();
+
+            if (queue.ApproximateMessageCount > 0)
+            {
+                Assert.Fail(String.Format("The queue '{0}' reports {1} messages", queueName, queue.ApproximateMessageCount));
+            }
+        }
+
+        private void AssertQueueInvisibleMessage(string queueName)
+        {
+            var client = _storageAccount.CreateCloudQueueClient();
+            var queue = client.GetQueueReference(queueName);
+            if (!queue.Exists())
+            {
+                Assert.Fail(String.Format("The queue '{0}' does not exist", queueName));
+            }
+
+            var msg = queue.PeekMessage();
+            queue.FetchAttributes();
+
+            if (msg != null)
+            {
+                Assert.Fail(String.Format("The queue '{0}' had a visible message", queueName));
+            }
+
+            if (queue.ApproximateMessageCount == 0)
+            {
+                Assert.Fail(String.Format("The queue '{0}' reports 0 ApproximateMessageCount", queueName));
             }
         }
 

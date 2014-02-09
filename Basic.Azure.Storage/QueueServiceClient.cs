@@ -22,9 +22,9 @@ namespace Basic.Azure.Storage
 			request.Execute();
 		}
 
-        public void PutMessage(string queueName, string messageData)
+        public void PutMessage(string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null)
         {
-            var request = new PutMessageRequest(_account, queueName, messageData);
+            var request = new PutMessageRequest(_account, queueName, messageData, visibilityTimeout, messageTtl);
             request.Execute();
         }
     }

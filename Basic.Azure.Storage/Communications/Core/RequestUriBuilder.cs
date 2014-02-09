@@ -32,6 +32,11 @@ namespace Basic.Azure.Storage.Communications.Core
                 return urlSegment;
         }
 
+        public void AddParameter(string name, string value)
+        {
+            _parameters.Add(name, value);
+        }
+
         public Dictionary<string, string> GetParameters()
         {
             return _parameters;

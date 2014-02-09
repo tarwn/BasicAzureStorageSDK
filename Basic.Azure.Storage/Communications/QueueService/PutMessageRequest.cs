@@ -8,16 +8,26 @@ using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage.Communications.QueueService
 {
+    /// <summary>
+    /// Add a message to the specified Queue
+    /// http://msdn.microsoft.com/en-us/library/windowsazure/dd179346.aspx
+    /// </summary>
     public class PutMessageRequest : RequestBase<EmptyResponsePayload>, ISendDataWithRequest
     {
         private string _queueName;
         private string _messageData;
+        private int? _visibilityTimeout;
+        private int? _messageTtl;
 
-        public PutMessageRequest(StorageAccountSettings settings, string queueName, string messageData)
+        public PutMessageRequest(StorageAccountSettings settings, string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null)
             : base(settings)
         {
+            //TODO: add Guard statements against invalid values, short circuit so we don't have the latency roundtrip to the server
             _queueName = queueName;
             _messageData = messageData;
+
+            _visibilityTimeout = visibilityTimeout;
+            _messageTtl = messageTtl;
         }
 
         protected override string HttpMethod { get { return "POST"; } }
@@ -29,7 +39,13 @@ namespace Basic.Azure.Storage.Communications.QueueService
             var builder = new RequestUriBuilder(Settings.QueueEndpoint);
             builder.AddSegment(_queueName);
             builder.AddSegment("messages");
-            // TODO: add querystring options for timeout, messagettl, visibilitytimeout
+
+            if (_visibilityTimeout.HasValue)
+                builder.AddParameter(ProtocolConstants.QueryParameters.VisibilityTimeout, _visibilityTimeout.Value.ToString());
+
+            if (_messageTtl.HasValue)
+                builder.AddParameter(ProtocolConstants.QueryParameters.MessageTTL, _messageTtl.Value.ToString());
+
             return builder;
         }
 

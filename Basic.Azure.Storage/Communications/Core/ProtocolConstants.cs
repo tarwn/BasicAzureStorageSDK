@@ -22,5 +22,13 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string UserAgent = "User-Agent";
         }
 
+        public static class QueryParameters
+        {
+            public const string MessageTTL = "messagettl";
+
+            public const string Timeout = "timeout";
+
+            public const string VisibilityTimeout = "visibilitytimeout";
+        }
     }
 }
