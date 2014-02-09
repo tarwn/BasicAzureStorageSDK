@@ -1,4 +1,5 @@
 ﻿using Basic.Azure.Storage.Communications.Core;
+using Basic.Azure.Storage.Communications.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,22 +33,11 @@ namespace Basic.Azure.Storage.Communications.QueueService
             return builder;
         }
 
-        protected override void ApplyRequiredHeaders(System.Net.WebRequest request)
-        {
-            // no additional required headers
-        }
-
-        protected override void ApplyOptionalHeaders(System.Net.WebRequest request)
-        {
-            // no additional optional headers
-        }
-
         public byte[] GetContentToSend()
         {
             string messageWithEnvelope = String.Format("<QueueMessage><MessageText>{0}</MessageText></QueueMessage>", _messageData);
             return UTF8Encoding.UTF8.GetBytes(messageWithEnvelope);
         }
-
 
         public int GetContentLength()
         {

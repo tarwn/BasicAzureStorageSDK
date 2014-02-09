@@ -1,4 +1,5 @@
 ﻿using Basic.Azure.Storage.Communications.Core;
+using Basic.Azure.Storage.Communications.Core.Interfaces;
 using Basic.Azure.Storage.Communications.Utility;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Basic.Azure.Storage.Communications.QueueService
     /// <remarks>
     /// Per the documentation, this is more of a "Create if not exists" operation
     /// </remarks>
-    public class CreateQueueRequest : RequestBase<EmptyResponsePayload>
+    public class CreateQueueRequest : RequestBase<EmptyResponsePayload>, ISendAdditionalOptionalHeaders
     {
         private string _queueName;
         private Dictionary<string, string> _metadata;
@@ -42,12 +43,7 @@ namespace Basic.Azure.Storage.Communications.QueueService
             return builder;
         }
 
-        protected override void ApplyRequiredHeaders(WebRequest request)
-        {
-
-        }
-
-        protected override void ApplyOptionalHeaders(WebRequest request)
+        public void ApplyAdditionalOptionalHeaders(WebRequest request)
         {
             if (_metadata != null && _metadata.Count > 0)
             {
@@ -57,6 +53,5 @@ namespace Basic.Azure.Storage.Communications.QueueService
                 }
             }
         }
-
     }
 }

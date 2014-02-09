@@ -1,4 +1,5 @@
-﻿using Basic.Azure.Storage.Communications.ServiceExceptions;
+﻿using Basic.Azure.Storage.Communications.Core.Interfaces;
+using Basic.Azure.Storage.Communications.ServiceExceptions;
 using Microsoft.Practices.TransientFaultHandling;
 using System;
 using System.Collections.Generic;
@@ -30,14 +31,28 @@ namespace Basic.Azure.Storage.Communications.Core
         protected abstract RequestUriBuilder GetUriBase();
         protected abstract string HttpMethod { get; }
         protected abstract StorageServiceType ServiceType { get; }
-        protected abstract void ApplyRequiredHeaders(WebRequest request);
-        protected abstract void ApplyOptionalHeaders(WebRequest request);
 
         private bool HasContentToSend
         {
             get
             {
                 return typeof(ISendDataWithRequest).IsAssignableFrom(this.GetType());
+            }
+        }
+
+        private bool HasAdditionalRequiredHeaders
+        {
+            get
+            {
+                return typeof(ISendAdditionalRequiredHeaders).IsAssignableFrom(this.GetType());
+            }
+        }
+
+        private bool HasAdditionalOptionalHeaders
+        {
+            get
+            {
+                return typeof(ISendAdditionalOptionalHeaders).IsAssignableFrom(this.GetType());
             }
         }
 
@@ -86,6 +101,18 @@ namespace Basic.Azure.Storage.Communications.Core
 
             // send web request
             return SendRequestWithRetryAsync(request);
+        }
+
+        private void ApplyRequiredHeaders(WebRequest request)
+        {
+            if (HasAdditionalRequiredHeaders)
+                ((ISendAdditionalRequiredHeaders)this).ApplyAdditionalRequiredHeaders(request);
+        }
+
+        private void ApplyOptionalHeaders(WebRequest request)
+        {
+            if (HasAdditionalOptionalHeaders)
+                ((ISendAdditionalOptionalHeaders)this).ApplyAdditionalOptionalHeaders(request);
         }
 
         private static void ApplyAuthorizationHeader(StorageServiceType serviceType, WebRequest request, Dictionary<string, string> queryStringParameters, StorageAccountSettings settings)
