@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Basic.Azure.Storage.Communications.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,10 +10,8 @@ using System.Xml.Linq;
 
 namespace Basic.Azure.Storage.Communications
 {
-    public class ErrorResponsePayload : IResponsePayload
+    public class ErrorResponsePayload : IResponsePayload, IReceiveDataWithResponse
     {
-        public bool ExpectsResponseBody { get { return true; } }
-
         public string ErrorCode { get; set; }
         public string ErrorMessage { get; set; }
 

@@ -5,11 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basic.Azure.Storage.Communications
+namespace Basic.Azure.Storage.Communications.Core.Interfaces
 {
-	public interface IResponsePayload
-	{
-        bool ExpectsResponseBody { get; }
+    public interface IReceiveDataWithResponse
+    {
         void ParseResponseBody(Stream responseStream);
-	}
+    }
 }

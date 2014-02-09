@@ -32,12 +32,6 @@ namespace Basic.Azure.Storage.Tests.Fakes
 
         protected override StorageServiceType ServiceType { get { return StorageServiceType.QueueService; } }
 
-        protected override void ApplyRequiredHeaders(WebRequest request)
-        { }
-
-        protected override void ApplyOptionalHeaders(WebRequest request)
-        { }
-
         public string TestHttpMethod { get; protected set; }
         public string TestRequestUri { get; protected set; }
     }

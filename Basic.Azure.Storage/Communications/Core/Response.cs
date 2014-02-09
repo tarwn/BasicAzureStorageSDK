@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Basic.Azure.Storage.Communications.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,8 +23,8 @@ namespace Basic.Azure.Storage.Communications.Core
             ParseHeaders(httpWebResponse);
 
             var responseStream = httpWebResponse.GetResponseStream();
-            if (_payload.ExpectsResponseBody)
-                _payload.ParseResponseBody(responseStream);
+            if (ExpectsResponseBody)
+                ((IReceiveDataWithResponse)_payload).ParseResponseBody(responseStream);
             else
                 ReadResponseToNull(responseStream);
         }
@@ -37,6 +38,14 @@ namespace Basic.Azure.Storage.Communications.Core
         public string RequestId { get; private set; }
 
         public T Payload { get { return _payload; } }
+
+        private bool ExpectsResponseBody
+        {
+            get
+            {
+                return typeof(IReceiveDataWithResponse).IsAssignableFrom(typeof(T));
+            }
+        }
 
         private void ReadResponseToNull(Stream stream)
         {
