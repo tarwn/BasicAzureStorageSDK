@@ -1,5 +1,6 @@
 ﻿using Basic.Azure.Storage.Communications;
 using Basic.Azure.Storage.Communications.Core;
+using Basic.Azure.Storage.Tests.Fakes;
 using Microsoft.Practices.TransientFaultHandling;
 using NUnit.Framework;
 using System;
@@ -51,7 +52,7 @@ namespace Basic.Azure.Storage.Tests.Communications.Core
 
             var response = request.Execute();
 
-            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.HttpStatus);
         }
 
         #region Retryable Error Cases
@@ -64,7 +65,7 @@ namespace Basic.Azure.Storage.Tests.Communications.Core
             var expectedUri = "test://queue.abc/whatever/";
             var azureErrorMessage = String.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>{0}</Code><Message>{1}</Message></Error>", errorCode, errorMessage);
             var expectedRawRequest = new TestableWebRequest(new Uri(expectedUri))
-                                        .EnqueueResponse((HttpStatusCode) httpStatus, errorCode, azureErrorMessage, true)
+                                        .EnqueueResponse((HttpStatusCode)httpStatus, errorCode, azureErrorMessage, true)
                                         .EnqueueResponse(HttpStatusCode.OK, "Success", "Response content", false);
             TestableWebRequestCreateFactory.GetFactory().AddRequest(expectedRawRequest);
             var request = new RequestWithEmptyPayload(new SettingsFake(), expectedUri, "GET");
@@ -123,17 +124,17 @@ namespace Basic.Azure.Storage.Tests.Communications.Core
         [ExpectedException()]
         public void Execute_FailsUntilRetryCountExceeded_ThenGivesUp()
         {
-                var expectedUri = "test://queue.abc/whatever/";
-                var expectedRawRequest = new TestableWebRequest(new Uri(expectedUri))
-                                                .EnqueueResponse(new TimeoutException("message 1"))
-                                                .EnqueueResponse(new TimeoutException("message 2"))
-                                                .EnqueueResponse(new TimeoutException("message 3"))
-                                                .EnqueueResponse(HttpStatusCode.OK, "Success", "Should give up before it gets this one", false);
-                TestableWebRequestCreateFactory.GetFactory().AddRequest(expectedRawRequest);
-                var request = new RequestWithEmptyPayload(new SettingsFake(), expectedUri, "GET");
-                request.RetryPolicy = new RetryPolicy<ExceptionRetryStrategy>(2, TimeSpan.FromMilliseconds(1));
+            var expectedUri = "test://queue.abc/whatever/";
+            var expectedRawRequest = new TestableWebRequest(new Uri(expectedUri))
+                                            .EnqueueResponse(new TimeoutException("message 1"))
+                                            .EnqueueResponse(new TimeoutException("message 2"))
+                                            .EnqueueResponse(new TimeoutException("message 3"))
+                                            .EnqueueResponse(HttpStatusCode.OK, "Success", "Should give up before it gets this one", false);
+            TestableWebRequestCreateFactory.GetFactory().AddRequest(expectedRawRequest);
+            var request = new RequestWithEmptyPayload(new SettingsFake(), expectedUri, "GET");
+            request.RetryPolicy = new RetryPolicy<ExceptionRetryStrategy>(2, TimeSpan.FromMilliseconds(1));
 
-                var response = request.Execute();
+            var response = request.Execute();
 
             // expecting an exception
         }
@@ -172,50 +173,5 @@ namespace Basic.Azure.Storage.Tests.Communications.Core
 
     }
 
-    public class RequestWithEmptyPayload : RequestBase<EmptyResponsePayload>
-    {
 
-        public RequestWithEmptyPayload(StorageAccountSettings settings, string uri, string httpMethod)
-            : base(settings)
-        {
-            TestRequestUri = uri;
-            TestHttpMethod = httpMethod;
-        }
-
-        protected override RequestUriBuilder GetUriBase()
-        {
-            var builder = new RequestUriBuilder(TestRequestUri);
-            return builder;
-        }
-
-        protected override string HttpMethod { get { return TestHttpMethod; } }
-
-        protected override AuthenticationMethod AuthenticationMethod
-        {
-            get { return Storage.Communications.Core.AuthenticationMethod.SharedKeyForBlobAndQueueServices; }
-        }
-
-        protected override void ApplyRequiredHeaders(WebRequest request)
-        { }
-
-        protected override void ApplyOptionalHeaders(WebRequest request)
-        { }
-
-        public string TestHttpMethod { get; protected set; }
-        public string TestRequestUri { get; protected set; }
-    }
-
-    public class SettingsFake : StorageAccountSettings
-    {
-        public static string FakeKey = Convert.ToBase64String(Encoding.ASCII.GetBytes("unit-test"));
-
-        public SettingsFake()
-            : base("unit-test", FakeKey, false)
-        { }
-
-        public override string BlobEndpoint { get { return "http://blob.abc"; } }
-        public override string QueueEndpoint { get { return "http://queue.abc"; } }
-        public override string TableEndpoint { get { return "http://table.abc"; } }
-
-    }
 }

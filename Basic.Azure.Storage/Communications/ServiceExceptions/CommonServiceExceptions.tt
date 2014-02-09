@@ -1,0 +1,135 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+
+// Matches list of errors published on MSDN: "Common REST API Error Codes"
+// http://msdn.microsoft.com/en-us/library/windowsazure/dd179357.aspx
+//
+// To regenerate list below, copy from web page table and:
+//		Replace: ([A-Za-z0-9]+)[\r\n]+[A-Za-z ]+\((\d+)\)[\r\n]+([A-Za-z0-9 \d\-\.\,\/\(\)\']+)[\r\n]+
+//		With: { "\1", "\3" },\n
+//	There is a duplicate entry for "ConditionNotMet", rename them to _Read, and _Write
+//	There is a duplicate entry for "InsufficientAccountPermissions", rename them to _Read and _Write
+
+var ErrorCodeList = new Dictionary<string,string>(){
+	{ "ConditionNotMetForRead", "The condition specified in the conditional header(s) was not met for a read operation." },
+	{ "MissingRequiredHeader", "A required HTTP header was not specified." },
+	{ "MissingRequiredXmlNode", "A required XML node was not specified in the request body." },
+	{ "UnsupportedHeader", "One of the HTTP headers specified in the request is not supported." },
+	{ "UnsupportedXmlNode", "One of the XML nodes specified in the request body is not supported." },
+	{ "InvalidHeaderValue", "The value provided for one of the HTTP headers was not in the correct format." },
+	{ "InvalidXmlNodeValue", "The value provided for one of the XML nodes in the request body was not in the correct format." },
+	{ "MissingRequiredQueryParameter", "A required query parameter was not specified for this request." },
+	{ "UnsupportedQueryParameter", "One of the query parameters specified in the request URI is not supported." },
+	{ "InvalidQueryParameterValue", "An invalid value was specified for one of the query parameters in the request URI." },
+	{ "OutOfRangeQueryParameterValue", "A query parameter specified in the request URI is outside the permissible range." },
+	{ "RequestUrlFailedToParse", "The url in the request could not be parsed." },
+	{ "InvalidUri", "The requested URI does not represent any resource on the server." },
+	{ "InvalidHttpVerb", "The HTTP verb specified was not recognized by the server." },
+	{ "EmptyMetadataKey", "The key for one of the metadata key-value pairs is empty." },
+	{ "InvalidXmlDocument", "The specified XML is not syntactically valid." },
+	{ "Md5Mismatch", "The MD5 value specified in the request did not match the MD5 value calculated by the server." },
+	{ "InvalidMd5", "The MD5 value specified in the request is invalid. The MD5 value must be 128 bits and Base64-encoded." },
+	{ "OutOfRangeInput", "One of the request inputs is out of range." },
+	{ "InvalidAuthenticationInfo", "The authentication information was not provided in the correct format. Verify the value of Authorization header." },
+	{ "InvalidInput", "One of the request inputs is not valid." },
+	{ "InvalidMetadata", "The specified metadata is invalid. It includes characters that are not permitted." },
+	{ "MetadataTooLarge", "The size of the specified metadata exceeds the maximum size permitted." },
+	{ "AuthenticationFailed", "Server failed to authenticate the request. Make sure the value of the Authorization header is formed correctly including the signature." },
+	{ "InsufficientAccountPermissionsForRead", "Read-access geo-redundant replication is not enabled for the account." },
+	{ "InsufficientAccountPermissionsForWrite", "Write operations to the secondary location are not allowed." },
+	{ "ResourceNotFound", "The specified resource does not exist." },
+	{ "AccountIsDisabled", "The specified account is disabled." },
+	{ "UnsupportedHttpVerb", "The resource doesn't support the specified HTTP verb." },
+	{ "AccountAlreadyExists", "The specified account already exists." },
+	{ "AccountBeingCreated", "The specified account is in the process of being created." },
+	{ "InsufficientAccountPermissionsForExecute", "The account being accessed does not have sufficient permissions to execute this operation." },
+	{ "MissingContentLengthHeader", "The Content-Length header was not specified." },
+	{ "ConditionNotMetForWrite", "The condition specified in the conditional header(s) was not met for a write operation." },
+	{ "MultipleConditionHeadersNotSupported", "Multiple condition headers are not supported." },
+	{ "RequestBodyTooLarge", "The size of the request body exceeds the maximum size permitted." },
+	{ "InvalidRange", "The range specified is invalid for the current size of the resource." },
+	{ "InternalError", "The server encountered an internal error. Please retry the request." },
+	{ "OperationTimedOut", "The operation could not be completed within the permitted time." },
+	{ "ServerBusy", "The server is currently unable to receive requests. Please retry your request." }
+};
+
+
+#>
+// -----------------------------------------------------------------------------
+// Autogenerated code. Do not modify.
+// -----------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Text;
+
+namespace Basic.Azure.Storage.Communications.ServiceExceptions
+{
+
+/// <summary>
+/// Maps a WebException from Azure to the appropriate local exception type
+/// </summary>
+/// <remarks>
+/// Uses the Common Service Error Codes defined here: http://msdn.microsoft.com/en-us/library/windowsazure/dd179357.aspx
+/// </remarks>
+public static class CommonServiceAzureExceptions
+{
+
+	public static AzureException GetExceptionFor(string requestId, HttpStatusCode statusCode, string errorCode, string statusDescription, WebException baseException)
+	{
+		switch(errorCode)
+		{
+		<#
+		foreach(var errorCode in ErrorCodeList)
+		{
+			#> 
+			case "<#=errorCode.Key#>":
+				return new <#=errorCode.Key#>AzureException(requestId, statusCode, statusDescription, baseException);
+			<#
+		}
+		#>
+		}
+
+		switch(statusDescription)
+		{
+			<#
+			foreach(var errorCode in ErrorCodeList)
+			{
+				#> 
+				case "<#=errorCode.Value#>":
+					return new <#=errorCode.Key#>AzureException(requestId, statusCode, statusDescription, baseException);
+				<#
+			}
+			#>
+
+			default:
+				return new UnrecognizedAzureException(requestId, statusCode, statusDescription, baseException);
+		}
+	}
+
+}
+
+<#
+foreach(var errorCode in ErrorCodeList)
+{
+	#>
+	///
+	///<summary>
+	///Represents a '<#=errorCode.Key#>' error response from the Azure Storage Service API
+	///</summary>
+	public class <#=errorCode.Key#>AzureException : AzureException
+    {
+        public <#=errorCode.Key#>AzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
+            : base(requestId, statusCode, statusDescription, baseException) { }
+    }
+
+	<#
+}
+#>
+}

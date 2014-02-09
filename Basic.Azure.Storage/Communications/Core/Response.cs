@@ -16,7 +16,10 @@ namespace Basic.Azure.Storage.Communications.Core
         public Response(HttpWebResponse httpWebResponse)
         {
             _payload = new T();
-            Status = httpWebResponse.StatusCode;
+            HttpStatus = httpWebResponse.StatusCode;
+            HttpStatusDescription = httpWebResponse.StatusDescription;
+
+            ParseHeaders(httpWebResponse);
 
             var responseStream = httpWebResponse.GetResponseStream();
             if (_payload.ExpectsResponseBody)
@@ -25,9 +28,15 @@ namespace Basic.Azure.Storage.Communications.Core
                 ReadResponseToNull(responseStream);
         }
 
-        public HttpStatusCode Status { get; private set; }
-
         public int NumberOfAttempts { get; set; }
+
+        public HttpStatusCode HttpStatus { get; private set; }
+
+        public string HttpStatusDescription { get; private set; }
+
+        public string RequestId { get; private set; }
+
+        public T Payload { get { return _payload; } }
 
         private void ReadResponseToNull(Stream stream)
         {
@@ -37,6 +46,11 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
+        private void ParseHeaders(HttpWebResponse response)
+        { 
+            //TODO: parse request id
+            RequestId = "Not implemented";
+        }
 
     }
 }

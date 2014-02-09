@@ -50,15 +50,60 @@
     <Compile Include="Communications\Core\RequestBase.cs" />
     <Compile Include="Communications\Core\RequestUriBuilder.cs" />
     <Compile Include="Communications\Core\Response.cs" />
+    <Compile Include="Communications\Core\StorageServiceType.cs" />
+    <Compile Include="Communications\ErrorResponsePayload.cs" />
     <Compile Include="Communications\IResponsePayload.cs" />
     <Compile Include="Communications\QueueService\CreateQueueRequest.cs" />
     <Compile Include="Communications\EmptyResponsePayload.cs" />
+    <Compile Include="Communications\ServiceExceptions\AzureException.cs" />
+    <Compile Include="Communications\ServiceExceptions\BlobServiceExceptions.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BlobServiceExceptions.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Communications\ServiceExceptions\CommonServiceExceptions.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CommonServiceExceptions.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Communications\ServiceExceptions\GeneralExceptionDuringAzureOperationException.cs" />
+    <Compile Include="Communications\ServiceExceptions\QueueServiceExceptions.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>QueueServiceExceptions.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Communications\ServiceExceptions\TableServiceExceptions.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TableServiceExceptions.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Communications\ServiceExceptions\UnidentifiedAzureException.cs" />
+    <Compile Include="Communications\ServiceExceptions\UnrecognizedAzureException.cs" />
     <Compile Include="QueueServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StorageAccountSettings.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Communications\ServiceExceptions\CommonServiceExceptions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>CommonServiceExceptions.cs</LastGenOutput>
+    </None>
+    <None Include="Communications\ServiceExceptions\BlobServiceExceptions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BlobServiceExceptions.cs</LastGenOutput>
+    </None>
+    <None Include="Communications\ServiceExceptions\TableServiceExceptions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TableServiceExceptions.cs</LastGenOutput>
+    </None>
+    <None Include="Communications\ServiceExceptions\QueueServiceExceptions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>QueueServiceExceptions.cs</LastGenOutput>
+    </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

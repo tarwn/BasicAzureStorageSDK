@@ -20,7 +20,7 @@ namespace Basic.Azure.Storage.Communications.QueueService
 
         protected override string HttpMethod { get { return "PUT"; } }
 
-        protected override AuthenticationMethod AuthenticationMethod { get { return AuthenticationMethod.SharedKeyForBlobAndQueueServices; } }
+        protected override StorageServiceType ServiceType { get { return StorageServiceType.QueueService; } }
 
         protected override RequestUriBuilder GetUriBase()
         {
