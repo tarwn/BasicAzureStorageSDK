@@ -16,9 +16,9 @@ namespace Basic.Azure.Storage
 			_account = account;
 		}
 
-		public void CreateQueue(string queueName)
+		public void CreateQueue(string queueName, Dictionary<string, string> metadata = null)
 		{
-			var request = new CreateQueueRequest(_account, queueName);
+			var request = new CreateQueueRequest(_account, queueName, metadata);
 			request.Execute();
 		}
 	}

@@ -21,7 +21,7 @@ namespace Basic.Azure.Storage.Communications.Core
             var canonicalizedHeaders = request.Headers.AllKeys
                 .Where(k => k.StartsWith("x-ms-"))
                 .OrderBy(k => k.ToLower())
-                .Select(k => k + ":" + request.Headers[k].Replace('\r',' ').Replace('\n',' ').TrimStart());
+                .Select(k => k.ToLower() + ":" + request.Headers[k].Replace('\r',' ').Replace('\n',' ').TrimStart());
 
             var queryStrings = queryStringParameters.OrderBy(kvp => kvp.Key)
             .Select(kvp => kvp.Key + ":" + kvp.Value);

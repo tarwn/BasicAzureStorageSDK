@@ -11,11 +11,13 @@ namespace Basic.Azure.Storage.Communications.Core
 
         public static class Headers
         {
-            public const string StorageVersion = "x-ms-version";
+            public const string Authorization = "Authorization";
 
             public const string Date = "x-ms-date";
 
-            public const string Authorization = "Authorization";
+            public const string MetaDataPrefix = "x-ms-meta-";
+
+            public const string StorageVersion = "x-ms-version";
 
             public const string UserAgent = "User-Agent";
         }
