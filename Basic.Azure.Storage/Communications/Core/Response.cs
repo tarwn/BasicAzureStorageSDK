@@ -47,6 +47,14 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
+        private bool ExpectsResponseHeaders
+        {
+            get
+            {
+                return typeof(IReceiveAdditionalHeadersWithResponse).IsAssignableFrom(typeof(T));
+            }
+        }
+
         private void ReadResponseToNull(Stream stream)
         {
             using (var sr = new StreamReader(stream))
@@ -59,6 +67,9 @@ namespace Basic.Azure.Storage.Communications.Core
         { 
             //TODO: parse request id
             RequestId = "Not implemented";
+
+            if (ExpectsResponseHeaders)
+                ((IReceiveAdditionalHeadersWithResponse)_payload).ParseHeaders(response);
         }
 
     }

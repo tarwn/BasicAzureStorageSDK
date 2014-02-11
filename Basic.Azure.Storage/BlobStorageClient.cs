@@ -17,10 +17,11 @@ namespace Basic.Azure.Storage
             _account = account;
         }
 
-        public void CreateContainer(string containerName, ContainerAccessType containerAccessType)
+        public CreateContainerResponse CreateContainer(string containerName, ContainerAccessType containerAccessType)
         {
             var request = new CreateContainerRequest(_account, containerName, containerAccessType);
-            request.Execute();
+            var response = request.Execute();
+            return response.Payload;
         }
     }
 }

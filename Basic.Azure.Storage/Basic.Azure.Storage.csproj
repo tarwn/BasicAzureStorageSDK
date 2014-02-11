@@ -42,8 +42,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlobStorageClient.cs" />
+    <Compile Include="Communications\BlobService\ContainerAccessType.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerRequest.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerResponsePayload.cs" />
     <Compile Include="Communications\Core\AuthenticationMethod.cs" />
     <Compile Include="Communications\Core\ExceptionRetryStrategy.cs" />
+    <Compile Include="Communications\Core\Interfaces\IReceiveAdditionalHeadersWithResponse.cs" />
+    <Compile Include="Communications\Core\Interfaces\IReceiveDataWithResponse.cs" />
+    <Compile Include="Communications\Core\Interfaces\ISendAdditionalOptionalHeaders.cs" />
+    <Compile Include="Communications\Core\Interfaces\ISendAdditionalRequiredHeaders.cs" />
+    <Compile Include="Communications\Core\Interfaces\ISendDataWithRequest.cs" />
     <Compile Include="Communications\Core\ProtocolConstants.cs" />
     <Compile Include="Communications\Core\RetriedException.cs" />
     <Compile Include="Communications\Core\SignedAuthorization.cs" />
@@ -52,9 +61,10 @@
     <Compile Include="Communications\Core\Response.cs" />
     <Compile Include="Communications\Core\StorageServiceType.cs" />
     <Compile Include="Communications\ErrorResponsePayload.cs" />
-    <Compile Include="Communications\IResponsePayload.cs" />
+    <Compile Include="Communications\Core\Interfaces\IResponsePayload.cs" />
     <Compile Include="Communications\QueueService\CreateQueueRequest.cs" />
     <Compile Include="Communications\EmptyResponsePayload.cs" />
+    <Compile Include="Communications\QueueService\PutMessageRequest.cs" />
     <Compile Include="Communications\ServiceExceptions\AzureException.cs" />
     <Compile Include="Communications\ServiceExceptions\BlobServiceExceptions.cs">
       <AutoGen>True</AutoGen>
@@ -79,6 +89,7 @@
     </Compile>
     <Compile Include="Communications\ServiceExceptions\UnidentifiedAzureException.cs" />
     <Compile Include="Communications\ServiceExceptions\UnrecognizedAzureException.cs" />
+    <Compile Include="Communications\Utility\IdentifierValidation.cs" />
     <Compile Include="QueueServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StorageAccountSettings.cs" />

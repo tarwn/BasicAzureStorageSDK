@@ -17,7 +17,13 @@ namespace Basic.Azure.Storage.Communications.Core
 
             public const string Date = "x-ms-date";
 
+            public const string ETag = "ETag";
+
+            public const string LastModified = "Last-Modified";
+
             public const string MetaDataPrefix = "x-ms-meta-";
+
+            public const string OperationDate = "Date";
 
             public const string StorageVersion = "x-ms-version";
 

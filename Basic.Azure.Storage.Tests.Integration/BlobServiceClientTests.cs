@@ -1,4 +1,5 @@
 ﻿using Basic.Azure.Storage.Communications.BlobService;
+using Basic.Azure.Storage.Communications.ServiceExceptions;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using NUnit.Framework;
@@ -84,6 +85,32 @@ namespace Basic.Azure.Storage.Tests.Integration
             AssertContainerAccess(containerName, BlobContainerPublicAccessType.Off);
         }
 
+        [Test]
+        [ExpectedException(typeof(ContainerAlreadyExistsAzureException))]
+        public void CreateContainer_AlreadyExists_ThrowsContainerAlreadyExistsException()
+        {
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+
+            client.CreateContainer(containerName, ContainerAccessType.None);
+
+            // expects exception
+        }
+
+        [Test]
+        public void CreateContainer_AlreadyExists_ReturnsContainerCreationResponse()
+        {
+            var containerName = GenerateSampleContainerName();
+            var client = new BlobServiceClient(_accountSettings);
+
+            var response = client.CreateContainer(containerName, ContainerAccessType.None);
+
+            Assert.IsTrue(response.Date > DateTime.Now.AddSeconds(-5), String.Format("Response Date was set to {0}", response.Date));
+            Assert.IsTrue(response.LastModified > DateTime.Now.AddSeconds(-5), String.Format("Response LastModified was set to {0}", response.LastModified));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(response.ETag), "Response ETag is not set");
+
+        }
 
         #endregion
 
@@ -111,6 +138,13 @@ namespace Basic.Azure.Storage.Tests.Integration
         #endregion
 
         #region Setup Mechanics
+
+        private void CreateContainer(string containerName)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            container.Create();
+        }
 
         #endregion
 

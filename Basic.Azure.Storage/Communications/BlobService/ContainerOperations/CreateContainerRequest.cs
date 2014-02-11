@@ -12,7 +12,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
     /// Create a container with the given name
     /// http://msdn.microsoft.com/en-us/library/windowsazure/dd179468.aspx
     /// </summary>
-    public class CreateContainerRequest : RequestBase<EmptyResponsePayload>, ISendAdditionalOptionalHeaders
+    public class CreateContainerRequest : RequestBase<CreateContainerResponse>, ISendAdditionalOptionalHeaders
     {
         private string _containerName;
         private ContainerAccessType _containerAccessType;
