@@ -210,8 +210,15 @@ namespace Basic.Azure.Storage.Communications.Core
 
         private Response<TPayload> ReceiveResponse(HttpWebResponse httpWebResponse)
         {
-            var response = new Response<TPayload>(httpWebResponse);
-            return response;
+            try
+            {
+                var response = new Response<TPayload>(httpWebResponse);
+                return response;
+            }
+            finally
+            {
+                httpWebResponse.Close();
+            }
         }
 
         private Exception GetAzureExceptionFor(Exception exception)
