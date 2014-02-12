@@ -15,6 +15,12 @@ namespace Basic.Azure.Storage.Communications.Core
 
             public const string BlobPublicAccess = "x-ms-blob-public-access";
 
+            public const string BlobType = "x-ms-blob-type";
+
+            public const string ContentEncoding = "Content-Encoding";
+
+            public const string ContentLanguage = "Content-Language";
+
             public const string Date = "x-ms-date";
 
             public const string ETag = "ETag";
@@ -39,6 +45,15 @@ namespace Basic.Azure.Storage.Communications.Core
                 public const string Container = "container";
 
                 public const string Blob = "blob";
+
+            }
+
+            public static class BlobType
+            {
+
+                public const string Block = "BlockBlob";
+
+                public const string Page = "PageBlob";
 
             }
         }

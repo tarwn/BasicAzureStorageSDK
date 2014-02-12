@@ -43,9 +43,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlobStorageClient.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\PutBlobRequest.cs" />
+    <Compile Include="Communications\BlobService\BlobType.cs" />
     <Compile Include="Communications\BlobService\ContainerAccessType.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerRequest.cs" />
-    <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerResponsePayload.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerResponse.cs" />
     <Compile Include="Communications\Core\AuthenticationMethod.cs" />
     <Compile Include="Communications\Core\ExceptionRetryStrategy.cs" />
     <Compile Include="Communications\Core\Interfaces\IReceiveAdditionalHeadersWithResponse.cs" />

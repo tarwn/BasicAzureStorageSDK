@@ -27,6 +27,11 @@ namespace Basic.Azure.Storage.Tests.Integration
             return name;
         }
 
+        private string GenerateSampleBlobName()
+        {
+            return String.Format("unit-test-{0}", Guid.NewGuid());
+        }
+
         [TestFixtureTearDown]
         public void TestFixtureTeardown()
         {
@@ -114,6 +119,90 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #endregion
 
+        #region Blob Operation Tests
+
+        [Test]
+        public void PutBlob_RequiredArgsOnly_UploadsBlobSuccessfully()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+
+            client.PutBlob(containerName, blobName, Basic.Azure.Storage.Communications.BlobService.BlobType.Block, data);
+
+            AssertBlobExists(containerName, blobName);
+        }
+
+        [Test]
+        public void PutBlob_RequiredArgsOnlyAndBlobAlreadyExists_UploadsBlobSuccessfully()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName);
+            var client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+
+            client.PutBlob(containerName, blobName, Basic.Azure.Storage.Communications.BlobService.BlobType.Block, data);
+
+            AssertBlobExists(containerName, blobName);
+        }
+
+        [Test]
+        public void PutBlob_BlockBlobWithContentType_UploadsWithSpecifiedContentType()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName);
+            var client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            string expectedContentType = "text/plain";
+
+            client.PutBlob(containerName, blobName, Basic.Azure.Storage.Communications.BlobService.BlobType.Block, data, contentType: expectedContentType);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            Assert.AreEqual(expectedContentType, blob.Properties.ContentType);
+        }
+
+        [Test]
+        public void PutBlob_BlockBlobWithContentEncoding_UploadsWithSpecifiedContentEncoding()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName);
+            var client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            string expectedContentEncoding = "UTF8";
+
+            client.PutBlob(containerName, blobName, Basic.Azure.Storage.Communications.BlobService.BlobType.Block, data, contentEncoding: expectedContentEncoding);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            Assert.AreEqual(expectedContentEncoding, blob.Properties.ContentEncoding);
+        }
+
+        [Test]
+        public void PutBlob_BlockBlobWithContentLanguage_UploadsWithSpecifiedContentLanguage()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName);
+            var client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            string expectedContentLanguage = "gibberish";
+
+            client.PutBlob(containerName, blobName, Basic.Azure.Storage.Communications.BlobService.BlobType.Block, data, contentLanguage: expectedContentLanguage);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            Assert.AreEqual(expectedContentLanguage, blob.Properties.ContentLanguage);
+        }
+
+        #endregion
+
         #region Assertions
 
         private void AssertContainerExists(string containerName)
@@ -135,6 +224,20 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.AreEqual(containerAccessType, permissions.PublicAccess, String.Format("Container access was expected to be {0}, but it is actually {1}", containerAccessType, permissions.PublicAccess));
         }
 
+        private ICloudBlob AssertBlobExists(string containerName, string blobName)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            if (!container.Exists())
+                Assert.Fail(String.Format("The container '{0}' does not exist", containerName));
+
+            var blob = container.GetBlobReferenceFromServer(blobName);
+            if (!blob.Exists())
+                Assert.Fail(String.Format("The blob '{0}' does not exist", blobName));
+
+            return blob;
+        }
+
         #endregion
 
         #region Setup Mechanics
@@ -144,6 +247,16 @@ namespace Basic.Azure.Storage.Tests.Integration
             var client = _storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             container.Create();
+        }
+
+        private void CreateBlob(string containerName, string blobName)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            var blob = container.GetBlockBlobReference(blobName);
+
+            byte[] data = UTF8Encoding.UTF8.GetBytes("Geeric content");
+            blob.UploadFromByteArray(data, 0, data.Length);
         }
 
         #endregion
