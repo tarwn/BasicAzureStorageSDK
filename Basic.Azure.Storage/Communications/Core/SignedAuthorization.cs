@@ -51,7 +51,7 @@ namespace Basic.Azure.Storage.Communications.Core
                 request.Headers[ProtocolConstants.Headers.ContentEncoding],
                 request.Headers[ProtocolConstants.Headers.ContentLanguage],
                 request.ContentLength,
-                "",
+                request.Headers[ProtocolConstants.Headers.ContentMD5],
                 request.ContentType,
                 "",
                 "",

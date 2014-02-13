@@ -33,6 +33,10 @@ namespace TestableHttpWebResponse
             SerializationInfo si = new SerializationInfo(typeof(HttpWebResponse), new System.Runtime.Serialization.FormatterConverter());
             StreamingContext sc = new StreamingContext();
             WebHeaderCollection headers = new WebHeaderCollection();
+
+            foreach (var kvp in httpResponseSettings.HeaderValues)
+                headers.Add(kvp.Key, kvp.Value);
+
             si.AddValue("m_HttpResponseHeaders", headers);
             si.AddValue("m_Uri", uri);
             si.AddValue("m_Certificate", null);
@@ -44,6 +48,7 @@ namespace TestableHttpWebResponse
             si.AddValue("m_MediaType", expectedContentType);
 
             var webResponse = new TestableHttpWebResponse(si, sc, httpResponseSettings.ResponseStream);
+ 
             if (httpResponseSettings.ExpectException)
                 throw new WebException("This request failed", new Exception(httpResponseSettings.StatusDescription), WebExceptionStatus.ProtocolError, webResponse);
             else

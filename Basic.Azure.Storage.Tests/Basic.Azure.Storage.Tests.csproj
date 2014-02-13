@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communications\BlobService\BlobOperations\PutBlobRequestTests.cs" />
     <Compile Include="Communications\Core\ExceptionRetryStrategyTests.cs" />
     <Compile Include="Communications\Core\RequestBaseTests.AzureExceptions.cs" />
     <Compile Include="Communications\Core\RequestBaseTests.cs" />

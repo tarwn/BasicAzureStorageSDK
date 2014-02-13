@@ -13,13 +13,21 @@ namespace Basic.Azure.Storage.Communications.Core
         {
             public const string Authorization = "Authorization";
 
+            public const string BlobContentLength = "x-ms-blob-content-length";
+
             public const string BlobPublicAccess = "x-ms-blob-public-access";
 
+            public const string BlobSequenceNumber = "x-ms-blob-sequence-number";
+
             public const string BlobType = "x-ms-blob-type";
+
+            public const string CacheControl = "Cache-Control";
 
             public const string ContentEncoding = "Content-Encoding";
 
             public const string ContentLanguage = "Content-Language";
+
+            public const string ContentMD5 = "Content-MD5";
 
             public const string Date = "x-ms-date";
 

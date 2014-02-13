@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace Basic.Azure.Storage.Tests.Integration
     {
 
         private StorageAccountSettings _accountSettings = new LocalEmulatorAccountSettings();
-        private CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true;");
+        private CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
 
         private List<string> _containersToCleanUp = new List<string>();
 
@@ -122,7 +123,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         #region Blob Operation Tests
 
         [Test]
-        public void PutBlob_RequiredArgsOnly_UploadsBlobSuccessfully()
+        public void PutBlockBlob_RequiredArgsOnly_UploadsBlobSuccessfully()
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
@@ -130,13 +131,13 @@ namespace Basic.Azure.Storage.Tests.Integration
             var client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
 
-            client.PutBlob(containerName, blobName, Basic.Azure.Storage.Communications.BlobService.BlobType.Block, data);
+            client.PutBlockBlob(containerName, blobName, data);
 
             AssertBlobExists(containerName, blobName);
         }
 
         [Test]
-        public void PutBlob_RequiredArgsOnlyAndBlobAlreadyExists_UploadsBlobSuccessfully()
+        public void PutBlockBlob_RequiredArgsOnlyAndBlobAlreadyExists_UploadsBlobSuccessfully()
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
@@ -145,60 +146,244 @@ namespace Basic.Azure.Storage.Tests.Integration
             var client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
 
-            client.PutBlob(containerName, blobName, Basic.Azure.Storage.Communications.BlobService.BlobType.Block, data);
+            client.PutBlockBlob(containerName, blobName, data);
 
             AssertBlobExists(containerName, blobName);
         }
 
         [Test]
-        public void PutBlob_BlockBlobWithContentType_UploadsWithSpecifiedContentType()
+        public void PutBlockBlob_WithContentType_UploadsWithSpecifiedContentType()
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            CreateBlob(containerName, blobName);
             var client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
             string expectedContentType = "text/plain";
 
-            client.PutBlob(containerName, blobName, Basic.Azure.Storage.Communications.BlobService.BlobType.Block, data, contentType: expectedContentType);
+            client.PutBlockBlob(containerName, blobName, data, contentType: expectedContentType);
 
             var blob = AssertBlobExists(containerName, blobName);
             Assert.AreEqual(expectedContentType, blob.Properties.ContentType);
         }
 
         [Test]
-        public void PutBlob_BlockBlobWithContentEncoding_UploadsWithSpecifiedContentEncoding()
+        public void PutBlockBlob_WithContentEncoding_UploadsWithSpecifiedContentEncoding()
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            CreateBlob(containerName, blobName);
             var client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
             string expectedContentEncoding = "UTF8";
 
-            client.PutBlob(containerName, blobName, Basic.Azure.Storage.Communications.BlobService.BlobType.Block, data, contentEncoding: expectedContentEncoding);
+            client.PutBlockBlob(containerName, blobName, data, contentEncoding: expectedContentEncoding);
 
             var blob = AssertBlobExists(containerName, blobName);
             Assert.AreEqual(expectedContentEncoding, blob.Properties.ContentEncoding);
         }
 
         [Test]
-        public void PutBlob_BlockBlobWithContentLanguage_UploadsWithSpecifiedContentLanguage()
+        public void PutBlockBlob_WithContentLanguage_UploadsWithSpecifiedContentLanguage()
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            CreateBlob(containerName, blobName);
             var client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
             string expectedContentLanguage = "gibberish";
 
-            client.PutBlob(containerName, blobName, Basic.Azure.Storage.Communications.BlobService.BlobType.Block, data, contentLanguage: expectedContentLanguage);
+            client.PutBlockBlob(containerName, blobName, data, contentLanguage: expectedContentLanguage);
 
             var blob = AssertBlobExists(containerName, blobName);
             Assert.AreEqual(expectedContentLanguage, blob.Properties.ContentLanguage);
+        }
+
+        [Test]
+        public void PutBlockBlob_WithContentMD5_UploadsWithSpecifiedContentMD5()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            var expectedContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(data));
+
+            client.PutBlockBlob(containerName, blobName, data, contentMD5: expectedContentMD5);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            //this next test is not a real one, just for roundtrip verification
+            Assert.AreEqual(expectedContentMD5, blob.Properties.ContentMD5);
+        }
+
+        [Test]
+        [ExpectedException(typeof(Md5MismatchAzureException))]
+        public void PutBlockBlob_WithIncorrectContentMD5_ThrowsMD5MismatchAzureException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            var someOtherData = UTF8Encoding.UTF8.GetBytes("different content");
+            var incorrectContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(someOtherData));
+
+            client.PutBlockBlob(containerName, blobName, data, contentMD5: incorrectContentMD5);
+
+            // expects exception
+        }
+
+        [Test]
+        public void PutBlockBlob_WithCacheControl_UploadsWithCacheControl()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            string expectedCacheControl = "123-ABC";
+
+            client.PutBlockBlob(containerName, blobName, data, cacheControl: expectedCacheControl);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            Assert.AreEqual(expectedCacheControl, blob.Properties.CacheControl);
+        }
+
+        [Test]
+        public void PutBlockBlob_WithMetadata_UploadsMetadata()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            var expectedMetadata = new Dictionary<string, string>(){
+                { "firstValue", "1" },
+                { "secondValue", "2"}
+            };
+
+            client.PutBlockBlob(containerName, blobName, data, metadata: expectedMetadata);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            Assert.IsTrue(blob.Metadata.Any(m => m.Key == "firstValue" && m.Value == "1"), "First value is missing or incorrect");
+            Assert.IsTrue(blob.Metadata.Any(m => m.Key == "secondValue" && m.Value == "2"), "Second value is missing or incorrect");
+        }
+
+        [Test]
+        public void PutPageBlob_WithRequiredArgs_CreatesNewPageBlob()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            int expectedSize = 512;
+
+            client.PutPageBlob(containerName, blobName, expectedSize);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            Assert.AreEqual(expectedSize, blob.Properties.Length);
+        }
+
+        [Test]
+        public void PutPageBlob_WithContentType_UploadsWithSpecifiedContentType()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            string expectedContentType = "text/plain";
+            int expectedSize = 512;
+
+            client.PutPageBlob(containerName, blobName, expectedSize, contentType: expectedContentType);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            Assert.AreEqual(expectedContentType, blob.Properties.ContentType);
+        }
+
+        [Test]
+        public void PutPageBlob_WithContentEncoding_UploadsWithSpecifiedContentEncoding()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            string expectedContentEncoding = "UTF8";
+            int expectedSize = 512;
+
+            client.PutPageBlob(containerName, blobName, expectedSize, contentEncoding: expectedContentEncoding);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            Assert.AreEqual(expectedContentEncoding, blob.Properties.ContentEncoding);
+        }
+
+        [Test]
+        public void PutPageBlob_WithContentLanguage_UploadsWithSpecifiedContentLanguage()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            string expectedContentLanguage = "gibberish";
+            int expectedSize = 512;
+
+            client.PutPageBlob(containerName, blobName, expectedSize, contentLanguage: expectedContentLanguage);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            Assert.AreEqual(expectedContentLanguage, blob.Properties.ContentLanguage);
+        }
+
+        [Test]
+        public void PutPageBlob_WithCacheControl_UploadsWithCacheControl()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            string expectedCacheControl = "123-ABC";
+            int expectedSize = 512;
+
+            client.PutPageBlob(containerName, blobName, expectedSize, cacheControl: expectedCacheControl);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            Assert.AreEqual(expectedCacheControl, blob.Properties.CacheControl);
+        }
+
+        [Test]
+        public void PutPageBlob_WithMetadata_UploadsMetadata()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            var expectedMetadata = new Dictionary<string, string>(){
+                { "firstValue", "1" },
+                { "secondValue", "2"}
+            };
+            int expectedSize = 512;
+
+            client.PutPageBlob(containerName, blobName, expectedSize, metadata: expectedMetadata);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            Assert.IsTrue(blob.Metadata.Any(m => m.Key == "firstValue" && m.Value == "1"), "First value is missing or incorrect");
+            Assert.IsTrue(blob.Metadata.Any(m => m.Key == "secondValue" && m.Value == "2"), "Second value is missing or incorrect");
+        }
+
+        [Test]
+        public void PutPageBlob_WithSequenceNumber_AssignsSpecifiedSequenceNumberToBlob()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            int expectedSize = 512;
+            long expectedSequenceNumber = 123;
+
+            client.PutPageBlob(containerName, blobName, expectedSize, sequenceNumber: expectedSequenceNumber);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            Assert.AreEqual(expectedSequenceNumber, blob.Properties.PageBlobSequenceNumber);
         }
 
         #endregion
@@ -255,7 +440,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var container = client.GetContainerReference(containerName);
             var blob = container.GetBlockBlobReference(blobName);
 
-            byte[] data = UTF8Encoding.UTF8.GetBytes("Geeric content");
+            byte[] data = UTF8Encoding.UTF8.GetBytes("Generic content");
             blob.UploadFromByteArray(data, 0, data.Length);
         }
 
