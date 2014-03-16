@@ -70,6 +70,14 @@ namespace Basic.Azure.Storage.Communications.Core
 
         public Task<Response<TPayload>> ExecuteAsync()
         {
+            var request = BuildRequest();
+
+            // send web request
+            return SendRequestWithRetryAsync(request);
+        }
+
+        public WebRequest BuildRequest()
+        {
             // create web request
             var requestUri = GetUriBase();
             var request = WebRequest.Create(requestUri.GetUri());
@@ -83,7 +91,7 @@ namespace Basic.Azure.Storage.Communications.Core
             {
                 // hacky workaround area 
                 //  - Can't test against HttpWebRequest because the ctor isn't accessible
-                //  - Can't set UserAgent as raw header becauseHttpWebRequest won't allow you to not uset the named property
+                //  - Can't set UserAgent as raw header because HttpWebRequest won't allow you to not use the named property
                 if (request is HttpWebRequest)
                     ((HttpWebRequest)request).UserAgent = "Basic.Azure.Storage/1.0.0";
             }
@@ -99,8 +107,7 @@ namespace Basic.Azure.Storage.Communications.Core
             // apply authorization header
             ApplyAuthorizationHeader(ServiceType, request, requestUri.GetParameters(), _settings);
 
-            // send web request
-            return SendRequestWithRetryAsync(request);
+            return request;
         }
 
         private void ApplyRequiredHeaders(WebRequest request)
@@ -126,6 +133,12 @@ namespace Basic.Azure.Storage.Communications.Core
                 case StorageServiceType.BlobService:
                     string blobSignedString = SignedAuthorization.GenerateSharedKeySignatureString(request, queryStringParameters, settings);
                     request.Headers.Add(ProtocolConstants.Headers.Authorization, String.Format("SharedKey {0}:{1}", settings.AccountName, blobSignedString));
+                    break;
+                case StorageServiceType.TableService:
+                    string tableSignedString = SignedAuthorization.GenerateSharedKeySignatureStringForTableService(request, queryStringParameters, settings);
+                    request.Headers.Add(ProtocolConstants.Headers.Authorization, String.Format("SharedKey {0}:{1}", settings.AccountName, tableSignedString));
+                    //string tableSignedString = SignedAuthorization.GenerateSharedKeyLiteSignatureStringForTableService(request, queryStringParameters, settings);
+                    //request.Headers.Add(ProtocolConstants.Headers.Authorization, String.Format("SharedKeyLite {0}:{1}", settings.AccountName, tableSignedString));
                     break;
                 default:
                     throw new NotImplementedException("Specified authentication type is not supported yet");
@@ -171,11 +184,12 @@ namespace Basic.Azure.Storage.Communications.Core
                     request.BeginGetRequestStream,
                     asyncResult => request.EndGetRequestStream(asyncResult),
                     null)
-               .ContinueWith((t) => {
-                    if (t.IsFaulted)
-                        throw t.Exception;
+               .ContinueWith((t) =>
+               {
+                   if (t.IsFaulted)
+                       throw t.Exception;
 
-                    var stream = t.Result;
+                   var stream = t.Result;
                    var content = ((ISendDataWithRequest)this).GetContentToSend();
                    return Task.Factory.FromAsync(
                        stream.BeginWrite,
@@ -188,13 +202,13 @@ namespace Basic.Azure.Storage.Communications.Core
                .Unwrap()
                .ContinueWith((t) =>
                {
-                    if (t.IsFaulted)
-                        throw t.Exception;
+                   if (t.IsFaulted)
+                       throw t.Exception;
 
-                    return Task.Factory.FromAsync(
-                        request.BeginGetResponse,
-                        asyncResult => request.EndGetResponse(asyncResult),
-                        null);
+                   return Task.Factory.FromAsync(
+                       request.BeginGetResponse,
+                       asyncResult => request.EndGetResponse(asyncResult),
+                       null);
                })
                .Unwrap();
             }

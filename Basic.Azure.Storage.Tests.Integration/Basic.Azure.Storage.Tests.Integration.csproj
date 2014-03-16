@@ -63,6 +63,7 @@
     <Compile Include="BlobServiceClientTests.cs" />
     <Compile Include="QueueServiceClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TableServiceClientTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Basic.Azure.Storage.Communications.TableService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,6 +40,8 @@ namespace Basic.Azure.Storage.Communications.Core
 
             public const string OperationDate = "Date";
 
+            public const string PreferenceApplied = "Preference-Applied";
+
             public const string StorageVersion = "x-ms-version";
 
             public const string UserAgent = "User-Agent";
@@ -63,6 +66,25 @@ namespace Basic.Azure.Storage.Communications.Core
 
                 public const string Page = "PageBlob";
 
+            }
+
+            public static class TableMetadataPreference
+            {
+                public const string ReturnContent = "return-content";
+
+                public const string ReturnNoContent = "return-no-content";
+
+                public static string GetValue(MetadataPreference value)
+                {
+                    switch (value)
+                    {
+                        case MetadataPreference.ReturnContent:
+                            return ReturnContent;
+                        case MetadataPreference.ReturnNoContent:
+                        default:
+                            return ReturnNoContent;
+                    }
+                }
             }
         }
 

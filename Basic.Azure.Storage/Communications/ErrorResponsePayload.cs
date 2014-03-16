@@ -25,7 +25,14 @@ namespace Basic.Azure.Storage.Communications
                     var xDoc = XDocument.Parse(content);
                     try
                     {
-                        ErrorCode = xDoc.Element("Error").Element("Code").Value;
+                        // blob + queue are capitalized, table service is not
+                        ErrorCode = xDoc.Elements()
+                                        .Where(e => e.Name.LocalName.Equals("Error", StringComparison.InvariantCultureIgnoreCase))
+                                        .Single()
+                                        .Elements()
+                                        .Where(e => e.Name.LocalName.Equals("Code", StringComparison.InvariantCultureIgnoreCase))
+                                        .Single()
+                                        .Value;
                     }
                     catch
                     {

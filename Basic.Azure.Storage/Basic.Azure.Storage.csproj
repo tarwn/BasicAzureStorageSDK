@@ -92,10 +92,14 @@
     </Compile>
     <Compile Include="Communications\ServiceExceptions\UnidentifiedAzureException.cs" />
     <Compile Include="Communications\ServiceExceptions\UnrecognizedAzureException.cs" />
+    <Compile Include="Communications\TableService\CreateTableRequest.cs" />
+    <Compile Include="Communications\TableService\CreateTableResponse.cs" />
+    <Compile Include="Communications\TableService\MetadataPreference.cs" />
     <Compile Include="Communications\Utility\IdentifierValidation.cs" />
     <Compile Include="QueueServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StorageAccountSettings.cs" />
+    <Compile Include="TableServiceClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Communications\ServiceExceptions\CommonServiceExceptions.tt">

@@ -10,10 +10,49 @@ namespace Basic.Azure.Storage.Communications.Core
 {
     public static class SignedAuthorization
     {
-
-        public static string GenerateSharedKeySignatureStringForTableService(HttpWebRequest request, StorageAccountSettings settings)
+        public static string GenerateSharedKeyLiteSignatureStringForTableService(WebRequest request, Dictionary<string, string> queryStringParameters, StorageAccountSettings settings)
         {
-            return "";
+            var queryStrings = queryStringParameters.OrderBy(kvp => kvp.Key)
+                                                    .Select(kvp => kvp.Key + ":" + kvp.Value);
+
+            string canonicalizedResource = "/" + settings.AccountName +
+                                            String.Join("", request.RequestUri.Segments);
+            canonicalizedResource = canonicalizedResource.TrimEnd(new char[] { '\n' });
+
+            //SharedKeyLIte
+            string stringToSign = String.Format(
+                /* Date */ "{0}\n" +
+                /* Canonicalized Resource */ "{1}",
+                request.Headers[ProtocolConstants.Headers.Date],
+                canonicalizedResource);
+
+            return settings.ComputeMacSha256(stringToSign);
+        }
+
+        public static string GenerateSharedKeySignatureStringForTableService(WebRequest request, Dictionary<string, string> queryStringParameters, StorageAccountSettings settings)
+        {
+
+            var queryStrings = queryStringParameters.OrderBy(kvp => kvp.Key)
+                                                    .Select(kvp => kvp.Key + ":" + kvp.Value);
+
+            string canonicalizedResource = "/" + settings.AccountName +
+                                            String.Join("", request.RequestUri.Segments);
+            canonicalizedResource = canonicalizedResource.TrimEnd(new char[] { '\n' });
+
+            // Shared Key
+            string stringToSign = String.Format(
+                /* Method */ "{0}\n" +
+                /* Content-MD5 */ "{1}\n" +
+                /* Content-Type */ "{2}\n" +
+                /* Date */ "{3}\n" +
+                /* Canonicalized Resource */ "{4}",
+                request.Method,
+                request.Headers[ProtocolConstants.Headers.ContentMD5],
+                request.ContentType,
+                request.Headers[ProtocolConstants.Headers.Date],
+                canonicalizedResource);
+
+            return settings.ComputeMacSha256(stringToSign);
         }
 
         public static string GenerateSharedKeySignatureString(WebRequest request, Dictionary<string,string> queryStringParameters, StorageAccountSettings settings)
@@ -65,6 +104,7 @@ namespace Basic.Azure.Storage.Communications.Core
 
             return settings.ComputeMacSha256(stringToSign);
         }
+
 
     }
 }
