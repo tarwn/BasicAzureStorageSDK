@@ -60,7 +60,7 @@ namespace Basic.Azure.Storage
         public LocalEmulatorAccountSettings(string proxyUri = DEV_DEFAULT_URL)
             : base(DEV_ACCOUNT_NAME, DEV_ACCOUNT_KEY, false)
         {
-            ProxyUri = "ipv4.fiddler";// proxyUri;
+            ProxyUri = proxyUri;
         }
 
         public string ProxyUri { get; protected set; }

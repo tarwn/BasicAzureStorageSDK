@@ -15,7 +15,9 @@ namespace Basic.Azure.Storage.Tests.Integration
     public class TableServiceClientTests
     {
         private StorageAccountSettings _accountSettings = new LocalEmulatorAccountSettings();
-        private CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true;DevelopmentStorageProxyUri=http://ipv4.fiddler");
+        //for debugging: "ipv4.fiddler"
+        private CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
+        //for debugging: "UseDevelopmentStorage=true;DevelopmentStorageProxyUri=http://ipv4.fiddler"
 
         private List<string> _tablesToCleanup = new List<string>();
 
