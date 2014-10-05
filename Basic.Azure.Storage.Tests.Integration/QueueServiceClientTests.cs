@@ -91,6 +91,30 @@ namespace Basic.Azure.Storage.Tests.Integration
             // expects exception
         }
 
+        [Test]
+        public void DeleteQueue_ValidQueue_DeletesQueue()
+        {
+            var client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            client.DeleteQueue(queueName);
+
+            AssertQueueDoesNotExist(queueName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueNotFoundAzureException))]
+        public void DeleteQueue_NonExistentQueue_ReportsError()
+        {
+            var client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            client.DeleteQueue(queueName);
+
+            // expects exception
+        }
+
         #endregion
 
         #region Message Operations Tests
@@ -149,6 +173,16 @@ namespace Basic.Azure.Storage.Tests.Integration
             if (!queue.Exists())
             {
                 Assert.Fail(String.Format("The queue '{0}' does not exist", queueName));
+            }
+        }
+
+        private void AssertQueueDoesNotExist(string queueName)
+        {
+            var client = _storageAccount.CreateCloudQueueClient();
+            var queue = client.GetQueueReference(queueName);
+            if (queue.Exists())
+            {
+                Assert.Fail(String.Format("The queue '{0}' exists", queueName));
             }
         }
 

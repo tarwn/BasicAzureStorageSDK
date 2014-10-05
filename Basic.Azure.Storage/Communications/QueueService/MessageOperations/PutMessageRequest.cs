@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basic.Azure.Storage.Communications.QueueService
+namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
 {
     /// <summary>
     /// Add a message to the specified Queue

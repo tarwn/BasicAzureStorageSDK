@@ -8,7 +8,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basic.Azure.Storage.Communications.QueueService
+namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
 {
     /// <summary>
     /// Create a queue with the given name

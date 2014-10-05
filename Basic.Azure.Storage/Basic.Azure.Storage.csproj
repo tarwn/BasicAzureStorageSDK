@@ -65,9 +65,10 @@
     <Compile Include="Communications\Core\StorageServiceType.cs" />
     <Compile Include="Communications\ErrorResponsePayload.cs" />
     <Compile Include="Communications\Core\Interfaces\IResponsePayload.cs" />
-    <Compile Include="Communications\QueueService\CreateQueueRequest.cs" />
+    <Compile Include="Communications\QueueService\QueueOperations\DeleteQueueRequest.cs" />
+    <Compile Include="Communications\QueueService\QueueOperations\CreateQueueRequest.cs" />
     <Compile Include="Communications\EmptyResponsePayload.cs" />
-    <Compile Include="Communications\QueueService\PutMessageRequest.cs" />
+    <Compile Include="Communications\QueueService\MessageOperations\PutMessageRequest.cs" />
     <Compile Include="Communications\ServiceExceptions\AzureException.cs" />
     <Compile Include="Communications\ServiceExceptions\BlobServiceExceptions.cs">
       <AutoGen>True</AutoGen>
@@ -122,6 +123,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Communications\QueueService\AccountOperations\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
