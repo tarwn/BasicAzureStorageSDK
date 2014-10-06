@@ -65,10 +65,12 @@
     <Compile Include="Communications\Core\StorageServiceType.cs" />
     <Compile Include="Communications\ErrorResponsePayload.cs" />
     <Compile Include="Communications\Core\Interfaces\IResponsePayload.cs" />
+    <Compile Include="Communications\QueueService\QueueOperations\GetQueueMetadataRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\DeleteQueueRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\CreateQueueRequest.cs" />
     <Compile Include="Communications\EmptyResponsePayload.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\PutMessageRequest.cs" />
+    <Compile Include="Communications\QueueService\QueueOperations\GetQueueMetadataResponse.cs" />
     <Compile Include="Communications\ServiceExceptions\AzureException.cs" />
     <Compile Include="Communications\ServiceExceptions\BlobServiceExceptions.cs">
       <AutoGen>True</AutoGen>

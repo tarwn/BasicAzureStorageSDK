@@ -11,20 +11,20 @@ using System.Threading.Tasks;
 namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
 {
     /// <summary>
-    /// Delete a queue with the given name
-    /// http://msdn.microsoft.com/en-us/library/azure/dd179436.aspx
+    /// Retrieve metadata for queue, including approximate message count
+    /// http://msdn.microsoft.com/en-us/library/azure/dd179384.aspx
     /// </summary>
-    public class DeleteQueueRequest : RequestBase<EmptyResponsePayload>
+    public class GetQueueMetadataRequest : RequestBase<GetQueueMetadataResponse>
     {
         private string _queueName;
 
-        public DeleteQueueRequest(StorageAccountSettings settings, string queueName)
+        public GetQueueMetadataRequest(StorageAccountSettings settings, string queueName)
             : base(settings)
         {
             _queueName = queueName;
         }
 
-        protected override string HttpMethod { get { return "DELETE"; } }
+        protected override string HttpMethod { get { return "GET"; } }
 
         protected override StorageServiceType ServiceType { get { return StorageServiceType.QueueService; } }
 
@@ -32,6 +32,7 @@ namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
         {
             var builder = new RequestUriBuilder(Settings.QueueEndpoint);
             builder.AddSegment(_queueName);
+            builder.AddParameter(ProtocolConstants.QueryParameters.Comp, ProtocolConstants.QueryValues.Metadata);
             return builder;
         }
 

@@ -71,6 +71,10 @@ namespace Basic.Azure.Storage.Communications.Core
                     String.Join("\n", queryStrings);
             canonicalizedResource = canonicalizedResource.TrimEnd(new char[] { '\n' });
 
+            string contentLength = "";
+            if (request.Method == "POST" || request.Method == "PUT" || request.Method == "DELETE")
+                contentLength = request.ContentLength.ToString();
+
             string stringToSign = String.Format(
                 /* Method */ "{0}\n"
                 /* Content-Encoding */ + "{1}\n"
@@ -89,7 +93,7 @@ namespace Basic.Azure.Storage.Communications.Core
                 request.Method,
                 request.Headers[ProtocolConstants.Headers.ContentEncoding],
                 request.Headers[ProtocolConstants.Headers.ContentLanguage],
-                request.ContentLength,
+                contentLength,
                 request.Headers[ProtocolConstants.Headers.ContentMD5],
                 request.ContentType,
                 "",

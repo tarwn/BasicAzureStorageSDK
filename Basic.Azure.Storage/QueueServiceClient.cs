@@ -31,6 +31,12 @@ namespace Basic.Azure.Storage
             var request = new DeleteQueueRequest(_account, queueName);
             request.Execute();
         }
+        public GetQueueMetadataResponse GetQueueMetadata(string queueName)
+        {
+            var request = new GetQueueMetadataRequest(_account, queueName);
+            var response = request.Execute();
+            return response.Payload;
+        }
 
         #endregion
 
@@ -43,5 +49,6 @@ namespace Basic.Azure.Storage
         }
 
         #endregion
+
     }
 }

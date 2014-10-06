@@ -12,6 +12,8 @@ namespace Basic.Azure.Storage.Communications.Core
 
         public static class Headers
         {
+            public const string ApproximateMessagesCount = "x-ms-approximate-messages-count";
+
             public const string Authorization = "Authorization";
 
             public const string BlobContentLength = "x-ms-blob-content-length";
@@ -42,9 +44,13 @@ namespace Basic.Azure.Storage.Communications.Core
 
             public const string PreferenceApplied = "Preference-Applied";
 
+            public const string RequestId = "x-ms-request-id";
+
             public const string StorageVersion = "x-ms-version";
 
             public const string UserAgent = "User-Agent";
+
+            public const string Version = "x-ms-version";
         }
 
         public static class HeaderValues
@@ -90,6 +96,8 @@ namespace Basic.Azure.Storage.Communications.Core
 
         public static class QueryParameters
         {
+            public const string Comp = "comp";
+
             public const string MessageTTL = "messagettl";
 
             public const string ResType = "restype";
@@ -101,6 +109,7 @@ namespace Basic.Azure.Storage.Communications.Core
 
         public static class QueryValues
         {
+            public const string Metadata = "metadata";
 
             public static class ResType
             {
