@@ -65,6 +65,7 @@
     <Compile Include="Communications\Core\StorageServiceType.cs" />
     <Compile Include="Communications\ErrorResponsePayload.cs" />
     <Compile Include="Communications\Core\Interfaces\IResponsePayload.cs" />
+    <Compile Include="Communications\QueueService\QueueOperations\SetQueueMetadataRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\GetQueueMetadataRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\DeleteQueueRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\CreateQueueRequest.cs" />

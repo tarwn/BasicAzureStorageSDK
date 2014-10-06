@@ -160,6 +160,53 @@ namespace Basic.Azure.Storage.Tests.Integration
             // expects exception
         }
 
+        [Test]
+        public void SetQueueMetadata_EmptyMetadata_SetsEmptyMetadataOnQueue()
+        {
+            var client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            client.SetQueueMetadata(queueName, new Dictionary<string,string>());
+
+            var metadata = GetQueueMetadata(queueName);
+            Assert.IsEmpty(metadata);
+        }
+
+        [Test]
+        public void SetQueueMetadata_ValidMetadata_SetsMetadataOnQueue()
+        {
+            var client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            var expectedMetadata = new Dictionary<string, string>(){
+                {"one", "1"},
+                {"two", "2"}
+            };
+
+            client.SetQueueMetadata(queueName, expectedMetadata);
+
+            var metadata = GetQueueMetadata(queueName);
+            Assert.IsNotNull(metadata);
+            Assert.AreEqual(expectedMetadata.Count, metadata.Count);
+            foreach (var key in expectedMetadata.Keys)
+            {
+                Assert.AreEqual(expectedMetadata[key], metadata[key]);
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueNotFoundAzureException))]
+        public void SetQueueMetadata_NonexistentQueue_ThrowsQueueDoesNotExistException()
+        {
+            var client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            client.SetQueueMetadata(queueName, new Dictionary<string, string>());
+
+            // expects exception
+        }
+
         #endregion
 
         #region Message Operations Tests
@@ -299,15 +346,22 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             if (metadata != null)
             {
-
+                // tell me how this method of adding metadata makes any sense at all?
                 foreach (var key in metadata.Keys)
                 {
-                    // so is this metadata data a local or remote get? and tell me how this method of adding metadata makes any sense at all?
                     queue.Metadata.Add(key, metadata[key]);
                 }
-
                 queue.SetMetadata();
             }
+        }
+
+        private IDictionary<string, string> GetQueueMetadata(string queueName)
+        {
+            var client = _storageAccount.CreateCloudQueueClient();
+            var queue = client.GetQueueReference(queueName);
+
+            queue.FetchAttributes();
+            return queue.Metadata;
         }
 
         #endregion

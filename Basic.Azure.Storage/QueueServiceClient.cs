@@ -37,6 +37,12 @@ namespace Basic.Azure.Storage
             var response = request.Execute();
             return response.Payload;
         }
+        
+        public void SetQueueMetadata(string queueName, Dictionary<string, string> metadata)
+        {
+            var request = new SetQueueMetadataRequest(_account, queueName, metadata);
+            request.Execute();
+        }
 
         #endregion
 
@@ -49,6 +55,7 @@ namespace Basic.Azure.Storage
         }
 
         #endregion
+
 
     }
 }
