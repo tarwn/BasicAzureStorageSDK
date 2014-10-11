@@ -1,10 +1,12 @@
 BasicAzureStorageSDK
 ====================
 
-This is the beginning of a .Net SDK for accessing the Azure Storage API. It targets the latest version 
-that is also supported by the local emulator (not counting preview versions).
+This is the beginning of a .Net SDK for accessing the Azure Storage API. The intent is to target the latest version 
+that is also supported by the local emulator (not counting preview versions). 
 
 Current Supported API Version: 2012-02-12
+
+The API version will be updated soon-ish. When I first started this version the emulator was very far out of date.
 
 I have not decided yet whether this will be a partial, reference implementation or a full implementation.
 
@@ -23,32 +25,33 @@ Azure Storage SDK for .Net, I've continued to be annoyed by several things:
 
 4) Information: The generic way exceptions are handled and thrown compared to the detail available from the API
 
-5) Information: The lack of informaiton about failed retries
+5) Information: The lack of information about failed retries
 
 6) Readability.
 
-7) Testability: There is not a clear interface or set of overrides I can do to execute local unit tests.
+7) Testability: There is not a clear interface to mock or fake for tests.
 
 8) Testability: The internal tests for the SDK use logic to mangle HTTP requests, are long and rambling, and have
-   actually been removed from the most recent version I looked at on github (3.0).
+   been removed from some versions (3.0).
 
 Some of these have improved with the later versions and with some of the tracing methods in later versions, but
 some have remained underlying concepts (such as trying to use stateful objects to represent a service).
 
 I've written an implementation of the Azure API before, but I wanted to start writing one that:
 
-1) Matches the API. The documentation should exist only to help understand how to do operations from the API
-   in this library, setup things like the storage settings or error handling, and call out exceptions to the API.
+1) Matches the API. The documentation should exist only to describe the naming gap between the two, the few
+   places where the local library diverges from the API, how to setup things like the storage settings and error
+   handling, and how exceptions map to the API.
 
 2) Treats the service as a service. If you want to consume the service and add some pseudo form of state, do so. 
-   But the SDk should not force that on you.
+   The SDK should not force that on you.
    
 3) Provides every scrap of error information possible to help the developer or maintainer do their job.
 
-4) Provides underlying informaiton about retry rates and retries that were later succesful
+4) Provides underlying information about retry rates and retries that were later succesful
 
-5) Matches the API internally as well. Finding the implementation of an API operation should not require opening 
-   15 files.
+5) Matches the API internally as well. Finding the implementation details of an API operation should not require 
+   opening 15 files.
    
 6) Has a clear set of tests that serves almost as a bullet point list of how the API works for each operation
 
@@ -57,12 +60,12 @@ I've written an implementation of the Azure API before, but I wanted to start wr
 8) Does not force you to use asynchronous patterns throughout your codebase (except where the API requires them)
 
 9) Requires no magic. There are no exposed properties that are only correct after another call is made, no
-   enumerated values that are not enums, and when a parametr has character or length restrictions, the library
-   should be smart enough to tell you about them.
+   enumerated values that are not enums, no properties that actually call the API behind the scenes,  and when a
+   parametr has character or length restrictions, the library should be smart enough to tell you about them.
 
-Currently the library does not have interfaces for the top-level client objects for #7, and retries are only
-communicated upward at the end of a failed operation rather than providing hooks to gather informaiotn on
-each individual failed retry. Restrictions on length and character usage have also not been added yet.
+Currently retries are only communicated upward at the end of a failed operation rather than providing hooks to 
+gather information on each individual failed retry. Restrictions on length and character usage have also not been 
+added yet.
 
 Geography
 ====================
@@ -85,9 +88,10 @@ Parameters that are required in the documentation are required by operations in 
 are optional in the documentation are optional in the client. If there is only a limited set of input options
 allowed, an enum will exist that has those options.
 
-Currently PutBlob is an exception, as it has been split into a PutBlockBlob and PutPageBlob so there is no 
-confusion over whether a parameter is optional because it is optional for the blob type you are operating on
-or because it is only valid for the opposite type.
+*PutBlob* Currently PutBlob is an exception, as it has been split into a PutBlockBlob and PutPageBlob. In the API,
+some of the parameters are truly optional and some are only optional depending on which flavor you are uploading,
+so I chose to split it into two methods so that only the truly optional parameters would be optional and the ones
+that are type dependeant are not available for the opposite call.
 
 _Responses_
 
@@ -148,21 +152,19 @@ The core logic includes the RequestBase, the Response wrapper that wraps around 
 expected for an operation, the RetriedException that is returned when we give up after exhausting the retry policy,
 and various constants for header values and such, the logic to create signed authorization headers, etc.
 
-Technical Details
+In Progress
 ====================
 
-The two biggest design changes I am going to make as I continue to work on this are around asynchronous operations.
-
-TPL Tasks
------------
-
-Currently the internal implementation uses TPL Tasks because I was familiar with this method from building an 
-earlier version and needed more production experience using async/await.
+There are a number of the design considerations above that are still in progress.
 
 Synchronous Clients
 --------------------
 
-The 3 clients (Blob, Table, Client) currently only expose synchronous methods. Surfacing asynchronous requests
-will be added as well (the underlying logic already supports it). It was built this way because plumbing out the
-early calls to each of the services had enough complexity without also trying to write tests that were managing
-asynchronous calls.
+The clients (Blob, Table, Client) started out exposing only synchronous methods. Surfacing asynchronous methods
+is in progress.
+
+Interfaces
+--------------------
+
+The interfaces (/ClientContracts/*) are still in progress. The QueueService contract has been added as I add more
+methods to the QueueServiceClient, the other two will be added when I return to add more calls to them.
