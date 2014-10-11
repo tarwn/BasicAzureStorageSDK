@@ -68,12 +68,12 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        public Task<Response<TPayload>> ExecuteAsync()
+        public async Task<Response<TPayload>> ExecuteAsync()
         {
             var request = BuildRequest();
 
             // send web request
-            return SendRequestWithRetryAsync(request);
+            return await SendRequestWithRetryAsync(request);
         }
 
         public WebRequest BuildRequest()
@@ -145,81 +145,44 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        private Task<Response<TPayload>> SendRequestWithRetryAsync(WebRequest request)
+        private async Task<Response<TPayload>> SendRequestWithRetryAsync(WebRequest request)
         {
             int numberOfAttempts = 0;
-            return RetryPolicy.ExecuteAsync<Response<TPayload>>(() =>
-            {
-                numberOfAttempts++;
-                var responseTask = SendRequestAsync(request);
-                var continuedTask = responseTask.ContinueWith<Response<TPayload>>((t) =>
+            try { 
+                return await RetryPolicy.ExecuteAsync<Response<TPayload>>(async () =>
                 {
-                    if (!t.IsFaulted)
+                    numberOfAttempts++;
+                    try
                     {
-                        t.Result.NumberOfAttempts = numberOfAttempts;
-                        return t.Result;
+                        var result = await SendRequestAsync(request);
+                        result.NumberOfAttempts = numberOfAttempts;
+                        return result;
                     }
-                    else
-                    {
-                        throw GetAzureExceptionFor(t.Exception);
+                    catch (Exception exc) {
+                        throw GetAzureExceptionFor(exc);
                     }
                 });
-                return continuedTask;
-            })
-            .ContinueWith<Response<TPayload>>((t) =>
+            }
+            catch(Exception exc)
             {
-                if (t.IsFaulted && numberOfAttempts > 1)
-                    throw new RetriedException(t.Exception, numberOfAttempts);
+                if (numberOfAttempts > 1)
+                    throw new RetriedException(exc, numberOfAttempts);
                 else
-                    return t.Result;
-            });
+                    throw;
+            }
         }
 
-        private Task<Response<TPayload>> SendRequestAsync(WebRequest request)
+        private async Task<Response<TPayload>> SendRequestAsync(WebRequest request)
         {
             Task<WebResponse> task;
             if (HasContentToSend)
             {
-                task = Task.Factory.FromAsync(
-                    request.BeginGetRequestStream,
-                    asyncResult => request.EndGetRequestStream(asyncResult),
-                    null)
-               .ContinueWith((t) =>
-               {
-                   if (t.IsFaulted)
-                       throw t.Exception;
-
-                   var stream = t.Result;
-                   var content = ((ISendDataWithRequest)this).GetContentToSend();
-                   return Task.Factory.FromAsync(
-                       stream.BeginWrite,
-                       stream.EndWrite,
-                       content,
-                       0,
-                       content.Length,
-                       null);
-               })
-               .Unwrap()
-               .ContinueWith((t) =>
-               {
-                   if (t.IsFaulted)
-                       throw t.Exception;
-
-                   return Task.Factory.FromAsync(
-                       request.BeginGetResponse,
-                       asyncResult => request.EndGetResponse(asyncResult),
-                       null);
-               })
-               .Unwrap();
+                var stream = await request.GetRequestStreamAsync();
+                var content = ((ISendDataWithRequest)this).GetContentToSend();
+                await stream.WriteAsync(content, 0, content.Length);
             }
-            else
-            {
-                task = Task.Factory.FromAsync(
-                    request.BeginGetResponse,
-                    asyncResult => request.EndGetResponse(asyncResult),
-                    null);
-            }
-            return task.ContinueWith(t => ReceiveResponse((HttpWebResponse)t.Result));
+            var response = await request.GetResponseAsync();
+            return ReceiveResponse((HttpWebResponse)response);
         }
 
         private Response<TPayload> ReceiveResponse(HttpWebResponse httpWebResponse)
@@ -237,32 +200,17 @@ namespace Basic.Azure.Storage.Communications.Core
 
         private Exception GetAzureExceptionFor(Exception exception)
         {
-            if (exception is AggregateException)
+            if (exception is WebException)
             {
-                var aggregateException = ((AggregateException)exception).Flatten();
-
-                // see if we can find a webexception
-                if (aggregateException.InnerExceptions.Any(ie => ie is WebException))
+                var wexc = (WebException)exception;
+                if (wexc.Response != null && typeof(HttpWebResponse).IsAssignableFrom(wexc.Response.GetType()))
                 {
-                    var wexc = aggregateException.InnerExceptions.OfType<WebException>().First();
-                    if (wexc.Response != null && typeof(HttpWebResponse).IsAssignableFrom(wexc.Response.GetType()))
-                    {
-                        var response = new Response<ErrorResponsePayload>((HttpWebResponse)wexc.Response);
-                        return GetAzureExceptionFor(response, wexc);
-                    }
-                    else
-                    {
-                        return new UnidentifiedAzureException(wexc);
-                    }
-                }
-                else if (aggregateException.InnerExceptions.Count == 1)
-                {
-
-                    throw new GeneralExceptionDuringAzureOperationException("Azure service request received an exception without a valid Http Response to parse", aggregateException.InnerExceptions.Single());
+                    var response = new Response<ErrorResponsePayload>((HttpWebResponse)wexc.Response);
+                    return GetAzureExceptionFor(response, wexc);
                 }
                 else
                 {
-                    throw new GeneralExceptionDuringAzureOperationException("Azure service request received exceptions without a valid Http Response to parse", aggregateException.InnerExceptions.Single());
+                    return new UnidentifiedAzureException(wexc);
                 }
             }
             else

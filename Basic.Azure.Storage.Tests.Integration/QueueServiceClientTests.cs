@@ -1,4 +1,5 @@
-﻿using Basic.Azure.Storage.Communications.ServiceExceptions;
+﻿using Basic.Azure.Storage.ClientContracts;
+using Basic.Azure.Storage.Communications.ServiceExceptions;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using NUnit.Framework;
@@ -15,7 +16,7 @@ namespace Basic.Azure.Storage.Tests.Integration
     public class QueueServiceClientTests
     {
         private StorageAccountSettings _accountSettings = new LocalEmulatorAccountSettings();
-        private CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true;");
+        private CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
 
         private List<string> _queuesToCleanUp = new List<string>();
 
@@ -43,18 +44,18 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void CreateQueue_ValidName_CreatesQueue()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
 
             client.CreateQueue(queueName);
 
             AssertQueueExists(queueName);
         }
-
+        
         [Test]
         public void CreateQueue_ValidNameAndMetadata_CreatesQueue()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
 
             client.CreateQueue(queueName, new Dictionary<string, string>() { 
@@ -67,7 +68,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void CreateQueue_AlreadyExistsWithMatchingMetadata_ReportsNoContentPerDocumentation()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
 
@@ -80,7 +81,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(QueueAlreadyExistsAzureException))]
         public void CreateQueue_AlreadyExistsWithDifferentMetadata_ReportsConflictProperly()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
 
@@ -90,11 +91,38 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
+        
+        [Test]
+        public async Task CreateQueueAsync_ValidName_CreatesQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            await client.CreateQueueAsync(queueName);
+
+            AssertQueueExists(queueName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueAlreadyExistsAzureException))]
+        public async Task CreateQueueAsync_AlreadyExistsWithDifferentMetadata_ReportsConflictProperly()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            await client.CreateQueueAsync(queueName, new Dictionary<string, string> { 
+                { "SampleKey", "SampleValue" }
+            });
+
+            // expects exception
+        }
+
 
         [Test]
         public void DeleteQueue_ValidQueue_DeletesQueue()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
 
@@ -107,7 +135,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(QueueNotFoundAzureException))]
         public void DeleteQueue_NonExistentQueue_ReportsError()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
 
             client.DeleteQueue(queueName);
@@ -116,9 +144,34 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public async Task DeleteQueueAsync_ValidQueue_DeletesQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            await client.DeleteQueueAsync(queueName);
+
+            AssertQueueDoesNotExist(queueName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueNotFoundAzureException))]
+        public async Task DeleteQueueAsync_NonExistentQueue_ReportsError()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            await client.DeleteQueueAsync(queueName);
+
+            // expects exception
+        }
+
+
+        [Test]
         public void GetQueueMetadata_ValidNameWithEmptyMetadata_ReturnsEmptyMetadata()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
 
@@ -130,7 +183,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetQueueMetadata_ValidNameWithMetadata_ReturnsMetadata()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
             var expectedMetadata = new Dictionary<string, string>(){
                 {"one", "1"},
@@ -152,7 +205,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(QueueNotFoundAzureException))]
         public void GetQueueMetadata_NonexistentQueue_ThrowsQueueDoesNotExistException()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
 
             var response = client.GetQueueMetadata(queueName);
@@ -161,9 +214,42 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public async Task GetQueueMetadataAsync_ValidNameWithMetadata_ReturnsMetadata()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            var expectedMetadata = new Dictionary<string, string>(){
+                {"one", "1"},
+                {"two", "2"}
+            };
+            CreateQueue(queueName, expectedMetadata);
+
+            var response = await client.GetQueueMetadataAsync(queueName);
+
+            Assert.IsNotNull(response.Metadata);
+            Assert.AreEqual(expectedMetadata.Count, response.Metadata.Count);
+            foreach (var key in expectedMetadata.Keys)
+            {
+                Assert.AreEqual(expectedMetadata[key], response.Metadata[key]);
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueNotFoundAzureException))]
+        public async Task GetQueueMetadataAsync_NonexistentQueue_ThrowsQueueDoesNotExistException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            var response = await client.GetQueueMetadataAsync(queueName);
+
+            // expects exception
+        }
+
+        [Test]
         public void SetQueueMetadata_EmptyMetadata_SetsEmptyMetadataOnQueue()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
 
@@ -176,7 +262,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void SetQueueMetadata_ValidMetadata_SetsMetadataOnQueue()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
             var expectedMetadata = new Dictionary<string, string>(){
@@ -199,10 +285,43 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(QueueNotFoundAzureException))]
         public void SetQueueMetadata_NonexistentQueue_ThrowsQueueDoesNotExistException()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
 
             client.SetQueueMetadata(queueName, new Dictionary<string, string>());
+
+            // expects exception
+        }
+
+        [Test]
+        public async Task SetQueueMetadataAsync_ValidMetadata_SetsMetadataOnQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            var expectedMetadata = new Dictionary<string, string>(){
+                {"one", "1"},
+                {"two", "2"}
+            };
+
+            await client.SetQueueMetadataAsync(queueName, expectedMetadata);
+
+            var metadata = GetQueueMetadata(queueName);
+            Assert.IsNotNull(metadata);
+            Assert.AreEqual(expectedMetadata.Count, metadata.Count);
+            foreach (var key in expectedMetadata.Keys)
+            {
+                Assert.AreEqual(expectedMetadata[key], metadata[key]);
+            }
+        }
+        [Test]
+        [ExpectedException(typeof(QueueNotFoundAzureException))]
+        public async Task SetQueueMetadataAsync_NonexistentQueue_ThrowsQueueDoesNotExistException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            await client.SetQueueMetadataAsync(queueName, new Dictionary<string, string>());
 
             // expects exception
         }
@@ -214,7 +333,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void PutMessage_ValidMessage_AddsMessageToQueue()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
             string message = "Unit Test Message";
@@ -227,7 +346,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void PutMessage_ValidMessageWithVisibilityTimeout_IsNotVisibleInQueue()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
             string message = "Unit Test Message";
@@ -242,7 +361,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Ignore("Either I messed up the MessageTTL property or it doesn't work as expected")]
         public void PutMessage_ValidMessageWithTTL_DisappearsAfterTTLExpires()
         {
-            var client = new QueueServiceClient(_accountSettings);
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
             string message = "Unit Test Message";
@@ -252,6 +371,19 @@ namespace Basic.Azure.Storage.Tests.Integration
             AssertQueueHasMessage(queueName);
             Thread.Sleep(1100); // a little extra to be sure
             AssertQueueIsEmpty(queueName);
+        }
+
+        [Test]
+        public async Task PutMessageAsync_ValidMessage_AddsMessageToQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            string message = "Unit Test Message";
+
+            await client.PutMessageAsync(queueName, message);
+
+            AssertQueueHasMessage(queueName);
         }
 
         #endregion
