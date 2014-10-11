@@ -23,6 +23,10 @@ namespace Basic.Azure.Storage.ClientContracts
         void SetQueueMetadata(string queueName, Dictionary<string, string> metadata);
         Task SetQueueMetadataAsync(string queueName, Dictionary<string, string> metadata);
 
+        GetQueueACLResponse GetQueueACL(string queueName);
+        Task<GetQueueACLResponse> GetQueueACLAsync(string queueName);
+
+
         #endregion
 
         #region Message Operations
@@ -31,8 +35,6 @@ namespace Basic.Azure.Storage.ClientContracts
         Task PutMessageAsync(string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null);
 
         #endregion
-
-
 
     }
 }

@@ -11,6 +11,11 @@ namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
 {
     public class GetQueueMetadataResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse
     {
+        public GetQueueMetadataResponse()
+        {
+            Metadata = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
+        }
+
         public int ApproximateMessageCount { get; protected set; }
 
         public ReadOnlyDictionary<string, string> Metadata { get; protected set; }

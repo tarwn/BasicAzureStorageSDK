@@ -109,6 +109,8 @@ namespace Basic.Azure.Storage.Communications.Core
 
         public static class QueryValues
         {
+            public const string ACL = "acl";
+
             public const string Metadata = "metadata";
 
             public static class ResType
@@ -117,6 +119,7 @@ namespace Basic.Azure.Storage.Communications.Core
                 public const string Container = "container";
 
             }
+
 
         }
     }

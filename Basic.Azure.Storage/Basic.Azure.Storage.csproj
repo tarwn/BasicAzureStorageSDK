@@ -49,6 +49,8 @@
     <Compile Include="Communications\BlobService\ContainerAccessType.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerResponse.cs" />
+    <Compile Include="Communications\Common\AccessPolicy.cs" />
+    <Compile Include="Communications\Common\SignedIdentifier.cs" />
     <Compile Include="Communications\Core\AuthenticationMethod.cs" />
     <Compile Include="Communications\Core\ExceptionRetryStrategy.cs" />
     <Compile Include="Communications\Core\Interfaces\IReceiveAdditionalHeadersWithResponse.cs" />
@@ -65,8 +67,10 @@
     <Compile Include="Communications\Core\StorageServiceType.cs" />
     <Compile Include="Communications\ErrorResponsePayload.cs" />
     <Compile Include="Communications\Core\Interfaces\IResponsePayload.cs" />
-    <Compile Include="Communications\QueueService\QueueOperations\SetQueueMetadataRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\GetQueueMetadataRequest.cs" />
+    <Compile Include="Communications\QueueService\QueueOperations\GetQueueACLResponse.cs" />
+    <Compile Include="Communications\QueueService\QueueOperations\SetQueueMetadataRequest.cs" />
+    <Compile Include="Communications\QueueService\QueueOperations\GetQueueACLRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\DeleteQueueRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\CreateQueueRequest.cs" />
     <Compile Include="Communications\EmptyResponsePayload.cs" />

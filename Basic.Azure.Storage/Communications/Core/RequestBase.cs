@@ -189,6 +189,7 @@ namespace Basic.Azure.Storage.Communications.Core
         {
             try
             {
+                // TODO: convert this to an async method so we don't have a sync wait when downloading response streams
                 var response = new Response<TPayload>(httpWebResponse);
                 return response;
             }

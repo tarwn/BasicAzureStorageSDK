@@ -68,6 +68,19 @@ namespace Basic.Azure.Storage
             await request.ExecuteAsync();
         }
 
+        public GetQueueACLResponse GetQueueACL(string queueName)
+        {
+            var request = new GetQueueACLRequest(_account, queueName);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<GetQueueACLResponse> GetQueueACLAsync(string queueName)
+        {
+            var request = new GetQueueACLRequest(_account, queueName);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         #endregion
 
         #region Message Operations
@@ -84,6 +97,9 @@ namespace Basic.Azure.Storage
         }
 
         #endregion
+
+
+
 
     }
 }

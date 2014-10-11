@@ -51,7 +51,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             AssertQueueExists(queueName);
         }
-        
+
         [Test]
         public void CreateQueue_ValidNameAndMetadata_CreatesQueue()
         {
@@ -91,7 +91,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
-        
+
         [Test]
         public async Task CreateQueueAsync_ValidName_CreatesQueue()
         {
@@ -253,7 +253,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
 
-            client.SetQueueMetadata(queueName, new Dictionary<string,string>());
+            client.SetQueueMetadata(queueName, new Dictionary<string, string>());
 
             var metadata = GetQueueMetadata(queueName);
             Assert.IsEmpty(metadata);
@@ -326,6 +326,74 @@ namespace Basic.Azure.Storage.Tests.Integration
             // expects exception
         }
 
+        [Test]
+        public void GetQueueACL_NoAccessPolicies_ReturnsEmptyList()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            var result = client.GetQueueACL(queueName);
+
+            Assert.IsEmpty(result.SignedIdentifiers);
+        }
+
+        [Test]
+        public void GetQueueACL_HasAccessPolicies_ReturnsListConstainingThosePolicies()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            string expectedId = "abc-123";
+            DateTime expectedStart = getTruncatedUtcNow();
+            AddAccessPolicy(queueName, expectedId, expectedStart, expectedStart.AddDays(1));
+
+            var result = client.GetQueueACL(queueName);
+
+            Assert.IsNotEmpty(result.SignedIdentifiers);
+            Assert.AreEqual("abc-123", result.SignedIdentifiers.First().Id);
+            Assert.AreEqual(expectedStart, result.SignedIdentifiers.First().AccessPolicy.StartTime);
+            Assert.AreEqual(expectedStart.AddDays(1), result.SignedIdentifiers.First().AccessPolicy.Expiry);
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueNotFoundAzureException))]
+        public void GetQueueACL_NonexistentQueue_ThrowsQueueNotFoundException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            var result = client.GetQueueACL(queueName);
+
+            // expects exception
+        }
+
+        [Test]
+        public async Task GetQueueACLAsync_HasAccessPolicies_ReturnsListConstainingThosePolicies()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            string expectedId = "abc-123";
+            DateTime expectedStart = getTruncatedUtcNow();
+            AddAccessPolicy(queueName, expectedId, expectedStart, expectedStart.AddDays(1));
+
+            var result = await client.GetQueueACLAsync(queueName);
+
+            Assert.IsNotEmpty(result.SignedIdentifiers);
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueNotFoundAzureException))]
+        public async Task GetQueueACLAync_NonexistentQueue_ThrowsQueueNotFoundException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            var result = await client.GetQueueACLAsync(queueName);
+
+            // expects exception
+        }
         #endregion
 
         #region Message Operations Tests
@@ -496,6 +564,25 @@ namespace Basic.Azure.Storage.Tests.Integration
             return queue.Metadata;
         }
 
+        private void AddAccessPolicy(string queueName, string id, DateTime startDate, DateTime expiry)
+        {
+            var client = _storageAccount.CreateCloudQueueClient();
+            var queue = client.GetQueueReference(queueName);
+            var permissions = queue.GetPermissions();
+            permissions.SharedAccessPolicies.Add(id, new Microsoft.WindowsAzure.Storage.Queue.SharedAccessQueuePolicy()
+            {
+                Permissions = Microsoft.WindowsAzure.Storage.Queue.SharedAccessQueuePermissions.Add,
+                SharedAccessStartTime = startDate,
+                SharedAccessExpiryTime = expiry
+            });
+            queue.SetPermissions(permissions);
+        }
+
         #endregion
+        private DateTime getTruncatedUtcNow()
+        {
+            return new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, DateTime.UtcNow.Hour, DateTime.UtcNow.Minute, DateTime.UtcNow.Second, DateTimeKind.Utc);
+        }
+
     }
 }
