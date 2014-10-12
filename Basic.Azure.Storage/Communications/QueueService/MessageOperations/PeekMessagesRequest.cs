@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
 {
     /// <summary>
-    /// Add a message to the specified Queue
-    /// http://msdn.microsoft.com/en-us/library/azure/dd179474.aspx
+    /// Retrieves one or more messages from the front of the queue without altering visibility of those messages
+    /// http://msdn.microsoft.com/en-us/library/azure/dd179472.aspx
     /// </summary>
-    public class GetMessagesRequest : RequestBase<GetMessagesResponse>
+    public class PeekMessagesRequest : RequestBase<PeekMessagesResponse>
     {
         private string _queueName;
         private int _numOfMessages;
         private int _visibilityTimeout;
         private int? _messageTtl;
 
-        public GetMessagesRequest(StorageAccountSettings settings, string queueName, int numOfMessages = 1, int visibilityTimeout = 30, int? messageTtl = null)
+        public PeekMessagesRequest(StorageAccountSettings settings, string queueName, int numOfMessages = 1, int visibilityTimeout = 30, int? messageTtl = null)
             : base(settings)
         {
             //TODO: add Guard statements against invalid values, short circuit so we don't have the latency roundtrip to the server

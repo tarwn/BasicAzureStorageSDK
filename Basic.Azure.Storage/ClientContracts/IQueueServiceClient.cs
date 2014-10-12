@@ -35,13 +35,17 @@ namespace Basic.Azure.Storage.ClientContracts
 
         #region Message Operations
 
-        GetMessagesResponse GetMessages(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null);
-        Task<GetMessagesResponse> GetMessagesAsync(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null);
-
         void PutMessage(string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null);
         Task PutMessageAsync(string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null);
 
+        GetMessagesResponse GetMessages(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null);
+        Task<GetMessagesResponse> GetMessagesAsync(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null);
+
+        PeekMessagesResponse PeekMessages(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null);
+        Task<PeekMessagesResponse> PeekMessagesAsync(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null);
+
         #endregion
+
 
 
 

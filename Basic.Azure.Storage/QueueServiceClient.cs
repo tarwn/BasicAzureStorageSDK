@@ -96,6 +96,17 @@ namespace Basic.Azure.Storage
 
         #region Message Operations
 
+        public void PutMessage(string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null)
+        {
+            var request = new PutMessageRequest(_account, queueName, messageData, visibilityTimeout, messageTtl);
+            request.Execute();
+        }
+        public async Task PutMessageAsync(string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null)
+        {
+            var request = new PutMessageRequest(_account, queueName, messageData, visibilityTimeout, messageTtl);
+            await request.ExecuteAsync();
+        }
+
         public GetMessagesResponse GetMessages(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null)
         {
             var request = new GetMessagesRequest(_account, queueName, numofMessages, visibilityTimeout, messageTtl);
@@ -109,17 +120,18 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
-        public void PutMessage(string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null)
+        public PeekMessagesResponse PeekMessages(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null)
         {
-            var request = new PutMessageRequest(_account, queueName, messageData, visibilityTimeout, messageTtl);
-            request.Execute();
+            var request = new PeekMessagesRequest(_account, queueName, numofMessages, visibilityTimeout, messageTtl);
+            var response = request.Execute();
+            return response.Payload;
         }
-        public async Task PutMessageAsync(string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null)
+        public async Task<PeekMessagesResponse> PeekMessagesAsync(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null)
         {
-            var request = new PutMessageRequest(_account, queueName, messageData, visibilityTimeout, messageTtl);
-            await request.ExecuteAsync();
+            var request = new PeekMessagesRequest(_account, queueName, numofMessages, visibilityTimeout, messageTtl);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
         }
-
         #endregion
 
 

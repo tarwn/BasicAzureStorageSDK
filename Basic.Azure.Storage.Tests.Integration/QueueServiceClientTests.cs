@@ -713,7 +713,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             client.PutMessage(queueName, message, messageTtl: 1);
 
             AssertQueueHasMessage(queueName);
-            Thread.Sleep(1100); // a little extra to be sure
+            Thread.Sleep(3100); // a little extra to be sure
             AssertQueueIsEmpty(queueName);
         }
 
@@ -728,6 +728,99 @@ namespace Basic.Azure.Storage.Tests.Integration
             await client.PutMessageAsync(queueName, message);
 
             AssertQueueHasMessage(queueName);
+        }
+
+        [Test]
+        public void PeekMessages_EmptyQueue_ReturnsEmptyCollection()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            var response = client.PeekMessages(queueName, 32);
+
+            Assert.IsEmpty(response.Messages);
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueNotFoundAzureException))]
+        public void PeekMessages_NonExistentQueue_ThrowsQueueDoesNotExistException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            var response = client.PeekMessages(queueName, 32);
+
+            // expects exception
+        }
+
+        [Test]
+        public void PeekMessages_Request32ItemsFromFullQueue_Returns32Items()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, Enumerable.Range(1, 40).Select(n => n.ToString()).ToList());
+
+            var response = client.PeekMessages(queueName, 32);
+
+            Assert.AreEqual(32, response.Messages.Count);
+            for (int i = 1; i <= 32; i++)
+            {
+                // Base 64 encode the expected message since Azure SDK did so when enqueueing it
+                var expectedMessage = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(i.ToString()));
+                Assert.IsTrue(response.Messages.Any(m => m.MessageText.Equals(expectedMessage)));
+            }
+        }
+
+        [Test]
+        public void PeekMessages_RequestUndefinedNumberOfItemsFromFullQueue_ReturnsOneItem()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, Enumerable.Range(1, 40).Select(n => n.ToString()).ToList());
+            var expectedMessage = "1";
+
+            var response = client.PeekMessages(queueName);
+
+            Assert.AreEqual(1, response.Messages.Count);
+            var message = response.Messages.Single();
+            // Base 64 encode the expected message since Azure SDK did so when enqueueing it
+            Assert.AreEqual(Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(expectedMessage)), message.MessageText);
+        }
+
+        [Test]
+        public void PeekMessages_RequestItemWithVisibility_ReturnsItemWithFutureVisibility()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { "1" });
+
+            var response = client.PeekMessages(queueName, 1, 30);
+
+            Assert.AreEqual(1, response.Messages.Count);
+            var message = response.Messages.Single();
+            Assert.Less(message.InsertionTime, DateTime.UtcNow);
+            Assert.Greater(message.ExpirationTime, DateTime.UtcNow);
+            Assert.Greater(message.TimeNextVisible, DateTime.UtcNow);
+        }
+
+        [Test]
+        public void PeekMessages_RequestItemFromPopulatedQueue_ReturnsItemWithPopReceiptAndDequeueCount()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { "1" });
+
+            var response = client.PeekMessages(queueName, 1, 30);
+
+            Assert.AreEqual(1, response.Messages.Count);
+            var message = response.Messages.Single();
+            Assert.IsNotNullOrEmpty(message.PopReceipt);
+            Assert.Greater(message.DequeueCount, 0);
         }
 
         #endregion
