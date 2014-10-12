@@ -22,9 +22,9 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         private List<string> _queuesToCleanUp = new List<string>();
 
-        private string GenerateSampleQueueName()
+        private string GenerateSampleQueueName(string prefix = "")
         {
-            var name = "unit-test-" + Guid.NewGuid().ToString().ToLower();
+            var name = prefix + "unit-test-" + Guid.NewGuid().ToString().ToLower();
             _queuesToCleanUp.Add(name);
             return name;
         }
@@ -42,6 +42,108 @@ namespace Basic.Azure.Storage.Tests.Integration
                 queue.DeleteIfExists();
             }
         }
+
+        #region Account Operations
+
+        [Test]
+        public void ListQueues_AtLeastOneQueue_ReturnsListContainingThatQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            var response = client.ListQueues();
+
+            Assert.IsTrue(response.Queues.Any(q => q.Name == queueName));
+        }
+
+        [Test]
+        public void ListQueues_WithPrefix_ReturnsListContainingOnlyQueuesWithThatPrefix()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueNames = new List<string>();
+            for (int i = 18; i < 21; i++)
+            {
+                var queueName = GenerateSampleQueueName(i.ToString());
+                CreateQueue(queueName);
+                queueNames.Add(queueName);
+            }
+
+            var response = client.ListQueues("1");
+
+            Assert.AreEqual("1", response.Prefix);
+            Assert.IsTrue(response.Queues.Count(q => q.Name.StartsWith("1")) >= 2);
+            Assert.AreEqual(0, response.Queues.Count(q => !q.Name.StartsWith("1")));
+        }
+        
+        [Test]
+        public void ListQueues_MaxResultsSmallerThanQueueList_ReturnsOnlyThatManyResults()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueNames = new List<string>();
+            for (int i = 0; i < 5; i++)
+            {
+                var queueName = GenerateSampleQueueName(i.ToString());
+                CreateQueue(queueName);
+                queueNames.Add(queueName);
+            }
+
+            var response = client.ListQueues(maxResults: 3);
+
+            Assert.AreEqual(3, response.Queues.Count);
+        }
+        
+        [Test]
+        public void ListQueues_WithContinuationMarker_ReturnsRemainderOfList()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueNames = new List<string>();
+            for (int i = 0; i < 5; i++)
+            {
+                var queueName = GenerateSampleQueueName(i.ToString());
+                CreateQueue(queueName);
+                queueNames.Add(queueName);
+            }
+            var response = client.ListQueues(maxResults: 3);
+
+            var response2 = client.ListQueues(marker: response.Marker);
+
+            Assert.IsNotEmpty(response2.Queues);
+            Assert.GreaterOrEqual(response2.Queues.Count, 2);
+        }
+
+        [Test]
+        public void ListQueues_IncludingMetadata_ReturnsQueuesWithMetadata()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName, new Dictionary<string, string>() { 
+                {"a", "1"},
+                {"b", "2"}
+            });
+
+            var response = client.ListQueues(includeMetadata: true);
+
+            Assert.IsTrue(response.Queues.Any(q => q.Name == queueName));
+            var queue = response.Queues.Where(q => q.Name == queueName).Single();
+            Assert.IsNotEmpty(queue.Metadata);
+            Assert.AreEqual("1", queue.Metadata["a"]);
+            Assert.AreEqual("2", queue.Metadata["b"]);
+        }
+
+        [Test]
+        public async Task ListQueuesAsync_AtLeastOneQueue_ReturnsListContainingThatQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            var response = await client.ListQueuesAsync();
+
+            Assert.IsTrue(response.Queues.Any(q => q.Name == queueName));
+        }
+
+        #endregion
 
         #region Queue Operations Tests
 

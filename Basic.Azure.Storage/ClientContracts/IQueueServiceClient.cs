@@ -1,4 +1,5 @@
 ﻿using Basic.Azure.Storage.Communications.Common;
+using Basic.Azure.Storage.Communications.QueueService.AccountOperations;
 using Basic.Azure.Storage.Communications.QueueService.MessageOperations;
 using Basic.Azure.Storage.Communications.QueueService.QueueOperations;
 using System;
@@ -11,6 +12,14 @@ namespace Basic.Azure.Storage.ClientContracts
 {
     public interface IQueueServiceClient
     {
+        #region Account Operations
+
+        ListQueuesResponse ListQueues(string prefix = "", int maxResults = 5000, string marker = null, bool includeMetadata = false);
+        Task<ListQueuesResponse> ListQueuesAsync(string prefix = "", int maxResults = 5000, string marker = null, bool includeMetadata = false);
+
+
+        #endregion
+
         #region Queue Operations
 
         void CreateQueue(string queueName, Dictionary<string, string> metadata = null);
@@ -54,14 +63,6 @@ namespace Basic.Azure.Storage.ClientContracts
         Task<UpdateMessageResponse> UpdateMessageAsync(string queueName, string messageId, string popReceipt, int visibilityTimeout = 30, string messageData = null);
 
         #endregion
-
-
-
-
-
-
-
-
 
 
     }

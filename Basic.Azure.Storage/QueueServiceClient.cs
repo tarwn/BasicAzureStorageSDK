@@ -1,6 +1,7 @@
 ﻿using Basic.Azure.Storage.ClientContracts;
 using Basic.Azure.Storage.Communications.Common;
 using Basic.Azure.Storage.Communications.QueueService;
+using Basic.Azure.Storage.Communications.QueueService.AccountOperations;
 using Basic.Azure.Storage.Communications.QueueService.MessageOperations;
 using Basic.Azure.Storage.Communications.QueueService.QueueOperations;
 using System;
@@ -19,6 +20,23 @@ namespace Basic.Azure.Storage
 		{
 			_account = account;
 		}
+
+        #region Account Operations
+
+        public ListQueuesResponse ListQueues(string prefix = "", int maxResults = 5000, string marker = null, bool includeMetadata = false)
+        {
+            var request = new ListQueuesRequest(_account, prefix, maxResults, marker, includeMetadata);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<ListQueuesResponse> ListQueuesAsync(string prefix = "", int maxResults = 5000, string marker = null, bool includeMetadata = false)
+        {
+            var request = new ListQueuesRequest(_account, prefix, maxResults, marker, includeMetadata);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
+        #endregion
 
         #region Queue Operations
 
@@ -170,10 +188,6 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
         #endregion
-
-
-
-
 
     }
 }

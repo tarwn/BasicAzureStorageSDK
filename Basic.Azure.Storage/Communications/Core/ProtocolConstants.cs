@@ -101,11 +101,19 @@ namespace Basic.Azure.Storage.Communications.Core
         {
             public const string Comp = "comp";
 
+            public const string Include = "include";
+
+            public const string Marker = "marker";
+
+            public const string MaxResults = "maxresults";
+
             public const string MessageTTL = "messagettl";
 
             public const string NumOfMessages = "numofmessages";
 
             public const string PopReceipt = "popreceipt";
+
+            public const string Prefix = "prefix";
 
             public const string ResType = "restype";
 
@@ -113,11 +121,14 @@ namespace Basic.Azure.Storage.Communications.Core
 
             public const string VisibilityTimeout = "visibilitytimeout";
 
+
         }
 
         public static class QueryValues
         {
             public const string ACL = "acl";
+
+            public const string List = "list";
 
             public const string Metadata = "metadata";
 
@@ -127,7 +138,6 @@ namespace Basic.Azure.Storage.Communications.Core
                 public const string Container = "container";
 
             }
-
 
         }
     }
