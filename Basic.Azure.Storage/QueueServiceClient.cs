@@ -144,7 +144,18 @@ namespace Basic.Azure.Storage
             await request.ExecuteAsync();
         }
 
-
+        public void ClearMessages(string queueName)
+        {
+            //TODO: implement logic to keep retrying after 500 operation errors until queue is empty
+            var request = new ClearMessageRequest(_account, queueName);
+            request.Execute();
+        }
+        public async Task ClearMessagesAsync(string queueName)
+        {
+            //TODO: implement logic to keep retrying after 500 operation errors until queue is empty
+            var request = new ClearMessageRequest(_account, queueName);
+            await request.ExecuteAsync();
+        }
         #endregion
 
 

@@ -69,6 +69,7 @@
     <Compile Include="Communications\Core\StorageServiceType.cs" />
     <Compile Include="Communications\ErrorResponsePayload.cs" />
     <Compile Include="Communications\Core\Interfaces\IResponsePayload.cs" />
+    <Compile Include="Communications\QueueService\MessageOperations\ClearMessageRequest.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\PeekMessagesResponse.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\PeekMessagesRequest.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\GetMessagesRequest.cs" />

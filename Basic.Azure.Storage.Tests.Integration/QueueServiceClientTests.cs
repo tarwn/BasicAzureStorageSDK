@@ -929,6 +929,68 @@ namespace Basic.Azure.Storage.Tests.Integration
             // expects exception
         }
 
+        [Test]
+        public void ClearMessages_MessagesInQueue_LeavesQueueEmpty()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { "1", "2", "3", "4" });
+
+            client.ClearMessages(queueName);
+
+            AssertQueueIsEmpty(queueName);
+        }
+
+        [Test]
+        public void ClearMessages_NoMessagesInQueue_LeavesQueueEmpty()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            client.ClearMessages(queueName);
+
+            AssertQueueIsEmpty(queueName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueNotFoundAzureException))]
+        public void ClearMessages_QueueDoesNotExist_ThrowsQueueNotFoundException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            client.ClearMessages(queueName);
+
+            //expects exception
+        }
+
+        [Test]
+        public async Task ClearMessagesAsync_MessagesInQueue_LeavesQueueEmpty()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { "1", "2", "3", "4" });
+
+            await client.ClearMessagesAsync(queueName);
+
+            AssertQueueIsEmpty(queueName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueNotFoundAzureException))]
+        public async Task ClearMessagesAsync_QueueDoesNotExist_ThrowsQueueNotFoundException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            await client.ClearMessagesAsync(queueName);
+
+            //expects exception
+        }
+
         #endregion
 
         #region Assertions

@@ -47,7 +47,11 @@ namespace Basic.Azure.Storage.ClientContracts
         void DeleteMessage(string queueName, string messageId, string popReceipt);
         Task DeleteMessageAsync(string queueName, string messageId, string popReceipt);
 
+        void ClearMessages(string queueName);
+        Task ClearMessagesAsync(string queueName);
+
         #endregion
+
 
 
 
