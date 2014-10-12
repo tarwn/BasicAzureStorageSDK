@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
 {
     /// <summary>
-    /// Deletes the specified queue item from the queue
-    /// http://msdn.microsoft.com/en-us/library/azure/dd179347.aspx
+    /// Clears the specified queue
+    /// http://msdn.microsoft.com/en-us/library/azure/dd179454.aspx
     /// </summary>
     public class ClearMessageRequest : RequestBase<EmptyResponsePayload>
     {
