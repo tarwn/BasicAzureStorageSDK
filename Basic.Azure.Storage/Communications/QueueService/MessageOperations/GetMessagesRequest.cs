@@ -16,13 +16,15 @@ namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
     {
         private string _queueName;
         private int _numOfMessages;
-        private int? _visibilityTimeout;
+        private int _visibilityTimeout;
         private int? _messageTtl;
 
-        public GetMessagesRequest(StorageAccountSettings settings, string queueName, int numOfMessages = 1, int? visibilityTimeout = null, int? messageTtl = null)
+        public GetMessagesRequest(StorageAccountSettings settings, string queueName, int numOfMessages = 1, int visibilityTimeout = 30, int? messageTtl = null)
             : base(settings)
         {
             //TODO: add Guard statements against invalid values, short circuit so we don't have the latency roundtrip to the server
+            //TODO: add Guad statements for visibilityTimeout
+
             _queueName = queueName;
             _numOfMessages = numOfMessages;
 
@@ -42,8 +44,7 @@ namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
 
             builder.AddParameter(ProtocolConstants.QueryParameters.NumOfMessages, _numOfMessages.ToString());
 
-            if (_visibilityTimeout.HasValue)
-                builder.AddParameter(ProtocolConstants.QueryParameters.VisibilityTimeout, _visibilityTimeout.Value.ToString());
+            builder.AddParameter(ProtocolConstants.QueryParameters.VisibilityTimeout, _visibilityTimeout.ToString());
 
             if (_messageTtl.HasValue)
                 builder.AddParameter(ProtocolConstants.QueryParameters.MessageTTL, _messageTtl.Value.ToString());

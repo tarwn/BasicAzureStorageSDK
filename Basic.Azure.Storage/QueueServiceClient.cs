@@ -96,13 +96,13 @@ namespace Basic.Azure.Storage
 
         #region Message Operations
 
-        public GetMessagesResponse GetMessages(string queueName, int numofMessages = 1, int? visibilityTimeout = null, int? messageTtl = null)
+        public GetMessagesResponse GetMessages(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null)
         {
             var request = new GetMessagesRequest(_account, queueName, numofMessages, visibilityTimeout, messageTtl);
             var response = request.Execute();
             return response.Payload;
         }
-        public async Task<GetMessagesResponse> GetMessagesAsync(string queueName, int numofMessages = 1, int? visibilityTimeout = null, int? messageTtl = null)
+        public async Task<GetMessagesResponse> GetMessagesAsync(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null)
         {
             var request = new GetMessagesRequest(_account, queueName, numofMessages, visibilityTimeout, messageTtl);
             var response = await request.ExecuteAsync();
