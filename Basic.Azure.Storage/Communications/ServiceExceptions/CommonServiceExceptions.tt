@@ -81,7 +81,7 @@ namespace Basic.Azure.Storage.Communications.ServiceExceptions
 public static class CommonServiceAzureExceptions
 {
 
-	public static AzureException GetExceptionFor(string requestId, HttpStatusCode statusCode, string errorCode, string statusDescription, WebException baseException)
+	public static AzureException GetExceptionFor(string requestId, HttpStatusCode statusCode, string errorCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
 	{
 		switch(errorCode)
 		{
@@ -90,7 +90,7 @@ public static class CommonServiceAzureExceptions
 		{
 			#> 
 			case "<#=errorCode.Key#>":
-				return new <#=errorCode.Key#>AzureException(requestId, statusCode, statusDescription, baseException);
+				return new <#=errorCode.Key#>AzureException(requestId, statusCode, statusDescription, details, baseException);
 			<#
 		}
 		#>
@@ -103,13 +103,13 @@ public static class CommonServiceAzureExceptions
 			{
 				#> 
 				case "<#=errorCode.Value#>":
-					return new <#=errorCode.Key#>AzureException(requestId, statusCode, statusDescription, baseException);
+					return new <#=errorCode.Key#>AzureException(requestId, statusCode, statusDescription, details, baseException);
 				<#
 			}
 			#>
 
 			default:
-				return new UnrecognizedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new UnrecognizedAzureException(requestId, statusCode, statusDescription, details, baseException);
 		}
 	}
 
@@ -125,8 +125,8 @@ foreach(var errorCode in ErrorCodeList)
 	///</summary>
 	public class <#=errorCode.Key#>AzureException : AzureException
     {
-        public <#=errorCode.Key#>AzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public <#=errorCode.Key#>AzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 	<#

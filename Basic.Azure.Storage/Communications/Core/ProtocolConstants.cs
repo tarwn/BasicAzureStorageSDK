@@ -55,7 +55,7 @@ namespace Basic.Azure.Storage.Communications.Core
 
         public static class HeaderValues
         {
-            
+
             public static class BlobPublicAccess
             {
 
@@ -101,6 +101,8 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string MessageTTL = "messagettl";
 
             public const string NumOfMessages = "numofmessages";
+
+            public const string PopReceipt = "popreceipt";
 
             public const string ResType = "restype";
 

@@ -73,6 +73,7 @@
     <Compile Include="Communications\QueueService\MessageOperations\PeekMessagesRequest.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\GetMessagesRequest.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\GetMessagesResponse.cs" />
+    <Compile Include="Communications\QueueService\MessageOperations\DeleteMessageRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\GetQueueACLRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\GetQueueMetadataRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\GetQueueACLResponse.cs" />

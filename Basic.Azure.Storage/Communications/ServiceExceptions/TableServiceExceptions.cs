@@ -19,137 +19,137 @@ namespace Basic.Azure.Storage.Communications.ServiceExceptions
 public static class TableServiceAzureExceptions
 {
 
-	public static AzureException GetExceptionFor(string requestId, HttpStatusCode statusCode, string errorCode, string statusDescription, WebException baseException)
+	public static AzureException GetExceptionFor(string requestId, HttpStatusCode statusCode, string errorCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
 	{
 		switch(errorCode)
 		{
 		 
 			case "DuplicatePropertiesSpecified":
-				return new DuplicatePropertiesSpecifiedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new DuplicatePropertiesSpecifiedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "EntityAlreadyExists":
-				return new EntityAlreadyExistsAzureException(requestId, statusCode, statusDescription, baseException);
+				return new EntityAlreadyExistsAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "EntityTooLarge":
-				return new EntityTooLargeAzureException(requestId, statusCode, statusDescription, baseException);
+				return new EntityTooLargeAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "HostInformationNotPresent":
-				return new HostInformationNotPresentAzureException(requestId, statusCode, statusDescription, baseException);
+				return new HostInformationNotPresentAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidValueType":
-				return new InvalidValueTypeAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidValueTypeAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "JsonFormatNotSupported":
-				return new JsonFormatNotSupportedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new JsonFormatNotSupportedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "MethodNotAllowed":
-				return new MethodNotAllowedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new MethodNotAllowedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "NotImplemented":
-				return new NotImplementedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new NotImplementedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "PropertiesNeedValue":
-				return new PropertiesNeedValueAzureException(requestId, statusCode, statusDescription, baseException);
+				return new PropertiesNeedValueAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "PropertyNameInvalid":
-				return new PropertyNameInvalidAzureException(requestId, statusCode, statusDescription, baseException);
+				return new PropertyNameInvalidAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "PropertyNameTooLong":
-				return new PropertyNameTooLongAzureException(requestId, statusCode, statusDescription, baseException);
+				return new PropertyNameTooLongAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "PropertyValueTooLarge":
-				return new PropertyValueTooLargeAzureException(requestId, statusCode, statusDescription, baseException);
+				return new PropertyValueTooLargeAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "TableAlreadyExists":
-				return new TableAlreadyExistsAzureException(requestId, statusCode, statusDescription, baseException);
+				return new TableAlreadyExistsAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "TableBeingDeleted":
-				return new TableBeingDeletedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new TableBeingDeletedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "TableNotFound":
-				return new TableNotFoundAzureException(requestId, statusCode, statusDescription, baseException);
+				return new TableNotFoundAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "TooManyProperties":
-				return new TooManyPropertiesAzureException(requestId, statusCode, statusDescription, baseException);
+				return new TooManyPropertiesAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "UpdateConditionNotSatisfied":
-				return new UpdateConditionNotSatisfiedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new UpdateConditionNotSatisfiedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "XMethodIncorrectCount":
-				return new XMethodIncorrectCountAzureException(requestId, statusCode, statusDescription, baseException);
+				return new XMethodIncorrectCountAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "XMethodIncorrectValue":
-				return new XMethodIncorrectValueAzureException(requestId, statusCode, statusDescription, baseException);
+				return new XMethodIncorrectValueAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "XMethodNotUsingPost":
-				return new XMethodNotUsingPostAzureException(requestId, statusCode, statusDescription, baseException);
+				return new XMethodNotUsingPostAzureException(requestId, statusCode, statusDescription, details, baseException);
 					}
 
 		switch(statusDescription)
 		{
 			 
 				case "A property is specified more than one time.":
-					return new DuplicatePropertiesSpecifiedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new DuplicatePropertiesSpecifiedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified entity already exists.":
-					return new EntityAlreadyExistsAzureException(requestId, statusCode, statusDescription, baseException);
+					return new EntityAlreadyExistsAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The entity is larger than the maximum size permitted.":
-					return new EntityTooLargeAzureException(requestId, statusCode, statusDescription, baseException);
+					return new EntityTooLargeAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The required host information is not present in the request. You must send a non-empty Host header or include the absolute URI in the request line.":
-					return new HostInformationNotPresentAzureException(requestId, statusCode, statusDescription, baseException);
+					return new HostInformationNotPresentAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The value specified is invalid.":
-					return new InvalidValueTypeAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidValueTypeAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "JSON format is not supported.":
-					return new JsonFormatNotSupportedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new JsonFormatNotSupportedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The requested method is not allowed on the specified resource.":
-					return new MethodNotAllowedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new MethodNotAllowedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The requested operation is not implemented on the specified resource.":
-					return new NotImplementedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new NotImplementedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "Values have not been specified for all properties in the entity.":
-					return new PropertiesNeedValueAzureException(requestId, statusCode, statusDescription, baseException);
+					return new PropertiesNeedValueAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The property name is invalid.":
-					return new PropertyNameInvalidAzureException(requestId, statusCode, statusDescription, baseException);
+					return new PropertyNameInvalidAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The property name exceeds the maximum allowed length.":
-					return new PropertyNameTooLongAzureException(requestId, statusCode, statusDescription, baseException);
+					return new PropertyNameTooLongAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The property value is larger than the maximum size permitted.":
-					return new PropertyValueTooLargeAzureException(requestId, statusCode, statusDescription, baseException);
+					return new PropertyValueTooLargeAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The table specified already exists.":
-					return new TableAlreadyExistsAzureException(requestId, statusCode, statusDescription, baseException);
+					return new TableAlreadyExistsAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified table is being deleted.":
-					return new TableBeingDeletedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new TableBeingDeletedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The table specified does not exist.":
-					return new TableNotFoundAzureException(requestId, statusCode, statusDescription, baseException);
+					return new TableNotFoundAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The entity contains more properties than allowed.":
-					return new TooManyPropertiesAzureException(requestId, statusCode, statusDescription, baseException);
+					return new TooManyPropertiesAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The update condition specified in the request was not satisfied.":
-					return new UpdateConditionNotSatisfiedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new UpdateConditionNotSatisfiedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "More than one X-HTTP-Method is specified.":
-					return new XMethodIncorrectCountAzureException(requestId, statusCode, statusDescription, baseException);
+					return new XMethodIncorrectCountAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified X-HTTP-Method is invalid.":
-					return new XMethodIncorrectValueAzureException(requestId, statusCode, statusDescription, baseException);
+					return new XMethodIncorrectValueAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The request uses X-HTTP-Method with an HTTP verb other than POST.":
-					return new XMethodNotUsingPostAzureException(requestId, statusCode, statusDescription, baseException);
+					return new XMethodNotUsingPostAzureException(requestId, statusCode, statusDescription, details, baseException);
 				
 			default:
-				return CommonServiceAzureExceptions.GetExceptionFor(requestId, statusCode, errorCode, statusDescription, baseException);
+				return CommonServiceAzureExceptions.GetExceptionFor(requestId, statusCode, errorCode, statusDescription, details, baseException);
 		}
 	}
 
@@ -162,8 +162,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: A property is specified more than one time.</remarks>
 	public class DuplicatePropertiesSpecifiedAzureException : AzureException
     {
-        public DuplicatePropertiesSpecifiedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public DuplicatePropertiesSpecifiedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -173,8 +173,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The specified entity already exists.</remarks>
 	public class EntityAlreadyExistsAzureException : AzureException
     {
-        public EntityAlreadyExistsAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public EntityAlreadyExistsAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -184,8 +184,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The entity is larger than the maximum size permitted.</remarks>
 	public class EntityTooLargeAzureException : AzureException
     {
-        public EntityTooLargeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public EntityTooLargeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -195,8 +195,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The required host information is not present in the request. You must send a non-empty Host header or include the absolute URI in the request line.</remarks>
 	public class HostInformationNotPresentAzureException : AzureException
     {
-        public HostInformationNotPresentAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public HostInformationNotPresentAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -206,8 +206,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The value specified is invalid.</remarks>
 	public class InvalidValueTypeAzureException : AzureException
     {
-        public InvalidValueTypeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidValueTypeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -217,8 +217,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: JSON format is not supported.</remarks>
 	public class JsonFormatNotSupportedAzureException : AzureException
     {
-        public JsonFormatNotSupportedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public JsonFormatNotSupportedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -228,8 +228,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The requested method is not allowed on the specified resource.</remarks>
 	public class MethodNotAllowedAzureException : AzureException
     {
-        public MethodNotAllowedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public MethodNotAllowedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -239,8 +239,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The requested operation is not implemented on the specified resource.</remarks>
 	public class NotImplementedAzureException : AzureException
     {
-        public NotImplementedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public NotImplementedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -250,8 +250,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: Values have not been specified for all properties in the entity.</remarks>
 	public class PropertiesNeedValueAzureException : AzureException
     {
-        public PropertiesNeedValueAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public PropertiesNeedValueAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -261,8 +261,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The property name is invalid.</remarks>
 	public class PropertyNameInvalidAzureException : AzureException
     {
-        public PropertyNameInvalidAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public PropertyNameInvalidAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -272,8 +272,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The property name exceeds the maximum allowed length.</remarks>
 	public class PropertyNameTooLongAzureException : AzureException
     {
-        public PropertyNameTooLongAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public PropertyNameTooLongAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -283,8 +283,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The property value is larger than the maximum size permitted.</remarks>
 	public class PropertyValueTooLargeAzureException : AzureException
     {
-        public PropertyValueTooLargeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public PropertyValueTooLargeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -294,8 +294,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The table specified already exists.</remarks>
 	public class TableAlreadyExistsAzureException : AzureException
     {
-        public TableAlreadyExistsAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public TableAlreadyExistsAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -305,8 +305,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The specified table is being deleted.</remarks>
 	public class TableBeingDeletedAzureException : AzureException
     {
-        public TableBeingDeletedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public TableBeingDeletedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -316,8 +316,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The table specified does not exist.</remarks>
 	public class TableNotFoundAzureException : AzureException
     {
-        public TableNotFoundAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public TableNotFoundAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -327,8 +327,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The entity contains more properties than allowed.</remarks>
 	public class TooManyPropertiesAzureException : AzureException
     {
-        public TooManyPropertiesAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public TooManyPropertiesAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -338,8 +338,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The update condition specified in the request was not satisfied.</remarks>
 	public class UpdateConditionNotSatisfiedAzureException : AzureException
     {
-        public UpdateConditionNotSatisfiedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public UpdateConditionNotSatisfiedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -349,8 +349,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: More than one X-HTTP-Method is specified.</remarks>
 	public class XMethodIncorrectCountAzureException : AzureException
     {
-        public XMethodIncorrectCountAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public XMethodIncorrectCountAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -360,8 +360,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The specified X-HTTP-Method is invalid.</remarks>
 	public class XMethodIncorrectValueAzureException : AzureException
     {
-        public XMethodIncorrectValueAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public XMethodIncorrectValueAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -371,8 +371,8 @@ public static class TableServiceAzureExceptions
 	///<remarks>Description: The request uses X-HTTP-Method with an HTTP verb other than POST.</remarks>
 	public class XMethodNotUsingPostAzureException : AzureException
     {
-        public XMethodNotUsingPostAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public XMethodNotUsingPostAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 	

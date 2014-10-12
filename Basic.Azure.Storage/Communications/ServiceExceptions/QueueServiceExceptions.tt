@@ -49,7 +49,7 @@ namespace Basic.Azure.Storage.Communications.ServiceExceptions
 public static class QueueServiceAzureExceptions
 {
 
-	public static AzureException GetExceptionFor(string requestId, HttpStatusCode statusCode, string errorCode, string statusDescription, WebException baseException)
+	public static AzureException GetExceptionFor(string requestId, HttpStatusCode statusCode, string errorCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
 	{
 		switch(errorCode)
 		{
@@ -58,7 +58,7 @@ public static class QueueServiceAzureExceptions
 		{
 			#> 
 			case "<#=errorCode.Key#>":
-				return new <#=errorCode.Key#>AzureException(requestId, statusCode, statusDescription, baseException);
+				return new <#=errorCode.Key#>AzureException(requestId, statusCode, statusDescription, details, baseException);
 			<#
 		}
 		#>
@@ -71,13 +71,13 @@ public static class QueueServiceAzureExceptions
 			{
 				#> 
 				case "<#=errorCode.Value#>":
-					return new <#=errorCode.Key#>AzureException(requestId, statusCode, statusDescription, baseException);
+					return new <#=errorCode.Key#>AzureException(requestId, statusCode, statusDescription, details, baseException);
 				<#
 			}
 			#>
 
 			default:
-				return CommonServiceAzureExceptions.GetExceptionFor(requestId, statusCode, errorCode, statusDescription, baseException);
+				return CommonServiceAzureExceptions.GetExceptionFor(requestId, statusCode, errorCode, statusDescription, details, baseException);
 		}
 	}
 
@@ -94,8 +94,8 @@ foreach(var errorCode in ErrorCodeList)
 	///<remarks>Description: <#= errorCode.Value #></remarks>
 	public class <#=errorCode.Key#>AzureException : AzureException
     {
-        public <#=errorCode.Key#>AzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public <#=errorCode.Key#>AzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 	<#

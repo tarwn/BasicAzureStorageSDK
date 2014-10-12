@@ -44,7 +44,13 @@ namespace Basic.Azure.Storage.ClientContracts
         PeekMessagesResponse PeekMessages(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null);
         Task<PeekMessagesResponse> PeekMessagesAsync(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null);
 
+        void DeleteMessage(string queueName, string messageId, string popReceipt);
+        Task DeleteMessageAsync(string queueName, string messageId, string popReceipt);
+
         #endregion
+
+
+
 
 
 

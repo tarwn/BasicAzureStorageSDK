@@ -19,71 +19,71 @@ namespace Basic.Azure.Storage.Communications.ServiceExceptions
 public static class QueueServiceAzureExceptions
 {
 
-	public static AzureException GetExceptionFor(string requestId, HttpStatusCode statusCode, string errorCode, string statusDescription, WebException baseException)
+	public static AzureException GetExceptionFor(string requestId, HttpStatusCode statusCode, string errorCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
 	{
 		switch(errorCode)
 		{
 		 
 			case "MessageTooLarge":
-				return new MessageTooLargeAzureException(requestId, statusCode, statusDescription, baseException);
+				return new MessageTooLargeAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidMarker":
-				return new InvalidMarkerAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidMarkerAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "PopReceiptMismatch":
-				return new PopReceiptMismatchAzureException(requestId, statusCode, statusDescription, baseException);
+				return new PopReceiptMismatchAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "QueueNotFound":
-				return new QueueNotFoundAzureException(requestId, statusCode, statusDescription, baseException);
+				return new QueueNotFoundAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "MessageNotFound":
-				return new MessageNotFoundAzureException(requestId, statusCode, statusDescription, baseException);
+				return new MessageNotFoundAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "QueueDisabled":
-				return new QueueDisabledAzureException(requestId, statusCode, statusDescription, baseException);
+				return new QueueDisabledAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "QueueAlreadyExists":
-				return new QueueAlreadyExistsAzureException(requestId, statusCode, statusDescription, baseException);
+				return new QueueAlreadyExistsAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "QueueBeingDeleted":
-				return new QueueBeingDeletedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new QueueBeingDeletedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "QueueNotEmpty":
-				return new QueueNotEmptyAzureException(requestId, statusCode, statusDescription, baseException);
+				return new QueueNotEmptyAzureException(requestId, statusCode, statusDescription, details, baseException);
 					}
 
 		switch(statusDescription)
 		{
 			 
 				case "The message exceeds the maximum allowed size.":
-					return new MessageTooLargeAzureException(requestId, statusCode, statusDescription, baseException);
+					return new MessageTooLargeAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified marker is invalid.":
-					return new InvalidMarkerAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidMarkerAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified pop receipt did not match the pop receipt for a dequeued message.":
-					return new PopReceiptMismatchAzureException(requestId, statusCode, statusDescription, baseException);
+					return new PopReceiptMismatchAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified queue does not exist.":
-					return new QueueNotFoundAzureException(requestId, statusCode, statusDescription, baseException);
+					return new QueueNotFoundAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified message does not exist.":
-					return new MessageNotFoundAzureException(requestId, statusCode, statusDescription, baseException);
+					return new MessageNotFoundAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified queue has been disabled by the administrator.":
-					return new QueueDisabledAzureException(requestId, statusCode, statusDescription, baseException);
+					return new QueueDisabledAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified queue already exists.":
-					return new QueueAlreadyExistsAzureException(requestId, statusCode, statusDescription, baseException);
+					return new QueueAlreadyExistsAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified queue is being deleted.":
-					return new QueueBeingDeletedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new QueueBeingDeletedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified queue is not empty.":
-					return new QueueNotEmptyAzureException(requestId, statusCode, statusDescription, baseException);
+					return new QueueNotEmptyAzureException(requestId, statusCode, statusDescription, details, baseException);
 				
 			default:
-				return CommonServiceAzureExceptions.GetExceptionFor(requestId, statusCode, errorCode, statusDescription, baseException);
+				return CommonServiceAzureExceptions.GetExceptionFor(requestId, statusCode, errorCode, statusDescription, details, baseException);
 		}
 	}
 
@@ -96,8 +96,8 @@ public static class QueueServiceAzureExceptions
 	///<remarks>Description: The message exceeds the maximum allowed size.</remarks>
 	public class MessageTooLargeAzureException : AzureException
     {
-        public MessageTooLargeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public MessageTooLargeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -107,8 +107,8 @@ public static class QueueServiceAzureExceptions
 	///<remarks>Description: The specified marker is invalid.</remarks>
 	public class InvalidMarkerAzureException : AzureException
     {
-        public InvalidMarkerAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidMarkerAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -118,8 +118,8 @@ public static class QueueServiceAzureExceptions
 	///<remarks>Description: The specified pop receipt did not match the pop receipt for a dequeued message.</remarks>
 	public class PopReceiptMismatchAzureException : AzureException
     {
-        public PopReceiptMismatchAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public PopReceiptMismatchAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -129,8 +129,8 @@ public static class QueueServiceAzureExceptions
 	///<remarks>Description: The specified queue does not exist.</remarks>
 	public class QueueNotFoundAzureException : AzureException
     {
-        public QueueNotFoundAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public QueueNotFoundAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -140,8 +140,8 @@ public static class QueueServiceAzureExceptions
 	///<remarks>Description: The specified message does not exist.</remarks>
 	public class MessageNotFoundAzureException : AzureException
     {
-        public MessageNotFoundAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public MessageNotFoundAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -151,8 +151,8 @@ public static class QueueServiceAzureExceptions
 	///<remarks>Description: The specified queue has been disabled by the administrator.</remarks>
 	public class QueueDisabledAzureException : AzureException
     {
-        public QueueDisabledAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public QueueDisabledAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -162,8 +162,8 @@ public static class QueueServiceAzureExceptions
 	///<remarks>Description: The specified queue already exists.</remarks>
 	public class QueueAlreadyExistsAzureException : AzureException
     {
-        public QueueAlreadyExistsAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public QueueAlreadyExistsAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -173,8 +173,8 @@ public static class QueueServiceAzureExceptions
 	///<remarks>Description: The specified queue is being deleted.</remarks>
 	public class QueueBeingDeletedAzureException : AzureException
     {
-        public QueueBeingDeletedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public QueueBeingDeletedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -184,8 +184,8 @@ public static class QueueServiceAzureExceptions
 	///<remarks>Description: The specified queue is not empty.</remarks>
 	public class QueueNotEmptyAzureException : AzureException
     {
-        public QueueNotEmptyAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public QueueNotEmptyAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 	

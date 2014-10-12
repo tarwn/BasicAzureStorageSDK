@@ -10,7 +10,7 @@ namespace Basic.Azure.Storage.Communications.ServiceExceptions
     public class UnidentifiedAzureException : AzureException
     {
         public UnidentifiedAzureException(WebException baseException)
-            : base("No HTTP Response", HttpStatusCode.Unused, "Unknown Azure Error, no HttpWebResponse available", baseException) { }
+            : base("No HTTP Response", HttpStatusCode.Unused, "Unknown Azure Error, no HttpWebResponse available", new Dictionary<string,string>(), baseException) { }
 
     }
 }

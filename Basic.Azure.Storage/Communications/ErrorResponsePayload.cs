@@ -12,40 +12,41 @@ namespace Basic.Azure.Storage.Communications
 {
     public class ErrorResponsePayload : IResponsePayload, IReceiveDataWithResponse
     {
+        public ErrorResponsePayload()
+        {
+            Details = new Dictionary<string, string>();
+        }
+
         public string ErrorCode { get; set; }
         public string ErrorMessage { get; set; }
+        public Dictionary<string,string> Details { get; set; }
 
         public void ParseResponseBody(Stream responseStream)
         {
             using (StreamReader sr = new StreamReader(responseStream))
             {
+                               
                 var content = sr.ReadToEnd();
                 if (content.Length > 0)
                 {
-                    var xDoc = XDocument.Parse(content);
-                    try
-                    {
-                        // blob + queue are capitalized, table service is not
-                        ErrorCode = xDoc.Elements()
-                                        .Where(e => e.Name.LocalName.Equals("Error", StringComparison.InvariantCultureIgnoreCase))
-                                        .Single()
-                                        .Elements()
-                                        .Where(e => e.Name.LocalName.Equals("Code", StringComparison.InvariantCultureIgnoreCase))
-                                        .Single()
-                                        .Value;
-                    }
-                    catch
-                    {
-                        ErrorCode = "CodeNotProvided";
-                    }
+                    ErrorCode = "CodeNotProvided";
+                    ErrorMessage = "Message Not Provided";
 
-                    try
+                    var xDoc = XDocument.Parse(content);
+                    foreach (var element in xDoc.Root.Elements())
                     {
-                        ErrorMessage = xDoc.Element("Error").Element("Message").Value;
-                    }
-                    catch
-                    {
-                        ErrorMessage = "CodeNotProvided";
+                        switch (element.Name.LocalName.ToLowerInvariant())
+                        { 
+                            case "code":
+                                ErrorCode = element.Value;
+                                break;
+                            case "message":
+                                ErrorMessage = element.Value;
+                                break;
+                            default:
+                                Details.Add(element.Name.LocalName, element.Value);
+                                break;
+                        }
                     }
                 }
             }

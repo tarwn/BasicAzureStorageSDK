@@ -224,13 +224,13 @@ namespace Basic.Azure.Storage.Communications.Core
             switch (ServiceType)
             {
                 case StorageServiceType.QueueService:
-                    return QueueServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, response.Payload.ErrorCode, response.Payload.ErrorMessage, originalException);
+                    return QueueServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, response.Payload.ErrorCode, response.Payload.ErrorMessage, response.Payload.Details, originalException);
                 case StorageServiceType.BlobService:
-                    return BlobServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, response.Payload.ErrorCode, response.Payload.ErrorMessage, originalException);
+                    return BlobServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, response.Payload.ErrorCode, response.Payload.ErrorMessage, response.Payload.Details, originalException);
                 case StorageServiceType.TableService:
-                    return TableServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, response.Payload.ErrorCode, response.Payload.ErrorMessage, originalException);
+                    return TableServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, response.Payload.ErrorCode, response.Payload.ErrorMessage, response.Payload.Details, originalException);
                 default:
-                    return CommonServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, response.Payload.ErrorCode, response.Payload.ErrorMessage, originalException);
+                    return CommonServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, response.Payload.ErrorCode, response.Payload.ErrorMessage, response.Payload.Details, originalException);
             }
         }
 

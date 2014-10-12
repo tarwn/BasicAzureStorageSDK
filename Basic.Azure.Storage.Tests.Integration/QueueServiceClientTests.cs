@@ -551,6 +551,21 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        [ExpectedException(typeof(RequestBodyTooLargeAzureException))]
+        public void PutMessage_TooLargeMessage_ThrowsRequestBodyTooLargeException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            string message = new String('a', 64 * 1024 + 1);
+
+            client.PutMessage(queueName, message);
+
+            //expects exception
+        }
+
+
+        [Test]
         public void PutMessage_ValidMessageWithVisibilityTimeout_IsNotVisibleInQueue()
         {
             IQueueServiceClient client = new QueueServiceClient(_accountSettings);
@@ -824,6 +839,73 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.Greater(message.DequeueCount, 0);
         }
 
+        [Test]
+        public void DeleteMessage_ValidMessage_DeletesItFromTheQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { "1" });
+            var itemFromQueue = GetItemFromQueue(queueName);
+
+            client.DeleteMessage(queueName, itemFromQueue.Id, itemFromQueue.PopReceipt);
+
+            AssertQueueIsEmpty(queueName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(MessageNotFoundAzureException))]
+        public void DeleteMessage_NonexistentMessage_ThrowsMessageNotFoundException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            client.DeleteMessage(queueName, "abc-123", "AAAA/AAAAAAAAAAA");
+
+            // expects exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidQueryParameterValueAzureException))]
+        public void DeleteMessage_BadlyFormattedPopReceipt_ThrowsInvalidQueryParameterException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            client.DeleteMessage(queueName, "abc-123", "bad format");
+
+            // expects exception
+        }
+
+        [Test]
+        public async Task DeleteMessageAsync_ValidMessage_DeletesItFromTheQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { "1" });
+            var itemFromQueue = GetItemFromQueue(queueName);
+
+            await client.DeleteMessageAsync(queueName, itemFromQueue.Id, itemFromQueue.PopReceipt);
+
+            AssertQueueIsEmpty(queueName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(MessageNotFoundAzureException))]
+        public async Task DeleteMessageAsync_NonexistentMessage_ThrowsMessageNotFoundException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            await client.DeleteMessageAsync(queueName, "abc-123", "AAAA/AAAAAAAAAAA");
+
+            // expects exception
+        }
+
         #endregion
 
         #region Assertions
@@ -939,12 +1021,19 @@ namespace Basic.Azure.Storage.Tests.Integration
         {
             var client = _storageAccount.CreateCloudQueueClient();
             var queue = client.GetQueueReference(queueName);
-            queue.CreateIfNotExists();
 
             foreach (var message in messages)
             {
                 queue.AddMessage(new Microsoft.WindowsAzure.Storage.Queue.CloudQueueMessage(Encoding.ASCII.GetBytes(message)));
             }
+        }
+
+        private Microsoft.WindowsAzure.Storage.Queue.CloudQueueMessage GetItemFromQueue(string queueName)
+        {
+            var client = _storageAccount.CreateCloudQueueClient();
+            var queue = client.GetQueueReference(queueName);
+
+            return queue.GetMessage(TimeSpan.FromSeconds(30));
         }
 
         private IDictionary<string, string> GetQueueMetadata(string queueName)

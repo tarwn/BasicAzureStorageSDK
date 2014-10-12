@@ -132,7 +132,22 @@ namespace Basic.Azure.Storage
             var response = await request.ExecuteAsync();
             return response.Payload;
         }
+
+        public void DeleteMessage(string queueName, string messageId, string popReceipt)
+        {
+            var request = new DeleteMessageRequest(_account, queueName, messageId, popReceipt);
+            request.Execute();
+        }
+        public async Task DeleteMessageAsync(string queueName, string messageId, string popReceipt)
+        {
+            var request = new DeleteMessageRequest(_account, queueName, messageId, popReceipt);
+            await request.ExecuteAsync();
+        }
+
+
         #endregion
+
+
 
 
 

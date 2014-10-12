@@ -19,233 +19,233 @@ namespace Basic.Azure.Storage.Communications.ServiceExceptions
 public static class BlobServiceAzureExceptions
 {
 
-	public static AzureException GetExceptionFor(string requestId, HttpStatusCode statusCode, string errorCode, string statusDescription, WebException baseException)
+	public static AzureException GetExceptionFor(string requestId, HttpStatusCode statusCode, string errorCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
 	{
 		switch(errorCode)
 		{
 		 
 			case "InvalidBlobOrBlock":
-				return new InvalidBlobOrBlockAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidBlobOrBlockAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidBlockId":
-				return new InvalidBlockIdAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidBlockIdAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidBlockList":
-				return new InvalidBlockListAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidBlockListAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "ContainerNotFound":
-				return new ContainerNotFoundAzureException(requestId, statusCode, statusDescription, baseException);
+				return new ContainerNotFoundAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "BlobNotFound":
-				return new BlobNotFoundAzureException(requestId, statusCode, statusDescription, baseException);
+				return new BlobNotFoundAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "ContainerAlreadyExists":
-				return new ContainerAlreadyExistsAzureException(requestId, statusCode, statusDescription, baseException);
+				return new ContainerAlreadyExistsAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "ContainerDisabled":
-				return new ContainerDisabledAzureException(requestId, statusCode, statusDescription, baseException);
+				return new ContainerDisabledAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "ContainerBeingDeleted":
-				return new ContainerBeingDeletedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new ContainerBeingDeletedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "BlobAlreadyExists":
-				return new BlobAlreadyExistsAzureException(requestId, statusCode, statusDescription, baseException);
+				return new BlobAlreadyExistsAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "LeaseNotPresentWithBlobOperation":
-				return new LeaseNotPresentWithBlobOperationAzureException(requestId, statusCode, statusDescription, baseException);
+				return new LeaseNotPresentWithBlobOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "LeaseNotPresentWithContainerOperation":
-				return new LeaseNotPresentWithContainerOperationAzureException(requestId, statusCode, statusDescription, baseException);
+				return new LeaseNotPresentWithContainerOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "LeaseLost":
-				return new LeaseLostAzureException(requestId, statusCode, statusDescription, baseException);
+				return new LeaseLostAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "LeaseIdMismatchWithBlobOperation":
-				return new LeaseIdMismatchWithBlobOperationAzureException(requestId, statusCode, statusDescription, baseException);
+				return new LeaseIdMismatchWithBlobOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "LeaseIdMismatchWithContainerOperation":
-				return new LeaseIdMismatchWithContainerOperationAzureException(requestId, statusCode, statusDescription, baseException);
+				return new LeaseIdMismatchWithContainerOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "LeaseIdMissing":
-				return new LeaseIdMissingAzureException(requestId, statusCode, statusDescription, baseException);
+				return new LeaseIdMissingAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "LeaseNotPresentWithLeaseOperation":
-				return new LeaseNotPresentWithLeaseOperationAzureException(requestId, statusCode, statusDescription, baseException);
+				return new LeaseNotPresentWithLeaseOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "LeaseIdMismatchWithLeaseOperation":
-				return new LeaseIdMismatchWithLeaseOperationAzureException(requestId, statusCode, statusDescription, baseException);
+				return new LeaseIdMismatchWithLeaseOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "LeaseAlreadyPresent":
-				return new LeaseAlreadyPresentAzureException(requestId, statusCode, statusDescription, baseException);
+				return new LeaseAlreadyPresentAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "LeaseAlreadyBroken":
-				return new LeaseAlreadyBrokenAzureException(requestId, statusCode, statusDescription, baseException);
+				return new LeaseAlreadyBrokenAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "LeaseIsBrokenAndCannotBeRenewed":
-				return new LeaseIsBrokenAndCannotBeRenewedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new LeaseIsBrokenAndCannotBeRenewedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "LeaseIsBreakingAndCannotBeAquired":
-				return new LeaseIsBreakingAndCannotBeAquiredAzureException(requestId, statusCode, statusDescription, baseException);
+				return new LeaseIsBreakingAndCannotBeAquiredAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "LeaseIsBreakingAndCannotBeChanged":
-				return new LeaseIsBreakingAndCannotBeChangedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new LeaseIsBreakingAndCannotBeChangedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InfiniteLeaseDurationRequired":
-				return new InfiniteLeaseDurationRequiredAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InfiniteLeaseDurationRequiredAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "SnapshotsPresent":
-				return new SnapshotsPresentAzureException(requestId, statusCode, statusDescription, baseException);
+				return new SnapshotsPresentAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidBlobType":
-				return new InvalidBlobTypeAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidBlobTypeAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidVersionForPageBlobOperation":
-				return new InvalidVersionForPageBlobOperationAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidVersionForPageBlobOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidPageRange":
-				return new InvalidPageRangeAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidPageRangeAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "SequenceNumberConditionNotMet":
-				return new SequenceNumberConditionNotMetAzureException(requestId, statusCode, statusDescription, baseException);
+				return new SequenceNumberConditionNotMetAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "SequenceNumberIncrementTooLarge":
-				return new SequenceNumberIncrementTooLargeAzureException(requestId, statusCode, statusDescription, baseException);
+				return new SequenceNumberIncrementTooLargeAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "SourceConditionNotMet":
-				return new SourceConditionNotMetAzureException(requestId, statusCode, statusDescription, baseException);
+				return new SourceConditionNotMetAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "TargetConditionNotMet":
-				return new TargetConditionNotMetAzureException(requestId, statusCode, statusDescription, baseException);
+				return new TargetConditionNotMetAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "CopyAcrossAccountsNotSupported":
-				return new CopyAcrossAccountsNotSupportedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new CopyAcrossAccountsNotSupportedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "CannotVerifyCopySource":
-				return new CannotVerifyCopySourceAzureException(requestId, statusCode, statusDescription, baseException);
+				return new CannotVerifyCopySourceAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "PendingCopyOperation":
-				return new PendingCopyOperationAzureException(requestId, statusCode, statusDescription, baseException);
+				return new PendingCopyOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "NoPendingCopyOperation":
-				return new NoPendingCopyOperationAzureException(requestId, statusCode, statusDescription, baseException);
+				return new NoPendingCopyOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "CopyIdMismatch":
-				return new CopyIdMismatchAzureException(requestId, statusCode, statusDescription, baseException);
+				return new CopyIdMismatchAzureException(requestId, statusCode, statusDescription, details, baseException);
 					}
 
 		switch(statusDescription)
 		{
 			 
 				case "The specified blob or block content is invalid.":
-					return new InvalidBlobOrBlockAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidBlobOrBlockAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified block ID is invalid. The block ID must be Base64-encoded.":
-					return new InvalidBlockIdAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidBlockIdAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified block list is invalid.":
-					return new InvalidBlockListAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidBlockListAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified container does not exist.":
-					return new ContainerNotFoundAzureException(requestId, statusCode, statusDescription, baseException);
+					return new ContainerNotFoundAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified blob does not exist.":
-					return new BlobNotFoundAzureException(requestId, statusCode, statusDescription, baseException);
+					return new BlobNotFoundAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified container already exists.":
-					return new ContainerAlreadyExistsAzureException(requestId, statusCode, statusDescription, baseException);
+					return new ContainerAlreadyExistsAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified container has been disabled by the administrator.":
-					return new ContainerDisabledAzureException(requestId, statusCode, statusDescription, baseException);
+					return new ContainerDisabledAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified container is being deleted.":
-					return new ContainerBeingDeletedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new ContainerBeingDeletedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified blob already exists.":
-					return new BlobAlreadyExistsAzureException(requestId, statusCode, statusDescription, baseException);
+					return new BlobAlreadyExistsAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "There is currently no lease on the blob.":
-					return new LeaseNotPresentWithBlobOperationAzureException(requestId, statusCode, statusDescription, baseException);
+					return new LeaseNotPresentWithBlobOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "There is currently no lease on the container.":
-					return new LeaseNotPresentWithContainerOperationAzureException(requestId, statusCode, statusDescription, baseException);
+					return new LeaseNotPresentWithContainerOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "A lease ID was specified, but the lease for the blob/container has expired.":
-					return new LeaseLostAzureException(requestId, statusCode, statusDescription, baseException);
+					return new LeaseLostAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The lease ID specified did not match the lease ID for the blob.":
-					return new LeaseIdMismatchWithBlobOperationAzureException(requestId, statusCode, statusDescription, baseException);
+					return new LeaseIdMismatchWithBlobOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The lease ID specified did not match the lease ID for the container.":
-					return new LeaseIdMismatchWithContainerOperationAzureException(requestId, statusCode, statusDescription, baseException);
+					return new LeaseIdMismatchWithContainerOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "There is currently a lease on the blob/container and no lease ID was specified in the request.":
-					return new LeaseIdMissingAzureException(requestId, statusCode, statusDescription, baseException);
+					return new LeaseIdMissingAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "There is currently no lease on the blob/container.":
-					return new LeaseNotPresentWithLeaseOperationAzureException(requestId, statusCode, statusDescription, baseException);
+					return new LeaseNotPresentWithLeaseOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The lease ID specified did not match the lease ID for the blob/container.":
-					return new LeaseIdMismatchWithLeaseOperationAzureException(requestId, statusCode, statusDescription, baseException);
+					return new LeaseIdMismatchWithLeaseOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "There is already a lease present.":
-					return new LeaseAlreadyPresentAzureException(requestId, statusCode, statusDescription, baseException);
+					return new LeaseAlreadyPresentAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The lease has already been broken and cannot be broken again.":
-					return new LeaseAlreadyBrokenAzureException(requestId, statusCode, statusDescription, baseException);
+					return new LeaseAlreadyBrokenAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The lease ID matched, but the lease has been broken explicitly and cannot be renewed.":
-					return new LeaseIsBrokenAndCannotBeRenewedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new LeaseIsBrokenAndCannotBeRenewedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The lease ID matched, but the lease is currently in breaking state and cannot be acquired until it is broken.":
-					return new LeaseIsBreakingAndCannotBeAquiredAzureException(requestId, statusCode, statusDescription, baseException);
+					return new LeaseIsBreakingAndCannotBeAquiredAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The lease ID matched, but the lease is currently in breaking state and cannot be changed.":
-					return new LeaseIsBreakingAndCannotBeChangedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new LeaseIsBreakingAndCannotBeChangedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The lease ID matched, but the specified lease must be an infinite-duration lease.":
-					return new InfiniteLeaseDurationRequiredAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InfiniteLeaseDurationRequiredAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "This operation is not permitted because the blob has snapshots.":
-					return new SnapshotsPresentAzureException(requestId, statusCode, statusDescription, baseException);
+					return new SnapshotsPresentAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The blob type is invalid for this operation.":
-					return new InvalidBlobTypeAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidBlobTypeAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "All operations on page blobs require at least version 2009-09-19.":
-					return new InvalidVersionForPageBlobOperationAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidVersionForPageBlobOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The page range specified is invalid.":
-					return new InvalidPageRangeAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidPageRangeAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The sequence number condition specified was not met.":
-					return new SequenceNumberConditionNotMetAzureException(requestId, statusCode, statusDescription, baseException);
+					return new SequenceNumberConditionNotMetAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The sequence number increment cannot be performed because it would result in overflow of the sequence number.":
-					return new SequenceNumberIncrementTooLargeAzureException(requestId, statusCode, statusDescription, baseException);
+					return new SequenceNumberIncrementTooLargeAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The source condition specified using HTTP conditional header(s) is not met.":
-					return new SourceConditionNotMetAzureException(requestId, statusCode, statusDescription, baseException);
+					return new SourceConditionNotMetAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The target condition specified using HTTP conditional header(s) is not met.":
-					return new TargetConditionNotMetAzureException(requestId, statusCode, statusDescription, baseException);
+					return new TargetConditionNotMetAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The copy source account and destination account must be the same.":
-					return new CopyAcrossAccountsNotSupportedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new CopyAcrossAccountsNotSupportedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "Could not verify the copy source within the specified time. Examine the HTTP status code and message for more information about the failure.":
-					return new CannotVerifyCopySourceAzureException(requestId, statusCode, statusDescription, baseException);
+					return new CannotVerifyCopySourceAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "There is currently a pending copy operation.":
-					return new PendingCopyOperationAzureException(requestId, statusCode, statusDescription, baseException);
+					return new PendingCopyOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "There is currently no pending copy operation.":
-					return new NoPendingCopyOperationAzureException(requestId, statusCode, statusDescription, baseException);
+					return new NoPendingCopyOperationAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified copy ID did not match the copy ID for the pending copy operation.":
-					return new CopyIdMismatchAzureException(requestId, statusCode, statusDescription, baseException);
+					return new CopyIdMismatchAzureException(requestId, statusCode, statusDescription, details, baseException);
 				
 			default:
-				return CommonServiceAzureExceptions.GetExceptionFor(requestId, statusCode, errorCode, statusDescription, baseException);
+				return CommonServiceAzureExceptions.GetExceptionFor(requestId, statusCode, errorCode, statusDescription, details, baseException);
 		}
 	}
 
@@ -258,8 +258,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The specified blob or block content is invalid.</remarks>
 	public class InvalidBlobOrBlockAzureException : AzureException
     {
-        public InvalidBlobOrBlockAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidBlobOrBlockAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -269,8 +269,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The specified block ID is invalid. The block ID must be Base64-encoded.</remarks>
 	public class InvalidBlockIdAzureException : AzureException
     {
-        public InvalidBlockIdAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidBlockIdAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -280,8 +280,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The specified block list is invalid.</remarks>
 	public class InvalidBlockListAzureException : AzureException
     {
-        public InvalidBlockListAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidBlockListAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -291,8 +291,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The specified container does not exist.</remarks>
 	public class ContainerNotFoundAzureException : AzureException
     {
-        public ContainerNotFoundAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public ContainerNotFoundAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -302,8 +302,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The specified blob does not exist.</remarks>
 	public class BlobNotFoundAzureException : AzureException
     {
-        public BlobNotFoundAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public BlobNotFoundAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -313,8 +313,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The specified container already exists.</remarks>
 	public class ContainerAlreadyExistsAzureException : AzureException
     {
-        public ContainerAlreadyExistsAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public ContainerAlreadyExistsAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -324,8 +324,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The specified container has been disabled by the administrator.</remarks>
 	public class ContainerDisabledAzureException : AzureException
     {
-        public ContainerDisabledAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public ContainerDisabledAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -335,8 +335,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The specified container is being deleted.</remarks>
 	public class ContainerBeingDeletedAzureException : AzureException
     {
-        public ContainerBeingDeletedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public ContainerBeingDeletedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -346,8 +346,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The specified blob already exists.</remarks>
 	public class BlobAlreadyExistsAzureException : AzureException
     {
-        public BlobAlreadyExistsAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public BlobAlreadyExistsAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -357,8 +357,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: There is currently no lease on the blob.</remarks>
 	public class LeaseNotPresentWithBlobOperationAzureException : AzureException
     {
-        public LeaseNotPresentWithBlobOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public LeaseNotPresentWithBlobOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -368,8 +368,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: There is currently no lease on the container.</remarks>
 	public class LeaseNotPresentWithContainerOperationAzureException : AzureException
     {
-        public LeaseNotPresentWithContainerOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public LeaseNotPresentWithContainerOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -379,8 +379,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: A lease ID was specified, but the lease for the blob/container has expired.</remarks>
 	public class LeaseLostAzureException : AzureException
     {
-        public LeaseLostAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public LeaseLostAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -390,8 +390,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The lease ID specified did not match the lease ID for the blob.</remarks>
 	public class LeaseIdMismatchWithBlobOperationAzureException : AzureException
     {
-        public LeaseIdMismatchWithBlobOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public LeaseIdMismatchWithBlobOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -401,8 +401,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The lease ID specified did not match the lease ID for the container.</remarks>
 	public class LeaseIdMismatchWithContainerOperationAzureException : AzureException
     {
-        public LeaseIdMismatchWithContainerOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public LeaseIdMismatchWithContainerOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -412,8 +412,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: There is currently a lease on the blob/container and no lease ID was specified in the request.</remarks>
 	public class LeaseIdMissingAzureException : AzureException
     {
-        public LeaseIdMissingAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public LeaseIdMissingAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -423,8 +423,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: There is currently no lease on the blob/container.</remarks>
 	public class LeaseNotPresentWithLeaseOperationAzureException : AzureException
     {
-        public LeaseNotPresentWithLeaseOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public LeaseNotPresentWithLeaseOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -434,8 +434,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The lease ID specified did not match the lease ID for the blob/container.</remarks>
 	public class LeaseIdMismatchWithLeaseOperationAzureException : AzureException
     {
-        public LeaseIdMismatchWithLeaseOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public LeaseIdMismatchWithLeaseOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -445,8 +445,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: There is already a lease present.</remarks>
 	public class LeaseAlreadyPresentAzureException : AzureException
     {
-        public LeaseAlreadyPresentAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public LeaseAlreadyPresentAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -456,8 +456,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The lease has already been broken and cannot be broken again.</remarks>
 	public class LeaseAlreadyBrokenAzureException : AzureException
     {
-        public LeaseAlreadyBrokenAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public LeaseAlreadyBrokenAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -467,8 +467,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The lease ID matched, but the lease has been broken explicitly and cannot be renewed.</remarks>
 	public class LeaseIsBrokenAndCannotBeRenewedAzureException : AzureException
     {
-        public LeaseIsBrokenAndCannotBeRenewedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public LeaseIsBrokenAndCannotBeRenewedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -478,8 +478,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The lease ID matched, but the lease is currently in breaking state and cannot be acquired until it is broken.</remarks>
 	public class LeaseIsBreakingAndCannotBeAquiredAzureException : AzureException
     {
-        public LeaseIsBreakingAndCannotBeAquiredAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public LeaseIsBreakingAndCannotBeAquiredAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -489,8 +489,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The lease ID matched, but the lease is currently in breaking state and cannot be changed.</remarks>
 	public class LeaseIsBreakingAndCannotBeChangedAzureException : AzureException
     {
-        public LeaseIsBreakingAndCannotBeChangedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public LeaseIsBreakingAndCannotBeChangedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -500,8 +500,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The lease ID matched, but the specified lease must be an infinite-duration lease.</remarks>
 	public class InfiniteLeaseDurationRequiredAzureException : AzureException
     {
-        public InfiniteLeaseDurationRequiredAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InfiniteLeaseDurationRequiredAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -511,8 +511,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: This operation is not permitted because the blob has snapshots.</remarks>
 	public class SnapshotsPresentAzureException : AzureException
     {
-        public SnapshotsPresentAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public SnapshotsPresentAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -522,8 +522,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The blob type is invalid for this operation.</remarks>
 	public class InvalidBlobTypeAzureException : AzureException
     {
-        public InvalidBlobTypeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidBlobTypeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -533,8 +533,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: All operations on page blobs require at least version 2009-09-19.</remarks>
 	public class InvalidVersionForPageBlobOperationAzureException : AzureException
     {
-        public InvalidVersionForPageBlobOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidVersionForPageBlobOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -544,8 +544,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The page range specified is invalid.</remarks>
 	public class InvalidPageRangeAzureException : AzureException
     {
-        public InvalidPageRangeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidPageRangeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -555,8 +555,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The sequence number condition specified was not met.</remarks>
 	public class SequenceNumberConditionNotMetAzureException : AzureException
     {
-        public SequenceNumberConditionNotMetAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public SequenceNumberConditionNotMetAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -566,8 +566,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The sequence number increment cannot be performed because it would result in overflow of the sequence number.</remarks>
 	public class SequenceNumberIncrementTooLargeAzureException : AzureException
     {
-        public SequenceNumberIncrementTooLargeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public SequenceNumberIncrementTooLargeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -577,8 +577,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The source condition specified using HTTP conditional header(s) is not met.</remarks>
 	public class SourceConditionNotMetAzureException : AzureException
     {
-        public SourceConditionNotMetAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public SourceConditionNotMetAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -588,8 +588,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The target condition specified using HTTP conditional header(s) is not met.</remarks>
 	public class TargetConditionNotMetAzureException : AzureException
     {
-        public TargetConditionNotMetAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public TargetConditionNotMetAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -599,8 +599,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The copy source account and destination account must be the same.</remarks>
 	public class CopyAcrossAccountsNotSupportedAzureException : AzureException
     {
-        public CopyAcrossAccountsNotSupportedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public CopyAcrossAccountsNotSupportedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -610,8 +610,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: Could not verify the copy source within the specified time. Examine the HTTP status code and message for more information about the failure.</remarks>
 	public class CannotVerifyCopySourceAzureException : AzureException
     {
-        public CannotVerifyCopySourceAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public CannotVerifyCopySourceAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -621,8 +621,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: There is currently a pending copy operation.</remarks>
 	public class PendingCopyOperationAzureException : AzureException
     {
-        public PendingCopyOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public PendingCopyOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -632,8 +632,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: There is currently no pending copy operation.</remarks>
 	public class NoPendingCopyOperationAzureException : AzureException
     {
-        public NoPendingCopyOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public NoPendingCopyOperationAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -643,8 +643,8 @@ public static class BlobServiceAzureExceptions
 	///<remarks>Description: The specified copy ID did not match the copy ID for the pending copy operation.</remarks>
 	public class CopyIdMismatchAzureException : AzureException
     {
-        public CopyIdMismatchAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public CopyIdMismatchAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 	

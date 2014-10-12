@@ -19,257 +19,257 @@ namespace Basic.Azure.Storage.Communications.ServiceExceptions
 public static class CommonServiceAzureExceptions
 {
 
-	public static AzureException GetExceptionFor(string requestId, HttpStatusCode statusCode, string errorCode, string statusDescription, WebException baseException)
+	public static AzureException GetExceptionFor(string requestId, HttpStatusCode statusCode, string errorCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
 	{
 		switch(errorCode)
 		{
 		 
 			case "ConditionNotMetForRead":
-				return new ConditionNotMetForReadAzureException(requestId, statusCode, statusDescription, baseException);
+				return new ConditionNotMetForReadAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "MissingRequiredHeader":
-				return new MissingRequiredHeaderAzureException(requestId, statusCode, statusDescription, baseException);
+				return new MissingRequiredHeaderAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "MissingRequiredXmlNode":
-				return new MissingRequiredXmlNodeAzureException(requestId, statusCode, statusDescription, baseException);
+				return new MissingRequiredXmlNodeAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "UnsupportedHeader":
-				return new UnsupportedHeaderAzureException(requestId, statusCode, statusDescription, baseException);
+				return new UnsupportedHeaderAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "UnsupportedXmlNode":
-				return new UnsupportedXmlNodeAzureException(requestId, statusCode, statusDescription, baseException);
+				return new UnsupportedXmlNodeAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidHeaderValue":
-				return new InvalidHeaderValueAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidHeaderValueAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidXmlNodeValue":
-				return new InvalidXmlNodeValueAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidXmlNodeValueAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "MissingRequiredQueryParameter":
-				return new MissingRequiredQueryParameterAzureException(requestId, statusCode, statusDescription, baseException);
+				return new MissingRequiredQueryParameterAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "UnsupportedQueryParameter":
-				return new UnsupportedQueryParameterAzureException(requestId, statusCode, statusDescription, baseException);
+				return new UnsupportedQueryParameterAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidQueryParameterValue":
-				return new InvalidQueryParameterValueAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidQueryParameterValueAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "OutOfRangeQueryParameterValue":
-				return new OutOfRangeQueryParameterValueAzureException(requestId, statusCode, statusDescription, baseException);
+				return new OutOfRangeQueryParameterValueAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "RequestUrlFailedToParse":
-				return new RequestUrlFailedToParseAzureException(requestId, statusCode, statusDescription, baseException);
+				return new RequestUrlFailedToParseAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidUri":
-				return new InvalidUriAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidUriAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidHttpVerb":
-				return new InvalidHttpVerbAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidHttpVerbAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "EmptyMetadataKey":
-				return new EmptyMetadataKeyAzureException(requestId, statusCode, statusDescription, baseException);
+				return new EmptyMetadataKeyAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidXmlDocument":
-				return new InvalidXmlDocumentAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidXmlDocumentAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "Md5Mismatch":
-				return new Md5MismatchAzureException(requestId, statusCode, statusDescription, baseException);
+				return new Md5MismatchAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidMd5":
-				return new InvalidMd5AzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidMd5AzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "OutOfRangeInput":
-				return new OutOfRangeInputAzureException(requestId, statusCode, statusDescription, baseException);
+				return new OutOfRangeInputAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidAuthenticationInfo":
-				return new InvalidAuthenticationInfoAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidAuthenticationInfoAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidInput":
-				return new InvalidInputAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidInputAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidMetadata":
-				return new InvalidMetadataAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidMetadataAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "MetadataTooLarge":
-				return new MetadataTooLargeAzureException(requestId, statusCode, statusDescription, baseException);
+				return new MetadataTooLargeAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "AuthenticationFailed":
-				return new AuthenticationFailedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new AuthenticationFailedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InsufficientAccountPermissionsForRead":
-				return new InsufficientAccountPermissionsForReadAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InsufficientAccountPermissionsForReadAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InsufficientAccountPermissionsForWrite":
-				return new InsufficientAccountPermissionsForWriteAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InsufficientAccountPermissionsForWriteAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "ResourceNotFound":
-				return new ResourceNotFoundAzureException(requestId, statusCode, statusDescription, baseException);
+				return new ResourceNotFoundAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "AccountIsDisabled":
-				return new AccountIsDisabledAzureException(requestId, statusCode, statusDescription, baseException);
+				return new AccountIsDisabledAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "UnsupportedHttpVerb":
-				return new UnsupportedHttpVerbAzureException(requestId, statusCode, statusDescription, baseException);
+				return new UnsupportedHttpVerbAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "AccountAlreadyExists":
-				return new AccountAlreadyExistsAzureException(requestId, statusCode, statusDescription, baseException);
+				return new AccountAlreadyExistsAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "AccountBeingCreated":
-				return new AccountBeingCreatedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new AccountBeingCreatedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InsufficientAccountPermissionsForExecute":
-				return new InsufficientAccountPermissionsForExecuteAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InsufficientAccountPermissionsForExecuteAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "MissingContentLengthHeader":
-				return new MissingContentLengthHeaderAzureException(requestId, statusCode, statusDescription, baseException);
+				return new MissingContentLengthHeaderAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "ConditionNotMetForWrite":
-				return new ConditionNotMetForWriteAzureException(requestId, statusCode, statusDescription, baseException);
+				return new ConditionNotMetForWriteAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "MultipleConditionHeadersNotSupported":
-				return new MultipleConditionHeadersNotSupportedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new MultipleConditionHeadersNotSupportedAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "RequestBodyTooLarge":
-				return new RequestBodyTooLargeAzureException(requestId, statusCode, statusDescription, baseException);
+				return new RequestBodyTooLargeAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InvalidRange":
-				return new InvalidRangeAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InvalidRangeAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "InternalError":
-				return new InternalErrorAzureException(requestId, statusCode, statusDescription, baseException);
+				return new InternalErrorAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "OperationTimedOut":
-				return new OperationTimedOutAzureException(requestId, statusCode, statusDescription, baseException);
+				return new OperationTimedOutAzureException(requestId, statusCode, statusDescription, details, baseException);
 			 
 			case "ServerBusy":
-				return new ServerBusyAzureException(requestId, statusCode, statusDescription, baseException);
+				return new ServerBusyAzureException(requestId, statusCode, statusDescription, details, baseException);
 					}
 
 		switch(statusDescription)
 		{
 			 
 				case "The condition specified in the conditional header(s) was not met for a read operation.":
-					return new ConditionNotMetForReadAzureException(requestId, statusCode, statusDescription, baseException);
+					return new ConditionNotMetForReadAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "A required HTTP header was not specified.":
-					return new MissingRequiredHeaderAzureException(requestId, statusCode, statusDescription, baseException);
+					return new MissingRequiredHeaderAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "A required XML node was not specified in the request body.":
-					return new MissingRequiredXmlNodeAzureException(requestId, statusCode, statusDescription, baseException);
+					return new MissingRequiredXmlNodeAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "One of the HTTP headers specified in the request is not supported.":
-					return new UnsupportedHeaderAzureException(requestId, statusCode, statusDescription, baseException);
+					return new UnsupportedHeaderAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "One of the XML nodes specified in the request body is not supported.":
-					return new UnsupportedXmlNodeAzureException(requestId, statusCode, statusDescription, baseException);
+					return new UnsupportedXmlNodeAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The value provided for one of the HTTP headers was not in the correct format.":
-					return new InvalidHeaderValueAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidHeaderValueAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The value provided for one of the XML nodes in the request body was not in the correct format.":
-					return new InvalidXmlNodeValueAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidXmlNodeValueAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "A required query parameter was not specified for this request.":
-					return new MissingRequiredQueryParameterAzureException(requestId, statusCode, statusDescription, baseException);
+					return new MissingRequiredQueryParameterAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "One of the query parameters specified in the request URI is not supported.":
-					return new UnsupportedQueryParameterAzureException(requestId, statusCode, statusDescription, baseException);
+					return new UnsupportedQueryParameterAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "An invalid value was specified for one of the query parameters in the request URI.":
-					return new InvalidQueryParameterValueAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidQueryParameterValueAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "A query parameter specified in the request URI is outside the permissible range.":
-					return new OutOfRangeQueryParameterValueAzureException(requestId, statusCode, statusDescription, baseException);
+					return new OutOfRangeQueryParameterValueAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The url in the request could not be parsed.":
-					return new RequestUrlFailedToParseAzureException(requestId, statusCode, statusDescription, baseException);
+					return new RequestUrlFailedToParseAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The requested URI does not represent any resource on the server.":
-					return new InvalidUriAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidUriAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The HTTP verb specified was not recognized by the server.":
-					return new InvalidHttpVerbAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidHttpVerbAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The key for one of the metadata key-value pairs is empty.":
-					return new EmptyMetadataKeyAzureException(requestId, statusCode, statusDescription, baseException);
+					return new EmptyMetadataKeyAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified XML is not syntactically valid.":
-					return new InvalidXmlDocumentAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidXmlDocumentAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The MD5 value specified in the request did not match the MD5 value calculated by the server.":
-					return new Md5MismatchAzureException(requestId, statusCode, statusDescription, baseException);
+					return new Md5MismatchAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The MD5 value specified in the request is invalid. The MD5 value must be 128 bits and Base64-encoded.":
-					return new InvalidMd5AzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidMd5AzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "One of the request inputs is out of range.":
-					return new OutOfRangeInputAzureException(requestId, statusCode, statusDescription, baseException);
+					return new OutOfRangeInputAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The authentication information was not provided in the correct format. Verify the value of Authorization header.":
-					return new InvalidAuthenticationInfoAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidAuthenticationInfoAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "One of the request inputs is not valid.":
-					return new InvalidInputAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidInputAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified metadata is invalid. It includes characters that are not permitted.":
-					return new InvalidMetadataAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidMetadataAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The size of the specified metadata exceeds the maximum size permitted.":
-					return new MetadataTooLargeAzureException(requestId, statusCode, statusDescription, baseException);
+					return new MetadataTooLargeAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "Server failed to authenticate the request. Make sure the value of the Authorization header is formed correctly including the signature.":
-					return new AuthenticationFailedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new AuthenticationFailedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "Read-access geo-redundant replication is not enabled for the account.":
-					return new InsufficientAccountPermissionsForReadAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InsufficientAccountPermissionsForReadAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "Write operations to the secondary location are not allowed.":
-					return new InsufficientAccountPermissionsForWriteAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InsufficientAccountPermissionsForWriteAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified resource does not exist.":
-					return new ResourceNotFoundAzureException(requestId, statusCode, statusDescription, baseException);
+					return new ResourceNotFoundAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified account is disabled.":
-					return new AccountIsDisabledAzureException(requestId, statusCode, statusDescription, baseException);
+					return new AccountIsDisabledAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The resource doesn't support the specified HTTP verb.":
-					return new UnsupportedHttpVerbAzureException(requestId, statusCode, statusDescription, baseException);
+					return new UnsupportedHttpVerbAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified account already exists.":
-					return new AccountAlreadyExistsAzureException(requestId, statusCode, statusDescription, baseException);
+					return new AccountAlreadyExistsAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The specified account is in the process of being created.":
-					return new AccountBeingCreatedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new AccountBeingCreatedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The account being accessed does not have sufficient permissions to execute this operation.":
-					return new InsufficientAccountPermissionsForExecuteAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InsufficientAccountPermissionsForExecuteAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The Content-Length header was not specified.":
-					return new MissingContentLengthHeaderAzureException(requestId, statusCode, statusDescription, baseException);
+					return new MissingContentLengthHeaderAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The condition specified in the conditional header(s) was not met for a write operation.":
-					return new ConditionNotMetForWriteAzureException(requestId, statusCode, statusDescription, baseException);
+					return new ConditionNotMetForWriteAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "Multiple condition headers are not supported.":
-					return new MultipleConditionHeadersNotSupportedAzureException(requestId, statusCode, statusDescription, baseException);
+					return new MultipleConditionHeadersNotSupportedAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The size of the request body exceeds the maximum size permitted.":
-					return new RequestBodyTooLargeAzureException(requestId, statusCode, statusDescription, baseException);
+					return new RequestBodyTooLargeAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The range specified is invalid for the current size of the resource.":
-					return new InvalidRangeAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InvalidRangeAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The server encountered an internal error. Please retry the request.":
-					return new InternalErrorAzureException(requestId, statusCode, statusDescription, baseException);
+					return new InternalErrorAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The operation could not be completed within the permitted time.":
-					return new OperationTimedOutAzureException(requestId, statusCode, statusDescription, baseException);
+					return new OperationTimedOutAzureException(requestId, statusCode, statusDescription, details, baseException);
 				 
 				case "The server is currently unable to receive requests. Please retry your request.":
-					return new ServerBusyAzureException(requestId, statusCode, statusDescription, baseException);
+					return new ServerBusyAzureException(requestId, statusCode, statusDescription, details, baseException);
 				
 			default:
-				return new UnrecognizedAzureException(requestId, statusCode, statusDescription, baseException);
+				return new UnrecognizedAzureException(requestId, statusCode, statusDescription, details, baseException);
 		}
 	}
 
@@ -281,8 +281,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class ConditionNotMetForReadAzureException : AzureException
     {
-        public ConditionNotMetForReadAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public ConditionNotMetForReadAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -291,8 +291,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class MissingRequiredHeaderAzureException : AzureException
     {
-        public MissingRequiredHeaderAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public MissingRequiredHeaderAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -301,8 +301,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class MissingRequiredXmlNodeAzureException : AzureException
     {
-        public MissingRequiredXmlNodeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public MissingRequiredXmlNodeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -311,8 +311,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class UnsupportedHeaderAzureException : AzureException
     {
-        public UnsupportedHeaderAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public UnsupportedHeaderAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -321,8 +321,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class UnsupportedXmlNodeAzureException : AzureException
     {
-        public UnsupportedXmlNodeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public UnsupportedXmlNodeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -331,8 +331,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InvalidHeaderValueAzureException : AzureException
     {
-        public InvalidHeaderValueAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidHeaderValueAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -341,8 +341,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InvalidXmlNodeValueAzureException : AzureException
     {
-        public InvalidXmlNodeValueAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidXmlNodeValueAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -351,8 +351,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class MissingRequiredQueryParameterAzureException : AzureException
     {
-        public MissingRequiredQueryParameterAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public MissingRequiredQueryParameterAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -361,8 +361,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class UnsupportedQueryParameterAzureException : AzureException
     {
-        public UnsupportedQueryParameterAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public UnsupportedQueryParameterAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -371,8 +371,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InvalidQueryParameterValueAzureException : AzureException
     {
-        public InvalidQueryParameterValueAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidQueryParameterValueAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -381,8 +381,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class OutOfRangeQueryParameterValueAzureException : AzureException
     {
-        public OutOfRangeQueryParameterValueAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public OutOfRangeQueryParameterValueAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -391,8 +391,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class RequestUrlFailedToParseAzureException : AzureException
     {
-        public RequestUrlFailedToParseAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public RequestUrlFailedToParseAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -401,8 +401,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InvalidUriAzureException : AzureException
     {
-        public InvalidUriAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidUriAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -411,8 +411,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InvalidHttpVerbAzureException : AzureException
     {
-        public InvalidHttpVerbAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidHttpVerbAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -421,8 +421,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class EmptyMetadataKeyAzureException : AzureException
     {
-        public EmptyMetadataKeyAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public EmptyMetadataKeyAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -431,8 +431,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InvalidXmlDocumentAzureException : AzureException
     {
-        public InvalidXmlDocumentAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidXmlDocumentAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -441,8 +441,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class Md5MismatchAzureException : AzureException
     {
-        public Md5MismatchAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public Md5MismatchAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -451,8 +451,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InvalidMd5AzureException : AzureException
     {
-        public InvalidMd5AzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidMd5AzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -461,8 +461,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class OutOfRangeInputAzureException : AzureException
     {
-        public OutOfRangeInputAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public OutOfRangeInputAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -471,8 +471,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InvalidAuthenticationInfoAzureException : AzureException
     {
-        public InvalidAuthenticationInfoAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidAuthenticationInfoAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -481,8 +481,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InvalidInputAzureException : AzureException
     {
-        public InvalidInputAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidInputAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -491,8 +491,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InvalidMetadataAzureException : AzureException
     {
-        public InvalidMetadataAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidMetadataAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -501,8 +501,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class MetadataTooLargeAzureException : AzureException
     {
-        public MetadataTooLargeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public MetadataTooLargeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -511,8 +511,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class AuthenticationFailedAzureException : AzureException
     {
-        public AuthenticationFailedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public AuthenticationFailedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -521,8 +521,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InsufficientAccountPermissionsForReadAzureException : AzureException
     {
-        public InsufficientAccountPermissionsForReadAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InsufficientAccountPermissionsForReadAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -531,8 +531,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InsufficientAccountPermissionsForWriteAzureException : AzureException
     {
-        public InsufficientAccountPermissionsForWriteAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InsufficientAccountPermissionsForWriteAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -541,8 +541,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class ResourceNotFoundAzureException : AzureException
     {
-        public ResourceNotFoundAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public ResourceNotFoundAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -551,8 +551,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class AccountIsDisabledAzureException : AzureException
     {
-        public AccountIsDisabledAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public AccountIsDisabledAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -561,8 +561,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class UnsupportedHttpVerbAzureException : AzureException
     {
-        public UnsupportedHttpVerbAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public UnsupportedHttpVerbAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -571,8 +571,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class AccountAlreadyExistsAzureException : AzureException
     {
-        public AccountAlreadyExistsAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public AccountAlreadyExistsAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -581,8 +581,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class AccountBeingCreatedAzureException : AzureException
     {
-        public AccountBeingCreatedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public AccountBeingCreatedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -591,8 +591,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InsufficientAccountPermissionsForExecuteAzureException : AzureException
     {
-        public InsufficientAccountPermissionsForExecuteAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InsufficientAccountPermissionsForExecuteAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -601,8 +601,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class MissingContentLengthHeaderAzureException : AzureException
     {
-        public MissingContentLengthHeaderAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public MissingContentLengthHeaderAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -611,8 +611,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class ConditionNotMetForWriteAzureException : AzureException
     {
-        public ConditionNotMetForWriteAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public ConditionNotMetForWriteAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -621,8 +621,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class MultipleConditionHeadersNotSupportedAzureException : AzureException
     {
-        public MultipleConditionHeadersNotSupportedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public MultipleConditionHeadersNotSupportedAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -631,8 +631,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class RequestBodyTooLargeAzureException : AzureException
     {
-        public RequestBodyTooLargeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public RequestBodyTooLargeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -641,8 +641,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InvalidRangeAzureException : AzureException
     {
-        public InvalidRangeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InvalidRangeAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -651,8 +651,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class InternalErrorAzureException : AzureException
     {
-        public InternalErrorAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public InternalErrorAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -661,8 +661,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class OperationTimedOutAzureException : AzureException
     {
-        public OperationTimedOutAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public OperationTimedOutAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 		///
@@ -671,8 +671,8 @@ public static class CommonServiceAzureExceptions
 	///</summary>
 	public class ServerBusyAzureException : AzureException
     {
-        public ServerBusyAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, WebException baseException)
-            : base(requestId, statusCode, statusDescription, baseException) { }
+        public ServerBusyAzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
+            : base(requestId, statusCode, statusDescription, details, baseException) { }
     }
 
 	}
