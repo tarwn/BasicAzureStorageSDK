@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
 {
     /// <summary>
-    /// Retrieve metadata for queue, including approximate message count
-    /// http://msdn.microsoft.com/en-us/library/azure/dd179384.aspx
+    /// Sets access control policies for the queue
+    /// http://msdn.microsoft.com/en-us/library/azure/jj159099.aspx
     /// </summary>
     public class SetQueueACLRequest : RequestBase<GetQueueACLResponse>, ISendDataWithRequest
     {

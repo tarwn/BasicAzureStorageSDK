@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
 {
     /// <summary>
-    /// Add a message to the specified Queue
+    /// Gets one or more messages from the queue and sets them invisible for the specified time
     /// http://msdn.microsoft.com/en-us/library/azure/dd179474.aspx
     /// </summary>
     public class GetMessagesRequest : RequestBase<GetMessagesResponse>
