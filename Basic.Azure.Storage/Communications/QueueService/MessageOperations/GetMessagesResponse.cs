@@ -36,6 +36,15 @@ namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
             return dateValue;
         }
 
+        public void ParseHeaders(System.Net.HttpWebResponse response)
+        {
+            //TODO: determine what we want to do about potential missing headers and date parsing errors
+
+            RequestId = response.Headers[ProtocolConstants.Headers.RequestId];
+            Version = response.Headers[ProtocolConstants.Headers.Version];
+            Date = ParseDate(response.Headers[ProtocolConstants.Headers.OperationDate]);
+        }
+
         public void ParseResponseBody(System.IO.Stream responseStream)
         {
             using (StreamReader sr = new StreamReader(responseStream))

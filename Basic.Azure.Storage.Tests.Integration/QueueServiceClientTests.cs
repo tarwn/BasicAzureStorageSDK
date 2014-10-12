@@ -29,6 +29,8 @@ namespace Basic.Azure.Storage.Tests.Integration
             return name;
         }
 
+        public string FakePopReceipt { get { return "AAAA/AAAAAAAAAAA"; } }
+
         [TestFixtureTearDown]
         public void TestFixtureTeardown()
         {
@@ -884,7 +886,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
 
-            client.DeleteMessage(queueName, "abc-123", "AAAA/AAAAAAAAAAA");
+            client.DeleteMessage(queueName, "abc-123", FakePopReceipt);
 
             // expects exception
         }
@@ -924,7 +926,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
 
-            await client.DeleteMessageAsync(queueName, "abc-123", "AAAA/AAAAAAAAAAA");
+            await client.DeleteMessageAsync(queueName, "abc-123", FakePopReceipt);
 
             // expects exception
         }
@@ -989,6 +991,100 @@ namespace Basic.Azure.Storage.Tests.Integration
             await client.ClearMessagesAsync(queueName);
 
             //expects exception
+        }
+
+        [Test]
+        public void UpdateMessage_ClearVisibility_AllowsMessageToBeRetrievedAgain()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { "1" });
+            var itemFromQueue = GetItemFromQueue(queueName);
+
+            client.UpdateMessage(queueName, itemFromQueue.Id, itemFromQueue.PopReceipt, 0);
+
+            var itemFromQueueAgain = GetItemFromQueue(queueName);
+            Assert.IsNotNull(itemFromQueueAgain);
+            Assert.AreEqual(itemFromQueue.Id, itemFromQueueAgain.Id);
+        }
+
+        [Test]
+        public void UpdateMessage_UpdateContent_UpdatesContentOfMessageInQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { "1" });
+            var itemFromQueue = GetItemFromQueue(queueName);
+            var newString = Convert.ToBase64String(Encoding.ASCII.GetBytes("2"));   // the official SDK base 64's the values automatically
+
+            client.UpdateMessage(queueName, itemFromQueue.Id, itemFromQueue.PopReceipt, 0, newString);
+
+            var itemFromQueueAgain = GetItemFromQueue(queueName);
+            Assert.IsNotNull(itemFromQueueAgain);
+            Assert.AreEqual(itemFromQueue.Id, itemFromQueueAgain.Id);
+            Assert.AreEqual("1", itemFromQueue.AsString);
+            Assert.AreEqual("2", itemFromQueueAgain.AsString);
+        }
+
+        [Test]
+        public void UpdateMessage_ExtendVisibility_ExtendsMessageVisibilityInTheQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { "1" });
+            var itemFromQueue = GetItemFromQueue(queueName, 1);
+
+            var response = client.UpdateMessage(queueName, itemFromQueue.Id, itemFromQueue.PopReceipt, 30);
+
+            Assert.IsNotNullOrEmpty(response.PopReceipt);
+            Thread.Sleep(2000); // longer than the original visibility timeout
+            var itemFromQueueAgain = GetItemFromQueue(queueName);
+            Assert.IsNull(itemFromQueueAgain);
+        }
+
+        [Test]
+        [ExpectedException(typeof(MessageNotFoundAzureException))]
+        public void UpdateMessage_NonExistentMessage_ThrowsException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            client.UpdateMessage(queueName, "123-abc", FakePopReceipt, 0);
+
+            // expects exception
+        }
+
+        [Test]
+        public async Task UpdateMessageAsync_ClearVisibility_AllowsMessageToBeRetrievedAgain()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { "1" });
+            var itemFromQueue = GetItemFromQueue(queueName);
+
+            await client.UpdateMessageAsync(queueName, itemFromQueue.Id, itemFromQueue.PopReceipt, 0);
+
+            var itemFromQueueAgain = GetItemFromQueue(queueName);
+            Assert.IsNotNull(itemFromQueueAgain);
+            Assert.AreEqual(itemFromQueue.Id, itemFromQueueAgain.Id);
+        }
+
+        [Test]
+        [ExpectedException(typeof(MessageNotFoundAzureException))]
+        public async Task UpdateMessageAsync_NonExistentMessage_ThrowsException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            await client.UpdateMessageAsync(queueName, "123-abc", FakePopReceipt, 0);
+
+            // expects exception
         }
 
         #endregion
@@ -1113,12 +1209,12 @@ namespace Basic.Azure.Storage.Tests.Integration
             }
         }
 
-        private Microsoft.WindowsAzure.Storage.Queue.CloudQueueMessage GetItemFromQueue(string queueName)
+        private Microsoft.WindowsAzure.Storage.Queue.CloudQueueMessage GetItemFromQueue(string queueName, int visibility = 30)
         {
             var client = _storageAccount.CreateCloudQueueClient();
             var queue = client.GetQueueReference(queueName);
 
-            return queue.GetMessage(TimeSpan.FromSeconds(30));
+            return queue.GetMessage(TimeSpan.FromSeconds(visibility));
         }
 
         private IDictionary<string, string> GetQueueMetadata(string queueName)
@@ -1158,5 +1254,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             return new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, DateTime.UtcNow.Hour, DateTime.UtcNow.Minute, DateTime.UtcNow.Second, DateTimeKind.Utc);
         }
 
+
+        
     }
 }

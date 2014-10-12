@@ -156,6 +156,19 @@ namespace Basic.Azure.Storage
             var request = new ClearMessageRequest(_account, queueName);
             await request.ExecuteAsync();
         }
+
+        public UpdateMessageResponse UpdateMessage(string queueName, string messageId, string popReceipt, int visibilityTimeout = 30, string messageData = null)
+        {
+            var request = new UpdateMessageRequest(_account, queueName, messageId, popReceipt, visibilityTimeout, messageData);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<UpdateMessageResponse> UpdateMessageAsync(string queueName, string messageId, string popReceipt, int visibilityTimeout = 30, string messageData = null)
+        {
+            var request = new UpdateMessageRequest(_account, queueName, messageId, popReceipt, visibilityTimeout, messageData);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
         #endregion
 
 

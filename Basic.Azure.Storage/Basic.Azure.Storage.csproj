@@ -70,11 +70,13 @@
     <Compile Include="Communications\ErrorResponsePayload.cs" />
     <Compile Include="Communications\Core\Interfaces\IResponsePayload.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\ClearMessageRequest.cs" />
+    <Compile Include="Communications\QueueService\MessageOperations\UpdateMessageResponse.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\PeekMessagesResponse.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\PeekMessagesRequest.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\GetMessagesRequest.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\GetMessagesResponse.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\DeleteMessageRequest.cs" />
+    <Compile Include="Communications\QueueService\MessageOperations\UpdateMessageRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\GetQueueACLRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\GetQueueMetadataRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\GetQueueACLResponse.cs" />

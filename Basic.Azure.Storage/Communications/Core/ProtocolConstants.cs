@@ -42,6 +42,8 @@ namespace Basic.Azure.Storage.Communications.Core
 
             public const string OperationDate = "Date";
 
+            public const string PopReceipt = "x-ms-popreceipt";
+
             public const string PreferenceApplied = "Preference-Applied";
 
             public const string RequestId = "x-ms-request-id";
@@ -51,6 +53,7 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string UserAgent = "User-Agent";
 
             public const string Version = "x-ms-version";
+
         }
 
         public static class HeaderValues

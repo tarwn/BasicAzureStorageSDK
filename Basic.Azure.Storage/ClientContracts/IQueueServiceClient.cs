@@ -50,7 +50,12 @@ namespace Basic.Azure.Storage.ClientContracts
         void ClearMessages(string queueName);
         Task ClearMessagesAsync(string queueName);
 
+        UpdateMessageResponse UpdateMessage(string queueName, string messageId, string popReceipt, int visibilityTimeout = 30, string messageData = null);
+        Task<UpdateMessageResponse> UpdateMessageAsync(string queueName, string messageId, string popReceipt, int visibilityTimeout = 30, string messageData = null);
+
         #endregion
+
+
 
 
 
