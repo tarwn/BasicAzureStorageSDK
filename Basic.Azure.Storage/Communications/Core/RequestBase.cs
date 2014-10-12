@@ -174,7 +174,6 @@ namespace Basic.Azure.Storage.Communications.Core
 
         private async Task<Response<TPayload>> SendRequestAsync(WebRequest request)
         {
-            Task<WebResponse> task;
             if (HasContentToSend)
             {
                 var stream = await request.GetRequestStreamAsync();

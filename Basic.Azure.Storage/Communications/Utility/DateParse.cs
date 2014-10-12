@@ -18,5 +18,7 @@ namespace Basic.Azure.Storage.Communications.Utility
                                         CultureInfo.InvariantCulture,
                                         DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
         }
+
+        
     }
 }

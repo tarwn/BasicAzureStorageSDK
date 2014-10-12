@@ -1,4 +1,5 @@
-﻿using Basic.Azure.Storage.Communications.QueueService.QueueOperations;
+﻿using Basic.Azure.Storage.Communications.Common;
+using Basic.Azure.Storage.Communications.QueueService.QueueOperations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,8 @@ namespace Basic.Azure.Storage.ClientContracts
         GetQueueACLResponse GetQueueACL(string queueName);
         Task<GetQueueACLResponse> GetQueueACLAsync(string queueName);
 
+        void SetQueueACL(string queueName, List<SignedIdentifier> signedIdentifiers);
+        Task SetQueueACLAsync(string queueName, List<SignedIdentifier> signedIdentifiers);
 
         #endregion
 
@@ -35,6 +38,8 @@ namespace Basic.Azure.Storage.ClientContracts
         Task PutMessageAsync(string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null);
 
         #endregion
+
+
 
     }
 }

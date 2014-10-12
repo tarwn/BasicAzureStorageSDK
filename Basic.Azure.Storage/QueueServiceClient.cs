@@ -1,4 +1,5 @@
 ﻿using Basic.Azure.Storage.ClientContracts;
+using Basic.Azure.Storage.Communications.Common;
 using Basic.Azure.Storage.Communications.QueueService;
 using Basic.Azure.Storage.Communications.QueueService.MessageOperations;
 using Basic.Azure.Storage.Communications.QueueService.QueueOperations;
@@ -81,6 +82,16 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
+        public void SetQueueACL(string queueName, List<SignedIdentifier> signedIdentifiers)
+        {
+            var request = new SetQueueACLRequest(_account, queueName, signedIdentifiers);
+            request.Execute();
+        }
+        public async Task SetQueueACLAsync(string queueName, List<SignedIdentifier> signedIdentifiers)
+        {
+            var request = new SetQueueACLRequest(_account, queueName, signedIdentifiers);
+            await request.ExecuteAsync();
+        }
         #endregion
 
         #region Message Operations

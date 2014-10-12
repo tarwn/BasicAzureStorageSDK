@@ -70,7 +70,7 @@ namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
                                     {
                                         switch (apElement.Name.LocalName) { 
                                             case "Permission":
-                                                identifier.AccessPolicy.Permission = apElement.Value;
+                                                identifier.AccessPolicy.Permission = SharedAccessPermissionParse.Parse(apElement.Value);
                                                 break;
                                             case "Start":
                                                 identifier.AccessPolicy.StartTime = DateParse.Parse(apElement.Value);

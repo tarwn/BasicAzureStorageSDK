@@ -9,6 +9,6 @@ namespace Basic.Azure.Storage.Communications.Common
     {
         public DateTime StartTime { get; set; }
         public DateTime Expiry { get; set; }
-        public string Permission { get; set; }
+        public SharedAccessPermissions Permission { get; set; }
     }
 }
