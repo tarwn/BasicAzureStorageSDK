@@ -838,6 +838,29 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.IsNotNullOrEmpty(message.PopReceipt);
             Assert.Greater(message.DequeueCount, 0);
         }
+        [Test]
+        public async Task PeekMessagesAsync_EmptyQueue_ReturnsEmptyCollection()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            var response = await client.PeekMessagesAsync(queueName, 32);
+
+            Assert.IsEmpty(response.Messages);
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueNotFoundAzureException))]
+        public async Task PeekMessagesAsync_NonExistentQueue_ThrowsQueueDoesNotExistException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            var response = await client.PeekMessagesAsync(queueName, 32);
+
+            // expects exception
+        }
 
         [Test]
         public void DeleteMessage_ValidMessage_DeletesItFromTheQueue()
