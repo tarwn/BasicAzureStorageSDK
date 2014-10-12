@@ -538,6 +538,63 @@ namespace Basic.Azure.Storage.Tests.Integration
         #region Message Operations Tests
 
         [Test]
+        public void PutMessage_ValidMessage_AddsMessageToQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            string message = "Unit Test Message";
+
+            client.PutMessage(queueName, message);
+
+            AssertQueueHasMessage(queueName);
+        }
+
+        [Test]
+        public void PutMessage_ValidMessageWithVisibilityTimeout_IsNotVisibleInQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            string message = "Unit Test Message";
+
+            client.PutMessage(queueName, message, visibilityTimeout: 5);
+
+            AssertQueueInvisibleMessage(queueName);
+        }
+
+
+        [Test]
+        [Ignore("Either I messed up the MessageTTL property or it doesn't work as expected")]
+        public void PutMessage_ValidMessageWithTTL_DisappearsAfterTTLExpires()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            string message = "Unit Test Message";
+
+            client.PutMessage(queueName, message, messageTtl: 1);
+
+            AssertQueueHasMessage(queueName);
+            Thread.Sleep(3100); // a little extra to be sure
+            AssertQueueIsEmpty(queueName);
+        }
+
+        [Test]
+        public async Task PutMessageAsync_ValidMessage_AddsMessageToQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            string message = "Unit Test Message";
+
+            await client.PutMessageAsync(queueName, message);
+
+            AssertQueueHasMessage(queueName);
+        }
+
+
+        [Test]
         public void GetMessages_EmptyQueue_ReturnsEmptyCollection()
         {
             IQueueServiceClient client = new QueueServiceClient(_accountSettings);
@@ -596,7 +653,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             // Base 64 encode the expected message since Azure SDK did so when enqueueing it
             Assert.AreEqual(Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(expectedMessage)), message.MessageText);
         }
-        
+
         [Test]
         public void GetMessages_RequestItemWithVisibility_ReturnsItemWithFutureVisibility()
         {
@@ -672,62 +729,6 @@ namespace Basic.Azure.Storage.Tests.Integration
                 var expectedMessage = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(i.ToString()));
                 Assert.IsTrue(response.Messages.Any(m => m.MessageText.Equals(expectedMessage)));
             }
-        }
-
-        [Test]
-        public void PutMessage_ValidMessage_AddsMessageToQueue()
-        {
-            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
-            var queueName = GenerateSampleQueueName();
-            CreateQueue(queueName);
-            string message = "Unit Test Message";
-
-            client.PutMessage(queueName, message);
-
-            AssertQueueHasMessage(queueName);
-        }
-
-        [Test]
-        public void PutMessage_ValidMessageWithVisibilityTimeout_IsNotVisibleInQueue()
-        {
-            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
-            var queueName = GenerateSampleQueueName();
-            CreateQueue(queueName);
-            string message = "Unit Test Message";
-
-            client.PutMessage(queueName, message, visibilityTimeout: 5);
-
-            AssertQueueInvisibleMessage(queueName);
-        }
-
-
-        [Test]
-        [Ignore("Either I messed up the MessageTTL property or it doesn't work as expected")]
-        public void PutMessage_ValidMessageWithTTL_DisappearsAfterTTLExpires()
-        {
-            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
-            var queueName = GenerateSampleQueueName();
-            CreateQueue(queueName);
-            string message = "Unit Test Message";
-
-            client.PutMessage(queueName, message, messageTtl: 1);
-
-            AssertQueueHasMessage(queueName);
-            Thread.Sleep(3100); // a little extra to be sure
-            AssertQueueIsEmpty(queueName);
-        }
-
-        [Test]
-        public async Task PutMessageAsync_ValidMessage_AddsMessageToQueue()
-        {
-            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
-            var queueName = GenerateSampleQueueName();
-            CreateQueue(queueName);
-            string message = "Unit Test Message";
-
-            await client.PutMessageAsync(queueName, message);
-
-            AssertQueueHasMessage(queueName);
         }
 
         [Test]
