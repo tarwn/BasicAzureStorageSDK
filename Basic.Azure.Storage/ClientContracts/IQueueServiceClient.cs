@@ -1,4 +1,5 @@
 ﻿using Basic.Azure.Storage.Communications.Common;
+using Basic.Azure.Storage.Communications.QueueService.MessageOperations;
 using Basic.Azure.Storage.Communications.QueueService.QueueOperations;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,9 @@ namespace Basic.Azure.Storage.ClientContracts
         #endregion
 
         #region Message Operations
+
+        GetMessagesResponse GetMessages(string queueName, int numofMessages = 1, int? visibilityTimeout = null, int? messageTtl = null);
+        Task<GetMessagesResponse> GetMessagesAsync(string queueName, int numofMessages = 1, int? visibilityTimeout = null, int? messageTtl = null);
 
         void PutMessage(string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null);
         Task PutMessageAsync(string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null);

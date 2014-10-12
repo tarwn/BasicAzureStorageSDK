@@ -50,6 +50,8 @@
     <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerResponse.cs" />
     <Compile Include="Communications\Common\AccessPolicy.cs" />
+    <Compile Include="Communications\Common\QueueMessage.cs" />
+    <Compile Include="Communications\Common\SharedAccessPermissions.cs" />
     <Compile Include="Communications\Common\SignedIdentifier.cs" />
     <Compile Include="Communications\Core\AuthenticationMethod.cs" />
     <Compile Include="Communications\Core\ExceptionRetryStrategy.cs" />
@@ -67,10 +69,13 @@
     <Compile Include="Communications\Core\StorageServiceType.cs" />
     <Compile Include="Communications\ErrorResponsePayload.cs" />
     <Compile Include="Communications\Core\Interfaces\IResponsePayload.cs" />
+    <Compile Include="Communications\QueueService\MessageOperations\GetMessagesRequest.cs" />
+    <Compile Include="Communications\QueueService\MessageOperations\GetMessagesResponse.cs" />
+    <Compile Include="Communications\QueueService\QueueOperations\GetQueueACLRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\GetQueueMetadataRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\GetQueueACLResponse.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\SetQueueMetadataRequest.cs" />
-    <Compile Include="Communications\QueueService\QueueOperations\GetQueueACLRequest.cs" />
+    <Compile Include="Communications\QueueService\QueueOperations\SetQueueACLRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\DeleteQueueRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\CreateQueueRequest.cs" />
     <Compile Include="Communications\EmptyResponsePayload.cs" />
@@ -103,8 +108,10 @@
     <Compile Include="Communications\TableService\CreateTableRequest.cs" />
     <Compile Include="Communications\TableService\CreateTableResponse.cs" />
     <Compile Include="Communications\TableService\MetadataPreference.cs" />
+    <Compile Include="Communications\Utility\DateParse.cs" />
     <Compile Include="Communications\Utility\IdentifierValidation.cs" />
     <Compile Include="ClientContracts\IQueueServiceClient.cs" />
+    <Compile Include="Communications\Utility\SharedAccessPermissionParse.cs" />
     <Compile Include="QueueServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StorageAccountSettings.cs" />

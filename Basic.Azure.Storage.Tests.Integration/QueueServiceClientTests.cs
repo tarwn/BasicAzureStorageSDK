@@ -538,6 +538,143 @@ namespace Basic.Azure.Storage.Tests.Integration
         #region Message Operations Tests
 
         [Test]
+        public void GetMessages_EmptyQueue_ReturnsEmptyCollection()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            var response = client.GetMessages(queueName, 32);
+
+            Assert.IsEmpty(response.Messages);
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueNotFoundAzureException))]
+        public void GetMessages_NonExistentQueue_ThrowsQueueDoesNotExistException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            var response = client.GetMessages(queueName, 32);
+
+            // expects exception
+        }
+
+        [Test]
+        public void GetMessages_Request32ItemsFromFullQueue_Returns32Items()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, Enumerable.Range(1, 40).Select(n => n.ToString()).ToList());
+
+            var response = client.GetMessages(queueName, 32);
+
+            Assert.AreEqual(32, response.Messages.Count);
+            for (int i = 1; i <= 32; i++)
+            {
+                // Base 64 encode the expected message since Azure SDK did so when enqueueing it
+                var expectedMessage = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(i.ToString()));
+                Assert.IsTrue(response.Messages.Any(m => m.MessageText.Equals(expectedMessage)));
+            }
+        }
+
+        [Test]
+        public void GetMessages_RequestUndefinedNumberOfItemsFromFullQueue_ReturnsOneItem()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, Enumerable.Range(1, 40).Select(n => n.ToString()).ToList());
+            var expectedMessage = "1";
+
+            var response = client.GetMessages(queueName);
+
+            Assert.AreEqual(1, response.Messages.Count);
+            var message = response.Messages.Single();
+            // Base 64 encode the expected message since Azure SDK did so when enqueueing it
+            Assert.AreEqual(Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(expectedMessage)), message.MessageText);
+        }
+        
+        [Test]
+        public void GetMessages_RequestItemWithVisibility_ReturnsItemWithFutureVisibility()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { "1" });
+
+            var response = client.GetMessages(queueName, 1, 30);
+
+            Assert.AreEqual(1, response.Messages.Count);
+            var message = response.Messages.Single();
+            Assert.Less(message.InsertionTime, DateTime.UtcNow);
+            Assert.Greater(message.ExpirationTime, DateTime.UtcNow);
+            Assert.Greater(message.TimeNextVisible, DateTime.UtcNow);
+        }
+
+        [Test]
+        public void GetMessages_RequestItemFromPopulatedQueue_ReturnsItemWithPopReceiptAndDequeueCount()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { "1" });
+
+            var response = client.GetMessages(queueName, 1, 30);
+
+            Assert.AreEqual(1, response.Messages.Count);
+            var message = response.Messages.Single();
+            Assert.IsNotNullOrEmpty(message.PopReceipt);
+            Assert.Greater(message.DequeueCount, 0);
+        }
+
+
+        [Test]
+        public async Task GetMessagesAsync_EmptyQueue_ReturnsEmptyCollection()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+
+            var response = await client.GetMessagesAsync(queueName, 32);
+
+            Assert.IsEmpty(response.Messages);
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueNotFoundAzureException))]
+        public async Task GetMessagesAsync_NonExistentQueue_ThrowsQueueDoesNotExistException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+
+            var response = await client.GetMessagesAsync(queueName, 32);
+
+            // expects exception
+        }
+
+        [Test]
+        public async Task GetMessagesAsync_Request32ItemsFromFullQueue_Returns32Items()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, Enumerable.Range(1, 40).Select(n => n.ToString()).ToList());
+
+            var response = await client.GetMessagesAsync(queueName, 32);
+
+            Assert.AreEqual(32, response.Messages.Count);
+            for (int i = 1; i <= 32; i++)
+            {
+                // Base 64 encode the expected message since Azure SDK did so when enqueueing it
+                var expectedMessage = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(i.ToString()));
+                Assert.IsTrue(response.Messages.Any(m => m.MessageText.Equals(expectedMessage)));
+            }
+        }
+
+        [Test]
         public void PutMessage_ValidMessage_AddsMessageToQueue()
         {
             IQueueServiceClient client = new QueueServiceClient(_accountSettings);
@@ -701,6 +838,18 @@ namespace Basic.Azure.Storage.Tests.Integration
                     queue.Metadata.Add(key, metadata[key]);
                 }
                 queue.SetMetadata();
+            }
+        }
+
+        private void AddItemsToQueue(string queueName, List<string> messages)
+        {
+            var client = _storageAccount.CreateCloudQueueClient();
+            var queue = client.GetQueueReference(queueName);
+            queue.CreateIfNotExists();
+
+            foreach (var message in messages)
+            {
+                queue.AddMessage(new Microsoft.WindowsAzure.Storage.Queue.CloudQueueMessage(Encoding.ASCII.GetBytes(message)));
             }
         }
 

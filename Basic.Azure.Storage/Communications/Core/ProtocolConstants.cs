@@ -100,11 +100,14 @@ namespace Basic.Azure.Storage.Communications.Core
 
             public const string MessageTTL = "messagettl";
 
+            public const string NumOfMessages = "numofmessages";
+
             public const string ResType = "restype";
 
             public const string Timeout = "timeout";
 
             public const string VisibilityTimeout = "visibilitytimeout";
+
         }
 
         public static class QueryValues

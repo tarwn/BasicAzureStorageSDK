@@ -96,6 +96,19 @@ namespace Basic.Azure.Storage
 
         #region Message Operations
 
+        public GetMessagesResponse GetMessages(string queueName, int numofMessages = 1, int? visibilityTimeout = null, int? messageTtl = null)
+        {
+            var request = new GetMessagesRequest(_account, queueName, numofMessages, visibilityTimeout, messageTtl);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<GetMessagesResponse> GetMessagesAsync(string queueName, int numofMessages = 1, int? visibilityTimeout = null, int? messageTtl = null)
+        {
+            var request = new GetMessagesRequest(_account, queueName, numofMessages, visibilityTimeout, messageTtl);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         public void PutMessage(string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null)
         {
             var request = new PutMessageRequest(_account, queueName, messageData, visibilityTimeout, messageTtl);
@@ -108,7 +121,6 @@ namespace Basic.Azure.Storage
         }
 
         #endregion
-
 
 
 
