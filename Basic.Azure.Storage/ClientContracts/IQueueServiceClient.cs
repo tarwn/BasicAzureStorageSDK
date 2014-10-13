@@ -20,6 +20,9 @@ namespace Basic.Azure.Storage.ClientContracts
         void SetQueueServiceProperties(StorageServiceProperties expectedServiceProperties);
         Task SetQueueServicePropertiesAsync(StorageServiceProperties expectedServiceProperties);
 
+        GetQueueServicePropertiesResponse GetQueueServiceProperties();
+        Task<GetQueueServicePropertiesResponse> GetQueueServicePropertiesAsync();
+
         #endregion
 
         #region Queue Operations
@@ -65,6 +68,10 @@ namespace Basic.Azure.Storage.ClientContracts
         Task<UpdateMessageResponse> UpdateMessageAsync(string queueName, string messageId, string popReceipt, int visibilityTimeout = 30, string messageData = null);
 
         #endregion
+
+
+
+
 
 
 

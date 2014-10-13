@@ -234,6 +234,56 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.AreEqual(45, actualProperties.HourMetrics.RetentionDays);
         }
 
+        [Test]
+        public void GetQueueServiceProperties_EverythingEnabled_RetrievesPropertiesSuccessfully()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            SetServicePropertiesOn();
+
+            var response = client.GetQueueServiceProperties();
+
+            Assert.IsTrue(response.Properties.Logging.Delete);
+            Assert.IsTrue(response.Properties.Logging.Read);
+            Assert.IsTrue(response.Properties.Logging.Write);
+            Assert.IsTrue(response.Properties.Logging.RetentionPolicyEnabled);
+            Assert.IsTrue(response.Properties.Metrics.Enabled);
+            Assert.IsTrue(response.Properties.Metrics.IncludeAPIs);
+            Assert.IsTrue(response.Properties.Metrics.RetentionPolicyEnabled);
+        }
+
+        [Test]
+        public void GetQueueServiceProperties_EverythingDisabled_RetrievesPropertiesSuccessfully()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            SetServicePropertiesOff();
+
+            var response = client.GetQueueServiceProperties();
+
+            Assert.IsFalse(response.Properties.Logging.Delete);
+            Assert.IsFalse(response.Properties.Logging.Read);
+            Assert.IsFalse(response.Properties.Logging.Write);
+            Assert.IsFalse(response.Properties.Logging.RetentionPolicyEnabled);
+            Assert.IsFalse(response.Properties.Metrics.Enabled);
+            Assert.IsFalse(response.Properties.Metrics.IncludeAPIs);
+            Assert.IsFalse(response.Properties.Metrics.RetentionPolicyEnabled);
+        }
+
+        [Test]
+        public async Task GetQueueServicePropertiesAsync_EverythingEnabled_RetrievesPropertiesSuccessfully()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            SetServicePropertiesOn();
+
+            var response = await client.GetQueueServicePropertiesAsync();
+
+            Assert.IsTrue(response.Properties.Logging.Delete);
+            Assert.IsTrue(response.Properties.Logging.Read);
+            Assert.IsTrue(response.Properties.Logging.Write);
+            Assert.IsTrue(response.Properties.Logging.RetentionPolicyEnabled);
+            Assert.IsTrue(response.Properties.Metrics.Enabled);
+            Assert.IsTrue(response.Properties.Metrics.IncludeAPIs);
+            Assert.IsTrue(response.Properties.Metrics.RetentionPolicyEnabled);
+        }
 
         #endregion
 
@@ -1448,7 +1498,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             var cloudClient = _storageAccount.CreateCloudQueueClient();
             var actualProperties = cloudClient.GetServiceProperties();
             actualProperties.Logging.LoggingOperations = Microsoft.WindowsAzure.Storage.Shared.Protocol.LoggingOperations.All;
+            actualProperties.Logging.RetentionDays = 7;
             actualProperties.HourMetrics.MetricsLevel = Microsoft.WindowsAzure.Storage.Shared.Protocol.MetricsLevel.ServiceAndApi;
+            actualProperties.HourMetrics.RetentionDays = 7;
             cloudClient.SetServiceProperties(actualProperties);
         }
 
@@ -1457,7 +1509,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             var cloudClient = _storageAccount.CreateCloudQueueClient();
             var actualProperties = cloudClient.GetServiceProperties();
             actualProperties.Logging.LoggingOperations = Microsoft.WindowsAzure.Storage.Shared.Protocol.LoggingOperations.None;
+            actualProperties.Logging.RetentionDays = null;
             actualProperties.HourMetrics.MetricsLevel = Microsoft.WindowsAzure.Storage.Shared.Protocol.MetricsLevel.None;
+            actualProperties.HourMetrics.RetentionDays = null;
             cloudClient.SetServiceProperties(actualProperties);
         }
 

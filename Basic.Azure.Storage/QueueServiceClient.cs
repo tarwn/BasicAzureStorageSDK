@@ -47,6 +47,19 @@ namespace Basic.Azure.Storage
             await request.ExecuteAsync();
         }
 
+        public GetQueueServicePropertiesResponse GetQueueServiceProperties()
+        {
+            var request = new GetQueueServicePropertiesRequest(_account);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<GetQueueServicePropertiesResponse> GetQueueServicePropertiesAsync()
+        {
+            var request = new GetQueueServicePropertiesRequest(_account);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         #endregion
 
         #region Queue Operations

@@ -75,7 +75,9 @@
     <Compile Include="Communications\ErrorResponsePayload.cs" />
     <Compile Include="Communications\Core\Interfaces\IResponsePayload.cs" />
     <Compile Include="Communications\QueueService\AccountOperations\ListQueuesRequest.cs" />
+    <Compile Include="Communications\QueueService\AccountOperations\GetQueueServicePropertiesResponse.cs" />
     <Compile Include="Communications\QueueService\AccountOperations\ListQueuesResponse.cs" />
+    <Compile Include="Communications\QueueService\AccountOperations\GetQueueServicePropertiesRequest.cs" />
     <Compile Include="Communications\QueueService\AccountOperations\SetQueueServicePropertiesRequest.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\ClearMessageRequest.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\UpdateMessageResponse.cs" />
