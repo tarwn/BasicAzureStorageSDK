@@ -75,7 +75,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.IsTrue(response.Queues.Count(q => q.Name.StartsWith("1")) >= 2);
             Assert.AreEqual(0, response.Queues.Count(q => !q.Name.StartsWith("1")));
         }
-        
+
         [Test]
         public void ListQueues_MaxResultsSmallerThanQueueList_ReturnsOnlyThatManyResults()
         {
@@ -92,7 +92,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             Assert.AreEqual(3, response.Queues.Count);
         }
-        
+
         [Test]
         public void ListQueues_WithContinuationMarker_ReturnsRemainderOfList()
         {
@@ -142,6 +142,98 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             Assert.IsTrue(response.Queues.Any(q => q.Name == queueName));
         }
+
+        [Test]
+        public void SetQueueServiceProperties_TurnOffLoggingAndMetrics_SuccessfullyTurnsOffOptionsOnService()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var expectedServiceProperties = new StorageServiceProperties();
+            expectedServiceProperties.Logging = new StorageServiceLoggingProperties()
+            {
+                Delete = false,
+                Read = false,
+                Write = false,
+                RetentionPolicyEnabled = false
+            };
+            expectedServiceProperties.Metrics = new StorageServiceMetricsProperties()
+            {
+                Enabled = false,
+                RetentionPolicyEnabled = false
+            };
+            SetServicePropertiesOn();
+
+            client.SetQueueServiceProperties(expectedServiceProperties);
+
+            var cloudClient = _storageAccount.CreateCloudQueueClient();
+            var actualProperties = cloudClient.GetServiceProperties();
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Shared.Protocol.LoggingOperations.None, actualProperties.Logging.LoggingOperations);
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Shared.Protocol.MetricsLevel.None, actualProperties.HourMetrics.MetricsLevel);
+        }
+
+        [Test]
+        public void SetQueueServiceProperties_TurnOnLoggingAndMetrics_SuccessfullyTurnsOnOptionsOnService()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var expectedServiceProperties = new StorageServiceProperties();
+            expectedServiceProperties.Logging = new StorageServiceLoggingProperties()
+            {
+                Delete = true,
+                Read = true,
+                Write = true,
+                RetentionPolicyEnabled = true,
+                RetentionPolicyNumberOfDays = 123
+            };
+            expectedServiceProperties.Metrics = new StorageServiceMetricsProperties()
+            {
+                Enabled = true,
+                IncludeAPIs = true,
+                RetentionPolicyEnabled = true,
+                RetentionPolicyNumberOfDays = 45
+            };
+            SetServicePropertiesOff();
+
+            client.SetQueueServiceProperties(expectedServiceProperties);
+
+            var cloudClient = _storageAccount.CreateCloudQueueClient();
+            var actualProperties = cloudClient.GetServiceProperties();
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Shared.Protocol.LoggingOperations.All, actualProperties.Logging.LoggingOperations);
+            Assert.AreEqual(123, actualProperties.Logging.RetentionDays);
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Shared.Protocol.MetricsLevel.ServiceAndApi, actualProperties.HourMetrics.MetricsLevel);
+            Assert.AreEqual(45, actualProperties.HourMetrics.RetentionDays);
+        }
+
+        [Test]
+        public async Task SetQueueServicePropertiesAsync_TurnOnLoggingAndMetrics_SuccessfullyTurnsOnOptionsOnService()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var expectedServiceProperties = new StorageServiceProperties();
+            expectedServiceProperties.Logging = new StorageServiceLoggingProperties()
+            {
+                Delete = true,
+                Read = true,
+                Write = true,
+                RetentionPolicyEnabled = true,
+                RetentionPolicyNumberOfDays = 123
+            };
+            expectedServiceProperties.Metrics = new StorageServiceMetricsProperties()
+            {
+                Enabled = true,
+                IncludeAPIs = true,
+                RetentionPolicyEnabled = true,
+                RetentionPolicyNumberOfDays = 45
+            };
+            SetServicePropertiesOff();
+
+            await client.SetQueueServicePropertiesAsync(expectedServiceProperties);
+
+            var cloudClient = _storageAccount.CreateCloudQueueClient();
+            var actualProperties = cloudClient.GetServiceProperties();
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Shared.Protocol.LoggingOperations.All, actualProperties.Logging.LoggingOperations);
+            Assert.AreEqual(123, actualProperties.Logging.RetentionDays);
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Shared.Protocol.MetricsLevel.ServiceAndApi, actualProperties.HourMetrics.MetricsLevel);
+            Assert.AreEqual(45, actualProperties.HourMetrics.RetentionDays);
+        }
+
 
         #endregion
 
@@ -511,14 +603,15 @@ namespace Basic.Azure.Storage.Tests.Integration
             var expectedIdentifier = new SignedIdentifier()
             {
                 Id = "abc-123",
-                AccessPolicy = new AccessPolicy() { 
+                AccessPolicy = new AccessPolicy()
+                {
                     StartTime = expectedStartTime,
                     Expiry = expectedStartTime.AddHours(1),
                     Permission = SharedAccessPermissions.Add
                 }
             };
 
-            client.SetQueueACL(queueName, new List<SignedIdentifier>(){ expectedIdentifier });
+            client.SetQueueACL(queueName, new List<SignedIdentifier>() { expectedIdentifier });
 
             var actual = GetQueuePermissions(queueName);
             Assert.AreEqual(1, actual.SharedAccessPolicies.Count);
@@ -1342,12 +1435,30 @@ namespace Basic.Azure.Storage.Tests.Integration
             queue.SetPermissions(permissions);
         }
 
-        private QueuePermissions GetQueuePermissions(string queueName) 
+        private QueuePermissions GetQueuePermissions(string queueName)
         {
             var client = _storageAccount.CreateCloudQueueClient();
             var queue = client.GetQueueReference(queueName);
             var permissions = queue.GetPermissions();
             return permissions;
+        }
+
+        private void SetServicePropertiesOn()
+        {
+            var cloudClient = _storageAccount.CreateCloudQueueClient();
+            var actualProperties = cloudClient.GetServiceProperties();
+            actualProperties.Logging.LoggingOperations = Microsoft.WindowsAzure.Storage.Shared.Protocol.LoggingOperations.All;
+            actualProperties.HourMetrics.MetricsLevel = Microsoft.WindowsAzure.Storage.Shared.Protocol.MetricsLevel.ServiceAndApi;
+            cloudClient.SetServiceProperties(actualProperties);
+        }
+
+        private void SetServicePropertiesOff()
+        {
+            var cloudClient = _storageAccount.CreateCloudQueueClient();
+            var actualProperties = cloudClient.GetServiceProperties();
+            actualProperties.Logging.LoggingOperations = Microsoft.WindowsAzure.Storage.Shared.Protocol.LoggingOperations.None;
+            actualProperties.HourMetrics.MetricsLevel = Microsoft.WindowsAzure.Storage.Shared.Protocol.MetricsLevel.None;
+            cloudClient.SetServiceProperties(actualProperties);
         }
 
         #endregion
@@ -1357,6 +1468,6 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
 
-        
+
     }
 }

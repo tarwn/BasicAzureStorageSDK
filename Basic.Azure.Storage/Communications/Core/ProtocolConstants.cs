@@ -132,11 +132,17 @@ namespace Basic.Azure.Storage.Communications.Core
 
             public const string Metadata = "metadata";
 
+
+            public static class Comp
+            {
+                public const string Properties = "properties";
+            }
+
             public static class ResType
             {
-
                 public const string Container = "container";
 
+                public const string Service = "service";
             }
 
         }

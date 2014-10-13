@@ -17,6 +17,8 @@ namespace Basic.Azure.Storage.ClientContracts
         ListQueuesResponse ListQueues(string prefix = "", int maxResults = 5000, string marker = null, bool includeMetadata = false);
         Task<ListQueuesResponse> ListQueuesAsync(string prefix = "", int maxResults = 5000, string marker = null, bool includeMetadata = false);
 
+        void SetQueueServiceProperties(StorageServiceProperties expectedServiceProperties);
+        Task SetQueueServicePropertiesAsync(StorageServiceProperties expectedServiceProperties);
 
         #endregion
 
@@ -65,5 +67,7 @@ namespace Basic.Azure.Storage.ClientContracts
         #endregion
 
 
+
+        
     }
 }

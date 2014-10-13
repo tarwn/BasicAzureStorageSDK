@@ -54,6 +54,10 @@
     <Compile Include="Communications\Common\QueueMessage.cs" />
     <Compile Include="Communications\Common\SharedAccessPermissions.cs" />
     <Compile Include="Communications\Common\SignedIdentifier.cs" />
+    <Compile Include="Communications\Common\StorageAnalyticsVersionNumber.cs" />
+    <Compile Include="Communications\Common\StorageServiceLoggingProperties.cs" />
+    <Compile Include="Communications\Common\StorageServiceMetricsProperties.cs" />
+    <Compile Include="Communications\Common\StorageServiceProperties.cs" />
     <Compile Include="Communications\Core\AuthenticationMethod.cs" />
     <Compile Include="Communications\Core\ExceptionRetryStrategy.cs" />
     <Compile Include="Communications\Core\Interfaces\IReceiveAdditionalHeadersWithResponse.cs" />
@@ -72,6 +76,7 @@
     <Compile Include="Communications\Core\Interfaces\IResponsePayload.cs" />
     <Compile Include="Communications\QueueService\AccountOperations\ListQueuesRequest.cs" />
     <Compile Include="Communications\QueueService\AccountOperations\ListQueuesResponse.cs" />
+    <Compile Include="Communications\QueueService\AccountOperations\SetQueueServicePropertiesRequest.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\ClearMessageRequest.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\UpdateMessageResponse.cs" />
     <Compile Include="Communications\QueueService\MessageOperations\PeekMessagesResponse.cs" />
