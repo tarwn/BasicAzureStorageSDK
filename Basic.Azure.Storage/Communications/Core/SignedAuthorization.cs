@@ -13,7 +13,7 @@ namespace Basic.Azure.Storage.Communications.Core
         public static string GenerateSharedKeyLiteSignatureStringForTableService(WebRequest request, Dictionary<string, string> queryStringParameters, StorageAccountSettings settings)
         {
             var queryStrings = queryStringParameters.OrderBy(kvp => kvp.Key)
-                                                    .Select(kvp => kvp.Key + ":" + kvp.Value);
+                                                    .Select(kvp => WebUtility.UrlDecode(kvp.Key) + ":" + WebUtility.UrlDecode(kvp.Value));
 
             string canonicalizedResource = "/" + settings.AccountName +
                                             String.Join("", request.RequestUri.Segments);
@@ -33,7 +33,7 @@ namespace Basic.Azure.Storage.Communications.Core
         {
 
             var queryStrings = queryStringParameters.OrderBy(kvp => kvp.Key)
-                                                    .Select(kvp => kvp.Key + ":" + kvp.Value);
+                                                    .Select(kvp => WebUtility.UrlDecode(kvp.Key) + ":" + WebUtility.UrlDecode(kvp.Value));
 
             string canonicalizedResource = "/" + settings.AccountName +
                                             String.Join("", request.RequestUri.Segments);
