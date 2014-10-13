@@ -168,3 +168,154 @@ Interfaces
 
 The interfaces (/ClientContracts/*) are still in progress. The QueueService contract has been added as I add more
 methods to the QueueServiceClient, the other two will be added when I return to add more calls to them.
+
+
+Implemented Methods
+====================
+
+This section will list all of the available methods from the documentation, as of 2014-10-13, and whether they have 
+been implemented yet.
+
+- Queue is done for 2012-02-12
+- Table is barely started
+- Blob is barely started
+- File is not present at all
+
+Queue Service - QueueServiceClient: IQueueServiceClient
+-----------------------------------------------------------
+
+Account Operations
+
+- List Queues - Complete - does not automatically download with continuation markers
+- Set Queue Service Properties - Complete - does not include CORS additions from 2013
+- Get Queue Servuce Properties - Complete - does not include CORS additions from 2013
+- Preflight Queue Request - No
+- Get Queue Service States - No
+
+Queue Operations
+
+- Create Queue - Yes
+- Delete Queue - Yes
+- Get Queue Metadata - Yes
+- Set Queue Metadata - Yes
+- Get Queue ACL - Yes
+- Set Queue ACL - Yes
+
+Message Operations
+
+- Put Message - Yes
+- Get Messages - Yes
+- Peek Messages - Yes
+- Delete Message - Yes
+- Clear Messages - Yes - Does not auto-retry the 500 Operation Timeout yet
+- Update Message - Yes
+
+Table Service - TableServiceClient: ITableServiceClient
+-----------------------------------------------------------
+
+Account Operations
+
+- Set Table Service Properties - No
+- Get Table Service Properties - No
+- Preflight Table Request - No
+- Get Table Service Stats - No
+
+Table Operations
+
+- Query Tables - No
+- Create Table - Yes
+- Delete Table - No
+- Get Table ACL - No
+- Set Table ACL - No
+
+Entity Operations
+
+- Query Entities - No
+- Insert Entity - No
+- Update Entity - No
+- Merge Entity - No
+- Delete Entity - No
+- Insert or Replace Entity - No
+- Insert or Merge Entity - No
+
+Blob Service - BlobServiceClient: IBlobServiceClient
+-----------------------------------------------------------
+
+Account Operations
+
+- List Containers - No
+- Set Blob Service Properties - No
+- Get Blob Service Properties - No
+- Preflight Blob Request - No
+- Get Blob Service States - No
+
+Container Operations
+
+- Create Container - Yes
+- Get Container Properties - No
+- Get Container Metadata - No
+- Set Container Metadata - No
+- Get Container ACL - No
+- Set Container ACL - No
+- Delete Container - No
+- Lease Container - No
+- List Blobs - No
+
+Blob Operations
+
+- Put Blob - Yes - two flavors (see notes above): PutBlockBlob and PutPageBlob
+- Get Blob - No
+- Get Blob Properties - No
+- Set Blob Properties - No
+- Get Blob Metadata - No
+- Set Blob Metadata - No
+- Lease Blob - No
+- Snapshot Blob - No
+- Copy Blob - No
+- Abort Copy Blob - No
+- Delete Blob - No
+
+Block Blob Operations
+
+- Put Block - No
+- Put Block List - No
+- Get Block List - No
+
+Page Blob Operations
+
+- Put Page - No
+- Get Page Ranges - No
+
+File Service - N/A
+-----------------------------------------------------------
+
+Account Operations
+
+- List Shares - No
+
+Share Operations
+
+- Create Share - No
+- Get Share Properties - No
+- Get Share Metadata - No
+- Set Share Metadata - No
+- Delete Share - No
+
+Directory Operations
+
+- List Directories and Files - No
+- Create Directory - No
+- Get Directory Properties - No
+- Delete Directory - No
+
+File Operations
+
+- Create File - No
+- Get File - No
+- Get File Properties - No
+- Set File Properties - No
+- Put Range - No
+- List Ranges - No
+- Get File Metadata - No
+- Set File Metadata - No
+- Delete File - No
