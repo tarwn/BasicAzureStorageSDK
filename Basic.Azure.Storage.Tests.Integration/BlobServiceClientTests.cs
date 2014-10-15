@@ -106,7 +106,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        public void CreateContainer_AlreadyExists_ReturnsContainerCreationResponse()
+        public void CreateContainer_ValidArguments_ReturnsContainerCreationResponse()
         {
             var containerName = GenerateSampleContainerName();
             IBlobStorageClient client = new BlobServiceClient(_accountSettings);
@@ -118,6 +118,32 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.IsFalse(string.IsNullOrWhiteSpace(response.ETag), "Response ETag is not set");
 
         }
+
+
+        [Test]
+        public async Task CreateContainerAsync_ValidArguments_CreatesContainerWithSpecificName()
+        {
+            var containerName = GenerateSampleContainerName();
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+
+            await client.CreateContainerAsync(containerName, ContainerAccessType.None);
+
+            AssertContainerExists(containerName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ContainerAlreadyExistsAzureException))]
+        public async Task CreateContainerAsync_AlreadyExists_ThrowsContainerAlreadyExistsException()
+        {
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+
+            await client.CreateContainerAsync(containerName, ContainerAccessType.None);
+
+            // expects exception
+        }
+
 
         #endregion
 
@@ -270,6 +296,38 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.IsTrue(blob.Metadata.Any(m => m.Key == "secondValue" && m.Value == "2"), "Second value is missing or incorrect");
         }
 
+
+        [Test]
+        public async Task PutBlockBloAsyncb_RequiredArgsOnly_UploadsBlobSuccessfully()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+
+            await client.PutBlockBlobAsync(containerName, blobName, data);
+
+            AssertBlobExists(containerName, blobName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(Md5MismatchAzureException))]
+        public async Task PutBlockBlobAsync_WithIncorrectContentMD5_ThrowsMD5MismatchAzureException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            var someOtherData = UTF8Encoding.UTF8.GetBytes("different content");
+            var incorrectContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(someOtherData));
+
+            await client.PutBlockBlobAsync(containerName, blobName, data, contentMD5: incorrectContentMD5);
+
+            // expects exception
+        }
+
         [Test]
         public void PutPageBlob_WithRequiredArgs_CreatesNewPageBlob()
         {
@@ -386,6 +444,22 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blob = AssertBlobExists(containerName, blobName);
             Assert.AreEqual(expectedSequenceNumber, blob.Properties.PageBlobSequenceNumber);
         }
+
+        [Test]
+        public async Task PutPageBlobAsync_WithRequiredArgs_CreatesNewPageBlob()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+            int expectedSize = 512;
+
+            await client.PutPageBlobAsync(containerName, blobName, expectedSize);
+
+            var blob = AssertBlobExists(containerName, blobName);
+            Assert.AreEqual(expectedSize, blob.Properties.Length);
+        }
+
 
         #endregion
 

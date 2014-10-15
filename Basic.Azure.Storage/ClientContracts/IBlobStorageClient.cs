@@ -18,6 +18,7 @@ namespace Basic.Azure.Storage.ClientContracts
         #region Container Operations
 
         CreateContainerResponse CreateContainer(string containerName, ContainerAccessType containerAccessType);
+        Task<CreateContainerResponse> CreateContainerAsync(string containerName, ContainerAccessType containerAccessType);
 
         #endregion
 
@@ -26,10 +27,16 @@ namespace Basic.Azure.Storage.ClientContracts
         PutBlobResponse PutBlockBlob(string containerName, string blobName, byte[] data,
            string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
            string cacheControl = null, Dictionary<string, string> metadata = null);
+        Task<PutBlobResponse> PutBlockBlobAsync(string containerName, string blobName, byte[] data,
+           string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
+           string cacheControl = null, Dictionary<string, string> metadata = null);
 
         PutBlobResponse PutPageBlob(string containerName, string blobName, int contentLength,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0);
+        Task<PutBlobResponse> PutPageBlobAsync(string containerName, string blobName, int contentLength,
+                    string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
+                    string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0);
 
         #endregion
     }
