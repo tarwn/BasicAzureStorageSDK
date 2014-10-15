@@ -1,4 +1,5 @@
-﻿using Basic.Azure.Storage.Communications.BlobService;
+﻿using Basic.Azure.Storage.ClientContracts;
+using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.ServiceExceptions;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -51,7 +52,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         public void CreateContainer_ValidArguments_CreatesContainerWithSpecificName()
         {
             var containerName = GenerateSampleContainerName();
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
 
             client.CreateContainer(containerName, ContainerAccessType.None);
 
@@ -62,7 +63,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         public void CreateContainer_ValidArgumentsWithPublicContainerAccess_CreatesContainerWithContainerAccess()
         {
             var containerName = GenerateSampleContainerName();
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
 
             client.CreateContainer(containerName, ContainerAccessType.PublicContainer);
 
@@ -73,7 +74,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         public void CreateContainer_ValidArgumentsWithPublicBlobAccess_CreatesContainerWithBlobAccess()
         {
             var containerName = GenerateSampleContainerName();
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
 
             client.CreateContainer(containerName, ContainerAccessType.PublicBlob);
 
@@ -84,7 +85,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         public void CreateContainer_ValidArgumentsWithNoPublicAccess_CreatesContainerWithNoPublicAccess()
         {
             var containerName = GenerateSampleContainerName();
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
 
             client.CreateContainer(containerName, ContainerAccessType.None);
 
@@ -97,7 +98,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         {
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
 
             client.CreateContainer(containerName, ContainerAccessType.None);
 
@@ -108,7 +109,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         public void CreateContainer_AlreadyExists_ReturnsContainerCreationResponse()
         {
             var containerName = GenerateSampleContainerName();
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
 
             var response = client.CreateContainer(containerName, ContainerAccessType.None);
 

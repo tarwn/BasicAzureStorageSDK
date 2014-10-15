@@ -1,4 +1,5 @@
-﻿using Basic.Azure.Storage.Communications.BlobService;
+﻿using Basic.Azure.Storage.ClientContracts;
+using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Basic.Azure.Storage.Communications.BlobService.ContainerOperations;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage
 {
-    public class BlobServiceClient
+    public class BlobServiceClient : IBlobStorageClient
     {
         private StorageAccountSettings _account;
 
