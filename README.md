@@ -5,7 +5,7 @@ This is a .Net SDK designed to closely match the Azure Storage API. The operatio
 it supports only features that can be tested locally against the storage emulator, and provides interfaces and
 no internal methods.
 
-Because "use a real storage account" is not good advice.
+Because "use a real storage account" is not good advice and "400 Bad Request" is not a suitable error message.
 
 Current Supported API Version: 2012-02-12 - This will be caught up after I have finished the current round of
 additions.
