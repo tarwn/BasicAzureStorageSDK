@@ -48,9 +48,14 @@
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobType.cs" />
     <Compile Include="Communications\BlobService\ContainerAccessType.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\GetContainerPropertiesRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerRequest.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\GetContainerPropertiesResponse.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerResponse.cs" />
     <Compile Include="Communications\Common\AccessPolicy.cs" />
+    <Compile Include="Communications\Common\LeaseDuration.cs" />
+    <Compile Include="Communications\Common\LeaseState.cs" />
+    <Compile Include="Communications\Common\LeaseStatus.cs" />
     <Compile Include="Communications\Common\Queue.cs" />
     <Compile Include="Communications\Common\QueueMessage.cs" />
     <Compile Include="Communications\Common\SharedAccessPermissions.cs" />

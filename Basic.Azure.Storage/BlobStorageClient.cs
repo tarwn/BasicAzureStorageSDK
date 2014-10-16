@@ -39,6 +39,19 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
+        public GetContainerPropertiesResponse GetContainerProperties(string containerName)
+        {
+            var request = new GetContainerPropertiesRequest(_account, containerName);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<GetContainerPropertiesResponse> GetContainerPropertiesAsync(string containerName)
+        {
+            var request = new GetContainerPropertiesRequest(_account, containerName);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         #endregion
 
         #region Blob Operations

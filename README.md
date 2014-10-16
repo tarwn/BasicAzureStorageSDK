@@ -252,7 +252,7 @@ Account Operations
 Container Operations
 
 - Create Container - Yes
-- Get Container Properties - No
+- Get Container Properties - Yes
 - Get Container Metadata - No
 - Set Container Metadata - No
 - Get Container ACL - No

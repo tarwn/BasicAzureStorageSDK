@@ -38,6 +38,12 @@ namespace Basic.Azure.Storage.Communications.Core
 
             public const string LastModified = "Last-Modified";
 
+            public const string LeaseDuration = "x-ms-lease-duration";
+
+            public const string LeaseState = "x-ms-lease-state";
+
+            public const string LeaseStatus = "x-ms-lease-status";
+
             public const string MetaDataPrefix = "x-ms-meta-";
 
             public const string OperationDate = "Date";
@@ -75,6 +81,26 @@ namespace Basic.Azure.Storage.Communications.Core
 
                 public const string Page = "PageBlob";
 
+            }
+
+            public static class LeaseDuration
+            {
+                public const string Fixed = "fixed";
+                public const string Infinite = "infinite";
+            }
+            public static class LeaseState
+            {
+                public const string Available = "available";
+                public const string Leased = "leased";
+                public const string Expired = "expired";
+                public const string Breaking = "breaking";
+                public const string Broken = "broken";
+            }
+
+            public static class LeaseStatus
+            {
+                public const string Locked = "locked";
+                public const string Unlocked = "unlocked";
             }
 
             public static class TableMetadataPreference

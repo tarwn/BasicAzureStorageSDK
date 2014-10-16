@@ -20,6 +20,9 @@ namespace Basic.Azure.Storage.ClientContracts
         CreateContainerResponse CreateContainer(string containerName, ContainerAccessType containerAccessType);
         Task<CreateContainerResponse> CreateContainerAsync(string containerName, ContainerAccessType containerAccessType);
 
+        GetContainerPropertiesResponse GetContainerProperties(string containerName);
+        Task<GetContainerPropertiesResponse> GetContainerPropertiesAsync(string containerName);
+
         #endregion
 
         #region Blob Operations

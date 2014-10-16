@@ -1,8 +1,8 @@
 ﻿using Basic.Azure.Storage.ClientContracts;
 using Basic.Azure.Storage.Communications.BlobService;
+using Basic.Azure.Storage.Communications.Common;
 using Basic.Azure.Storage.Communications.ServiceExceptions;
 using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -67,7 +67,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.CreateContainer(containerName, ContainerAccessType.PublicContainer);
 
-            AssertContainerAccess(containerName, BlobContainerPublicAccessType.Container);
+            AssertContainerAccess(containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Container);
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.CreateContainer(containerName, ContainerAccessType.PublicBlob);
 
-            AssertContainerAccess(containerName, BlobContainerPublicAccessType.Blob);
+            AssertContainerAccess(containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Blob);
         }
 
         [Test]
@@ -89,7 +89,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.CreateContainer(containerName, ContainerAccessType.None);
 
-            AssertContainerAccess(containerName, BlobContainerPublicAccessType.Off);
+            AssertContainerAccess(containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Off);
         }
 
         [Test]
@@ -144,6 +144,145 @@ namespace Basic.Azure.Storage.Tests.Integration
             // expects exception
         }
 
+        [Test]
+        public void GetContainerProperties_ValidContainer_ReturnsProperties()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+
+            var response = client.GetContainerProperties(containerName);
+
+            Assert.IsNotNull(response.Metadata);
+            Assert.IsNotNullOrEmpty(response.ETag);
+            Assert.AreEqual(LeaseStatus.Unlocked, response.LeaseStatus);
+            Assert.AreEqual(LeaseState.Available, response.LeaseState);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ContainerNotFoundAzureException))]
+        public void GetContainerProperties_NonexistentContainer_ThrowsContainerNotFoundException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+
+            var response = client.GetContainerProperties(containerName);
+
+            // expects exception
+        }
+
+        [Test]
+        public void GetContainerProperties_ContainerWithMetadata_ReturnsMetadata()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName, new Dictionary<string, string>() { 
+                { "a", "1" },
+                { "b", "2" }
+            });
+
+            var response = client.GetContainerProperties(containerName);
+
+            Assert.IsNotNull(response.Metadata);
+            Assert.AreEqual(2, response.Metadata.Count);
+            Assert.IsTrue(response.Metadata.Any(kvp => kvp.Key == "a" && kvp.Value == "1"));
+            Assert.IsTrue(response.Metadata.Any(kvp => kvp.Key == "b" && kvp.Value == "2"));
+        }
+
+        [Test]
+        public void GetContainerProperties_FixedLeaseContainer_ReturnsLeaseDetails()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            string lease = LeaseContainer(containerName, TimeSpan.FromSeconds(30), null);
+            try
+            {
+
+                var response = client.GetContainerProperties(containerName);
+
+                Assert.AreEqual(LeaseStatus.Locked, response.LeaseStatus);
+                Assert.AreEqual(LeaseDuration.Fixed, response.LeaseDuration);
+                Assert.AreEqual(LeaseState.Leased, response.LeaseState);
+            }
+            finally
+            {
+                ReleaseContainerLease(containerName, lease);
+            }
+        }
+
+        [Test]
+        public void GetContainerProperties_InfiniteLeaseContainer_ReturnsLeaseDetails()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            string lease = LeaseContainer(containerName, null, null);
+            try
+            {
+
+                var response = client.GetContainerProperties(containerName);
+
+                Assert.AreEqual(LeaseStatus.Locked, response.LeaseStatus);
+                Assert.AreEqual(LeaseDuration.Infinite, response.LeaseDuration);
+                Assert.AreEqual(LeaseState.Leased, response.LeaseState);
+            }
+            finally
+            {
+                ReleaseContainerLease(containerName, lease);
+            }
+        }
+
+
+        [Test]
+        public void GetContainerProperties_BreakingLeaseContainer_ReturnsLeaseDetails()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            string lease = LeaseContainer(containerName, TimeSpan.FromSeconds(30), null);
+            BreakContainerLease(containerName, lease);
+            try
+            {
+
+                var response = client.GetContainerProperties(containerName);
+
+                Assert.AreEqual(LeaseStatus.Locked, response.LeaseStatus);
+                Assert.AreEqual(LeaseState.Breaking, response.LeaseState);
+            }
+            finally
+            {
+                ReleaseContainerLease(containerName, lease);
+            }
+        }
+
+
+        [Test]
+        public async Task GetContainerPropertiesAsync_ValidContainer_ReturnsProperties()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+
+            var response = await client.GetContainerPropertiesAsync(containerName);
+
+            Assert.IsNotNull(response.Metadata);
+            Assert.IsNotNullOrEmpty(response.ETag);
+            Assert.AreEqual(LeaseStatus.Unlocked, response.LeaseStatus);
+            Assert.AreEqual(LeaseState.Available, response.LeaseState);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ContainerNotFoundAzureException))]
+        public async Task GetContainerPropertiesAsync_NonexistentContainer_ThrowsContainerNotFoundException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+
+            var response = await client.GetContainerPropertiesAsync(containerName);
+
+            // expects exception
+        }
 
         #endregion
 
@@ -473,7 +612,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 Assert.Fail(String.Format("The container '{0}' does not exist", containerName));
         }
 
-        private void AssertContainerAccess(string containerName, BlobContainerPublicAccessType containerAccessType)
+        private void AssertContainerAccess(string containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType containerAccessType)
         {
             var client = _storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
@@ -484,7 +623,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.AreEqual(containerAccessType, permissions.PublicAccess, String.Format("Container access was expected to be {0}, but it is actually {1}", containerAccessType, permissions.PublicAccess));
         }
 
-        private ICloudBlob AssertBlobExists(string containerName, string blobName)
+        private Microsoft.WindowsAzure.Storage.Blob.ICloudBlob AssertBlobExists(string containerName, string blobName)
         {
             var client = _storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
@@ -502,11 +641,43 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #region Setup Mechanics
 
-        private void CreateContainer(string containerName)
+        private void CreateContainer(string containerName, Dictionary<string,string> metadata = null)
         {
             var client = _storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
+
             container.Create();
+
+            if(metadata != null){
+                // why ???
+                foreach (var key in metadata.Keys)
+                {
+                    container.Metadata.Add(key, metadata[key]);
+                }
+                container.SetMetadata();
+            }
+
+        }
+
+        private string LeaseContainer(string containerName, TimeSpan? leaseTime, string leaseId)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            return container.AcquireLease(leaseTime, leaseId);
+        }
+
+        private void ReleaseContainerLease(string containerName, string lease)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            container.ReleaseLease(new AccessCondition() { LeaseId = lease });
+        }
+
+        private void BreakContainerLease(string containerName, string lease)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            container.BreakLease(TimeSpan.FromSeconds(1), new AccessCondition() { LeaseId = lease });
         }
 
         private void CreateBlob(string containerName, string blobName)
