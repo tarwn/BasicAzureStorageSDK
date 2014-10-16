@@ -284,6 +284,79 @@ namespace Basic.Azure.Storage.Tests.Integration
             // expects exception
         }
 
+        [Test]
+        public void GetContainerMetadata_ValidContainer_ReturnsMetadata()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName, new Dictionary<string, string>() { 
+                { "a", "1" },
+                { "b", "2" }
+            });
+
+            var response = client.GetContainerMetadata(containerName);
+
+            Assert.IsNotNull(response.Metadata);
+            Assert.AreEqual(2, response.Metadata.Count);
+            Assert.IsTrue(response.Metadata.Any(kvp => kvp.Key == "a" && kvp.Value == "1"));
+            Assert.IsTrue(response.Metadata.Any(kvp => kvp.Key == "b" && kvp.Value == "2"));
+        }
+
+
+        [Test]
+        public void GetContainerMetadata_ValidContainerWithNoMetadata_ReturnsEmptyMetadata()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName, new Dictionary<string, string>() { });
+
+            var response = client.GetContainerMetadata(containerName);
+
+            Assert.IsNotNull(response.Metadata);
+            Assert.AreEqual(0, response.Metadata.Count);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ContainerNotFoundAzureException))]
+        public void GetContainerMetadata_NonexistentContainer_ThrowsContainerNotFoundException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+
+            client.GetContainerMetadata(containerName);
+
+            //expects exception
+        }
+
+        [Test]
+        public async Task GetContainerMetadataAsync_ValidContainer_ReturnsMetadata()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName, new Dictionary<string, string>() { 
+                { "a", "1" },
+                { "b", "2" }
+            });
+
+            var response = await client.GetContainerMetadataAsync(containerName);
+
+            Assert.IsNotNull(response.Metadata);
+            Assert.AreEqual(2, response.Metadata.Count);
+            Assert.IsTrue(response.Metadata.Any(kvp => kvp.Key == "a" && kvp.Value == "1"));
+            Assert.IsTrue(response.Metadata.Any(kvp => kvp.Key == "b" && kvp.Value == "2"));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ContainerNotFoundAzureException))]
+        public async Task GetContainerMetadataAsync_NonexistentContainer_ThrowsContainerNotFoundException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+
+            await client.GetContainerMetadataAsync(containerName);
+
+            //expects exception
+        }
         #endregion
 
         #region Blob Operation Tests

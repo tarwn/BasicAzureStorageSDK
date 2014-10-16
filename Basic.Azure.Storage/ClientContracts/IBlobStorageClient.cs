@@ -23,6 +23,9 @@ namespace Basic.Azure.Storage.ClientContracts
         GetContainerPropertiesResponse GetContainerProperties(string containerName);
         Task<GetContainerPropertiesResponse> GetContainerPropertiesAsync(string containerName);
 
+        GetContainerMetadataResponse GetContainerMetadata(string containerName);
+        Task<GetContainerMetadataResponse> GetContainerMetadataAsync(string containerName);
+
         #endregion
 
         #region Blob Operations
@@ -42,5 +45,7 @@ namespace Basic.Azure.Storage.ClientContracts
                     string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0);
 
         #endregion
+
+        
     }
 }

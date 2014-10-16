@@ -52,6 +52,18 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
+        public GetContainerMetadataResponse GetContainerMetadata(string containerName)
+        {
+            var request = new GetContainerMetadataRequest(_account, containerName);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<GetContainerMetadataResponse> GetContainerMetadataAsync(string containerName)
+        {
+            var request = new GetContainerMetadataRequest(_account, containerName);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
         #endregion
 
         #region Blob Operations
