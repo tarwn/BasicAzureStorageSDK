@@ -1,7 +1,7 @@
 BasicAzureStorageSDK
 ====================
 
-This is .Net SDK designed to closely match the Azure Storage API. The operations align with the API documentation,
+This is a .Net SDK designed to closely match the Azure Storage API. The operations align with the API documentation,
 it supports only features that can be tested locally against the storage emulator, and provides interfaces and
 no internal methods.
 
