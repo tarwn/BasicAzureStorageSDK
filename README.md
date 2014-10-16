@@ -1,17 +1,20 @@
 BasicAzureStorageSDK
 ====================
 
-This is the beginning of a .Net SDK for accessing the Azure Storage API. The intent is to target the latest version 
-that is also supported by the local emulator (not counting preview versions). 
+This is a .Net SDK designed to closely match the Azure Storage API. The operations align with the API documentation,
+it supports only features that can be tested locally against the storage emulator, and provides interfaces and
+no internal methods.
 
-Current Supported API Version: 2012-02-12
+Because "use a real storage account" is not good advice and "400 Bad Request" is not a suitable error message.
 
-The API version will be updated soon-ish. When I first started this version the emulator was very far out of date.
+Current Supported API Version: 2012-02-12 - This will be caught up after I have finished the current round of
+additions.
 
-I have not decided yet whether this will be a partial, reference implementation or a full implementation.
 
 Motivation
 ====================
+
+<blockquote>Ask me about the Azure Storage SDK...</blockquote>
 
 As I watched (and lived through, and tried to figure out) the evolution of the official 
 Azure Storage SDK for .Net, I've continued to be annoyed by several things:
