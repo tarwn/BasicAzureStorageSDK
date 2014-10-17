@@ -10,6 +10,14 @@ Because "use a real storage account" is not good advice and "400 Bad Request" is
 Current Supported API Version: 2012-02-12 - This will be caught up after I have finished the current round of
 additions.
 
+Status: 
+
+- Queue Service - 15/15
+- Table Service - 1/14
+- Blob Service - 6/28
+- File Service - 0/19
+
+(Does not include service preflight and stats operations)
 
 Motivation
 ====================
@@ -184,7 +192,7 @@ been implemented yet.
 - Blob is barely started
 - File is not present at all
 
-Queue Service - QueueServiceClient: IQueueServiceClient
+Queue Service - 15/17 - QueueServiceClient: IQueueServiceClient
 -----------------------------------------------------------
 
 Account Operations
@@ -213,7 +221,7 @@ Message Operations
 - Clear Messages - Yes - Does not auto-retry the 500 Operation Timeout yet
 - Update Message - Yes
 
-Table Service - TableServiceClient: ITableServiceClient
+Table Service - 1/16 - TableServiceClient: ITableServiceClient
 -----------------------------------------------------------
 
 Account Operations
@@ -241,7 +249,7 @@ Entity Operations
 - Insert or Replace Entity - No
 - Insert or Merge Entity - No
 
-Blob Service - BlobServiceClient: IBlobServiceClient
+Blob Service - 6/30 - BlobServiceClient: IBlobServiceClient
 -----------------------------------------------------------
 
 Account Operations
@@ -258,7 +266,7 @@ Container Operations
 - Get Container Properties - Yes
 - Get Container Metadata - Yes
 - Set Container Metadata - Yes
-- Get Container ACL - No
+- Get Container ACL - Yes
 - Set Container ACL - No
 - Delete Container - No
 - Lease Container - No
@@ -289,7 +297,7 @@ Page Blob Operations
 - Put Page - No
 - Get Page Ranges - No
 
-File Service - N/A
+File Service - 0/19 - N/A
 -----------------------------------------------------------
 
 Account Operations
