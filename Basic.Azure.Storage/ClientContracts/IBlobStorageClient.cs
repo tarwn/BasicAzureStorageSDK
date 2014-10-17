@@ -26,6 +26,12 @@ namespace Basic.Azure.Storage.ClientContracts
         GetContainerMetadataResponse GetContainerMetadata(string containerName);
         Task<GetContainerMetadataResponse> GetContainerMetadataAsync(string containerName);
 
+        void SetContainerMetadata(string containerName, Dictionary<string, string> metadata, string lease = null);
+        Task SetContainerMetadataAsync(string containerName, Dictionary<string, string> metadata, string lease = null);
+
+        GetContainerACLResponse GetContainerACL(string containerName);
+        Task<GetContainerACLResponse> GetContainerACLAsync(string containerName);
+
         #endregion
 
         #region Blob Operations
@@ -44,10 +50,10 @@ namespace Basic.Azure.Storage.ClientContracts
                     string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
                     string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0);
 
-        void SetContainerMetadata(string containerName, Dictionary<string, string> metadata, string lease = null);
-        Task SetContainerMetadataAsync(string containerName, Dictionary<string, string> metadata, string lease = null);
-
+        
         #endregion
+
+
 
 
 

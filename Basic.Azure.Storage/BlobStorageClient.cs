@@ -75,6 +75,20 @@ namespace Basic.Azure.Storage
             var request = new SetContainerMetadataRequest(_account, containerName, metadata, lease);
             await request.ExecuteAsync();
         }
+
+        public GetContainerACLResponse GetContainerACL(string containerName)
+        {
+            var request = new GetContainerACLRequest(_account, containerName);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<GetContainerACLResponse> GetContainerACLAsync(string containerName)
+        {
+            var request = new GetContainerACLRequest(_account, containerName);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         #endregion
 
         #region Blob Operations
@@ -82,9 +96,9 @@ namespace Basic.Azure.Storage
         /// <summary>
         /// Creates a new BlockBlob (Alias for the PutBlob call with a Blob Type of BlockBlob)
         /// </summary>
-        public PutBlobResponse PutBlockBlob(string containerName, string blobName, byte[] data, 
+        public PutBlobResponse PutBlockBlob(string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string,string> metadata = null)
+            string cacheControl = null, Dictionary<string, string> metadata = null)
         {
             var request = new PutBlobRequest(_account, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata);
             var response = request.Execute();
@@ -119,5 +133,7 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
         #endregion
+
+
     }
 }

@@ -465,6 +465,107 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
+
+        [Test]
+        public void GetContainerACL_NoAccessPolicies_ReturnsEmptyList()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+
+            var result = client.GetContainerACL(containerName);
+
+            Assert.IsEmpty(result.SignedIdentifiers);
+        }
+
+        [Test]
+        public void GetContainerACL_HasAccessPolicies_ReturnsListConstainingThosePolicies()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            string expectedId = "abc-123";
+            DateTime expectedStart = GetTruncatedUtcNow();
+            AddContainerAccessPolicy(containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Off, expectedId, expectedStart, expectedStart.AddDays(1));
+
+            var result = client.GetContainerACL(containerName);
+
+            Assert.IsNotEmpty(result.SignedIdentifiers);
+            Assert.AreEqual("abc-123", result.SignedIdentifiers.First().Id);
+            Assert.AreEqual(expectedStart, result.SignedIdentifiers.First().AccessPolicy.StartTime);
+            Assert.AreEqual(expectedStart.AddDays(1), result.SignedIdentifiers.First().AccessPolicy.Expiry);
+        }
+
+        [Test]
+        public void GetContainerACL_ContainerAccess_ReturnsPublicAccessSet()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            AddContainerAccessPolicy(containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Container);
+
+            var result = client.GetContainerACL(containerName);
+
+            Assert.AreEqual(ContainerAccessType.PublicContainer, result.PublicAccess);
+        }
+
+        [Test]
+        public void GetContainerACL_NoPublicAccess_ReturnsPublicAccessAsNone()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            AddContainerAccessPolicy(containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Off);
+
+            var result = client.GetContainerACL(containerName);
+
+            Assert.AreEqual(ContainerAccessType.None, result.PublicAccess);
+        }
+
+
+        [Test]
+        [ExpectedException(typeof(ContainerNotFoundAzureException))]
+        public void GetContainerACL_NonexistentQueue_ThrowsQueueNotFoundException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+
+            var result = client.GetContainerACL(containerName);
+
+            // expects exception
+        }
+
+
+        [Test]
+        public async Task GetContainerACLAsync_HasAccessPolicies_ReturnsListConstainingThosePolicies()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            string expectedId = "abc-123";
+            DateTime expectedStart = GetTruncatedUtcNow();
+            AddContainerAccessPolicy(containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Off, expectedId, expectedStart, expectedStart.AddDays(1));
+
+            var result = await client.GetContainerACLAsync(containerName);
+
+            Assert.IsNotEmpty(result.SignedIdentifiers);
+            Assert.AreEqual("abc-123", result.SignedIdentifiers.First().Id);
+            Assert.AreEqual(expectedStart, result.SignedIdentifiers.First().AccessPolicy.StartTime);
+            Assert.AreEqual(expectedStart.AddDays(1), result.SignedIdentifiers.First().AccessPolicy.Expiry);
+        }
+        
+        [Test]
+        [ExpectedException(typeof(ContainerNotFoundAzureException))]
+        public async Task GetContainerACLAsync_NonexistentQueue_ThrowsQueueNotFoundException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+
+            var result = await client.GetContainerACLAsync(containerName);
+
+            // expects exception
+        }
+
         #endregion
 
         #region Blob Operation Tests
@@ -872,6 +973,25 @@ namespace Basic.Azure.Storage.Tests.Integration
             container.BreakLease(TimeSpan.FromSeconds(1), new AccessCondition() { LeaseId = lease });
         }
 
+        private void AddContainerAccessPolicy(string containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType publicAccess, string id = null, DateTime? startDate = null, DateTime? expiry = null)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            var permissions = container.GetPermissions();
+            permissions.PublicAccess = publicAccess;
+            if (!string.IsNullOrEmpty(id) && startDate.HasValue && expiry.HasValue)
+            {
+                permissions.SharedAccessPolicies.Add(id, new Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPolicy()
+                {
+                    Permissions = Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPermissions.Read,
+                    SharedAccessStartTime = startDate,
+                    SharedAccessExpiryTime = expiry
+                });
+            }
+            container.SetPermissions(permissions);
+        }
+
+
         private void CreateBlob(string containerName, string blobName)
         {
             var client = _storageAccount.CreateCloudBlobClient();
@@ -883,6 +1003,11 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         #endregion
+
+        private DateTime GetTruncatedUtcNow()
+        {
+            return new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, DateTime.UtcNow.Hour, DateTime.UtcNow.Minute, DateTime.UtcNow.Second, DateTimeKind.Utc);
+        }
 
     }
 }

@@ -48,6 +48,8 @@
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobType.cs" />
     <Compile Include="Communications\BlobService\ContainerAccessType.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\GetContainerACLResponse.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\GetContainerACLRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\SetContainerMetadataRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\GetContainerMetadataRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\GetContainerPropertiesRequest.cs" />
@@ -107,6 +109,7 @@
     <Compile Include="Communications\QueueService\MessageOperations\PutMessageRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\GetQueueMetadataResponse.cs" />
     <Compile Include="Communications\ServiceExceptions\AzureException.cs" />
+    <Compile Include="Communications\ServiceExceptions\AzureResponseParseError.cs" />
     <Compile Include="Communications\ServiceExceptions\BlobServiceExceptions.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
