@@ -51,9 +51,9 @@ namespace Basic.Azure.Storage.Communications.TableService
                 request.Headers.Add("Accept", "application/atom+xml,application/xml");
             }
 
-            // these are not documented as required, but the emulator fails without them
-            request.Headers.Add("DataServiceVersion", "2.0;");
-            request.Headers.Add("MaxDataServiceVersion", "2.0;NetFx");
+            // these are not documented as required, but older emulator fails without them
+            //request.Headers.Add("DataServiceVersion", "2.0;");
+            //request.Headers.Add("MaxDataServiceVersion", "2.0;NetFx");
         }
 
         public void ApplyAdditionalOptionalHeaders(WebRequest request)

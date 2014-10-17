@@ -1,4 +1,5 @@
-﻿using Basic.Azure.Storage.Communications.ServiceExceptions;
+﻿using Basic.Azure.Storage.ClientContracts;
+using Basic.Azure.Storage.Communications.ServiceExceptions;
 using Basic.Azure.Storage.Communications.TableService;
 using Microsoft.WindowsAzure.Storage;
 using NUnit.Framework;
@@ -40,13 +41,17 @@ namespace Basic.Azure.Storage.Tests.Integration
             }
         }
 
-        #region Create Table Operation Tests
+        #region Account Operations
+
+        #endregion
+
+        #region Table Operations
 
         [Test]
         public void CreateTable_RequiredArgsOnly_CreatesTable()
         {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
             var tableName = GenerateSampleTableName();
-            var client = new TableServiceClient(_accountSettings);
 
             client.CreateTable(tableName);
 
@@ -57,8 +62,8 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(TableAlreadyExistsAzureException))]
         public void CreateTable_TableAlreadyExists_ReportsConflict()
         {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
             var tableName = GenerateSampleTableName();
-            var client = new TableServiceClient(_accountSettings);
             CreateTable(tableName);
 
             client.CreateTable(tableName);
@@ -69,8 +74,8 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void CreateTable_ValidName_ReceivesFullUrlInResponse()
         {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
             var tableName = GenerateSampleTableName();
-            var client = new TableServiceClient(_accountSettings);
 
             var response = client.CreateTable(tableName);
 
@@ -84,13 +89,41 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Ignore("Not implemented by emulator or it chooses to ignore preferece every time (per API doc, missing header means it ignored the preference)")]
         public void CreateTable_SpecifyMetadataPreference_IndicatesIfPreferenceWasApplied()
         {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
             var tableName = GenerateSampleTableName();
-            var client = new TableServiceClient(_accountSettings);
 
             var response = client.CreateTable(tableName, MetadataPreference.ReturnNoContent);
 
             Assert.AreEqual(MetadataPreference.ReturnNoContent, response.MetadataPreferenceApplied);
         }
+
+        [Test]
+        public async Task CreateTableAsync_RequiredArgsOnly_CreatesTable()
+        {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
+            var tableName = GenerateSampleTableName();
+
+            await client.CreateTableAsync(tableName);
+
+            AssertTableExists(tableName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(TableAlreadyExistsAzureException))]
+        public async Task CreateTableAsync_TableAlreadyExists_ReportsConflict()
+        {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
+            var tableName = GenerateSampleTableName();
+            CreateTable(tableName);
+
+            await client.CreateTableAsync(tableName);
+
+            // expects exception
+        }
+
+        #endregion
+
+        #region Entity Operations
 
         #endregion
 

@@ -163,24 +163,6 @@ The core logic includes the RequestBase, the Response wrapper that wraps around 
 expected for an operation, the RetriedException that is returned when we give up after exhausting the retry policy,
 and various constants for header values and such, the logic to create signed authorization headers, etc.
 
-In Progress
-====================
-
-There are a number of the design considerations above that are still in progress.
-
-Synchronous Clients
---------------------
-
-The clients (Blob, Table, Client) started out exposing only synchronous methods. Surfacing asynchronous methods
-is in progress.
-
-Interfaces
---------------------
-
-The interfaces (/ClientContracts/*) are still in progress. The QueueService contract has been added as I add more
-methods to the QueueServiceClient, the other two will be added when I return to add more calls to them.
-
-
 Implemented Methods
 ====================
 
@@ -189,7 +171,7 @@ been implemented yet.
 
 - Queue is done for 2012-02-12
 - Table is barely started
-- Blob is barely started
+- Blob is started
 - File is not present at all
 
 Queue Service - 15/17 - QueueServiceClient: IQueueServiceClient
