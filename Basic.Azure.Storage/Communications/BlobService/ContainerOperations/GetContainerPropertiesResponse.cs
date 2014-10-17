@@ -1,6 +1,7 @@
 ﻿using Basic.Azure.Storage.Communications.Common;
 using Basic.Azure.Storage.Communications.Core;
 using Basic.Azure.Storage.Communications.Core.Interfaces;
+using Basic.Azure.Storage.Communications.ServiceExceptions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -43,8 +44,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
                     LeaseStatus = LeaseStatus.Unlocked;
                     break;
                 default:
-                    LeaseStatus = LeaseStatus.Unknown;
-                    break;
+                    throw new AzureResponseParseException(ProtocolConstants.Headers.LeaseStatus, response.Headers[ProtocolConstants.Headers.LeaseStatus]);
             }
 
             switch (response.Headers[ProtocolConstants.Headers.LeaseState])
@@ -64,6 +64,8 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
                 case ProtocolConstants.HeaderValues.LeaseState.Leased:
                     LeaseState = Common.LeaseState.Leased;
                     break;
+                default:
+                    throw new AzureResponseParseException(ProtocolConstants.Headers.LeaseState, response.Headers[ProtocolConstants.Headers.LeaseState]);
             }
 
             switch (response.Headers[ProtocolConstants.Headers.LeaseDuration])
@@ -75,7 +77,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
                     LeaseDuration = LeaseDuration.Infinite;
                     break;
                 default:
-                    LeaseDuration = LeaseDuration.Unknown;
+                    LeaseDuration = LeaseDuration.NotSpecified;
                     break;
             }
 

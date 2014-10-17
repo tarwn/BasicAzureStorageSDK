@@ -8,7 +8,6 @@ namespace Basic.Azure.Storage.Communications.Common
 {
     public enum LeaseStatus
     {
-        Unknown,
         Unlocked,
         Locked
     }

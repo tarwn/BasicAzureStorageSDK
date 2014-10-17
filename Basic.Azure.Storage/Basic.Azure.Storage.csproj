@@ -109,7 +109,7 @@
     <Compile Include="Communications\QueueService\MessageOperations\PutMessageRequest.cs" />
     <Compile Include="Communications\QueueService\QueueOperations\GetQueueMetadataResponse.cs" />
     <Compile Include="Communications\ServiceExceptions\AzureException.cs" />
-    <Compile Include="Communications\ServiceExceptions\AzureResponseParseError.cs" />
+    <Compile Include="Communications\ServiceExceptions\AzureResponseParseException.cs" />
     <Compile Include="Communications\ServiceExceptions\BlobServiceExceptions.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

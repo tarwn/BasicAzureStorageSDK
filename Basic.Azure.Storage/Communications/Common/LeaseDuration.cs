@@ -8,7 +8,7 @@ namespace Basic.Azure.Storage.Communications.Common
 {
     public enum LeaseDuration
     {
-        Unknown,
+        NotSpecified,
         Infinite,
         Fixed
     }

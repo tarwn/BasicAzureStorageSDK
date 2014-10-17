@@ -56,7 +56,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
                         PublicAccess = ContainerAccessType.PublicBlob;
                         break;
                     default:
-                        throw new AzureResponseParseError(String.Format("Unexpected value for header {0}: '{1}'", ProtocolConstants.Headers.BlobPublicAccess, response.Headers[ProtocolConstants.Headers.BlobPublicAccess]));
+                        throw new AzureResponseParseException(ProtocolConstants.Headers.BlobPublicAccess, response.Headers[ProtocolConstants.Headers.BlobPublicAccess]);
                 }
             }
         }
