@@ -20,12 +20,12 @@ namespace Basic.Azure.Storage.Tests.Integration
         private StorageAccountSettings _accountSettings = new LocalEmulatorAccountSettings();
         private CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
 
-        private List<string> _containersToCleanUp = new List<string>();
+        private Dictionary<string, string> _containersToCleanUp = new Dictionary<string,string>();
 
         private string GenerateSampleContainerName()
         {
             var name = "unit-test-" + Guid.NewGuid().ToString().ToLower();
-            _containersToCleanUp.Add(name);
+            _containersToCleanUp.Add(name, null);
             return name;
         }
 
@@ -34,14 +34,23 @@ namespace Basic.Azure.Storage.Tests.Integration
             return String.Format("unit-test-{0}", Guid.NewGuid());
         }
 
+        public string FakeLeaseId { get { return "a28cf439-8776-4653-9ce8-4e3df49b4a72"; } }
+
         [TestFixtureTearDown]
         public void TestFixtureTeardown()
         {
             //let's clean up!
             var client = _storageAccount.CreateCloudBlobClient();
-            foreach (var containerName in _containersToCleanUp)
+            foreach (var containerPair in _containersToCleanUp)
             {
-                var container = client.GetContainerReference(containerName);
+                var container = client.GetContainerReference(containerPair.Key);
+                if (!string.IsNullOrEmpty(containerPair.Value))
+                {
+                    try {
+                        container.ReleaseLease(new AccessCondition() { LeaseId = containerPair.Value });
+                    }
+                    catch { }
+                }
                 container.DeleteIfExists();
             }
         }
@@ -118,8 +127,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.IsFalse(string.IsNullOrWhiteSpace(response.ETag), "Response ETag is not set");
 
         }
-
-
+        
         [Test]
         public async Task CreateContainerAsync_ValidArguments_CreatesContainerWithSpecificName()
         {
@@ -196,19 +204,12 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             string lease = LeaseContainer(containerName, TimeSpan.FromSeconds(30), null);
-            try
-            {
 
-                var response = client.GetContainerProperties(containerName);
+            var response = client.GetContainerProperties(containerName);
 
-                Assert.AreEqual(LeaseStatus.Locked, response.LeaseStatus);
-                Assert.AreEqual(LeaseDuration.Fixed, response.LeaseDuration);
-                Assert.AreEqual(LeaseState.Leased, response.LeaseState);
-            }
-            finally
-            {
-                ReleaseContainerLease(containerName, lease);
-            }
+            Assert.AreEqual(LeaseStatus.Locked, response.LeaseStatus);
+            Assert.AreEqual(LeaseDuration.Fixed, response.LeaseDuration);
+            Assert.AreEqual(LeaseState.Leased, response.LeaseState);
         }
 
         [Test]
@@ -232,8 +233,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 ReleaseContainerLease(containerName, lease);
             }
         }
-
-
+        
         [Test]
         public void GetContainerProperties_BreakingLeaseContainer_ReturnsLeaseDetails()
         {
@@ -255,8 +255,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 ReleaseContainerLease(containerName, lease);
             }
         }
-
-
+        
         [Test]
         public async Task GetContainerPropertiesAsync_ValidContainer_ReturnsProperties()
         {
@@ -301,8 +300,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.IsTrue(response.Metadata.Any(kvp => kvp.Key == "a" && kvp.Value == "1"));
             Assert.IsTrue(response.Metadata.Any(kvp => kvp.Key == "b" && kvp.Value == "2"));
         }
-
-
+        
         [Test]
         public void GetContainerMetadata_ValidContainerWithNoMetadata_ReturnsEmptyMetadata()
         {
@@ -356,6 +354,116 @@ namespace Basic.Azure.Storage.Tests.Integration
             await client.GetContainerMetadataAsync(containerName);
 
             //expects exception
+        }
+
+        [Test]
+        public void SetContainerMetadata_ValidContainer_SetsMetadataOnContainer()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+
+            client.SetContainerMetadata(containerName, new Dictionary<string, string>() { 
+                { "a", "1"},
+                { "b", "2"}
+            });
+
+            var metadata = GetContainerMetadata(containerName);
+            Assert.IsNotNull(metadata);
+            Assert.AreEqual(2, metadata.Count);
+            Assert.IsTrue(metadata.Any(kvp => kvp.Key == "a" && kvp.Value == "1"));
+            Assert.IsTrue(metadata.Any(kvp => kvp.Key == "b" && kvp.Value == "2"));
+        }
+
+        [Test]
+        public void SetContainerMetadata_LeasedContainerWithoutLease_SetsMetadataOnContainer()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            LeaseContainer(containerName, null, null);
+
+            client.SetContainerMetadata(containerName, new Dictionary<string, string>() { 
+                { "a", "1"},
+                { "b", "2"}
+            });
+
+            var metadata = GetContainerMetadata(containerName);
+            Assert.IsNotNull(metadata);
+            Assert.AreEqual(2, metadata.Count);
+            Assert.IsTrue(metadata.Any(kvp => kvp.Key == "a" && kvp.Value == "1"));
+            Assert.IsTrue(metadata.Any(kvp => kvp.Key == "b" && kvp.Value == "2"));
+        }
+
+        [Test]
+        public void SetContainerMetadata_LeasedContainerWithLease_SetsMetadataOnContainer()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            var lease = LeaseContainer(containerName, null, null);
+
+            client.SetContainerMetadata(containerName, new Dictionary<string, string>() { 
+                { "a", "1"},
+                { "b", "2"}
+            }, lease);
+
+            var metadata = GetContainerMetadata(containerName);
+            Assert.IsNotNull(metadata);
+            Assert.AreEqual(2, metadata.Count);
+            Assert.IsTrue(metadata.Any(kvp => kvp.Key == "a" && kvp.Value == "1"));
+            Assert.IsTrue(metadata.Any(kvp => kvp.Key == "b" && kvp.Value == "2"));
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseNotPresentWithContainerOperationAzureException))]
+        public void SetContainerMetadata_NonLeasedContainerWithLease_ThrowsPreconditionFailureException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+
+            client.SetContainerMetadata(containerName, new Dictionary<string, string>() { 
+                { "a", "1"},
+                { "b", "2"}
+            }, FakeLeaseId);
+
+            // expects exception
+        }
+
+        [Test]
+        public async Task SetContainerMetadataAsync_ValidContainer_SetsMetadataOnContainer()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+
+            await client.SetContainerMetadataAsync(containerName, new Dictionary<string, string>() { 
+                { "a", "1"},
+                { "b", "2"}
+            });
+
+            var metadata = GetContainerMetadata(containerName);
+            Assert.IsNotNull(metadata);
+            Assert.AreEqual(2, metadata.Count);
+            Assert.IsTrue(metadata.Any(kvp => kvp.Key == "a" && kvp.Value == "1"));
+            Assert.IsTrue(metadata.Any(kvp => kvp.Key == "b" && kvp.Value == "2"));
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseNotPresentWithContainerOperationAzureException))]
+        public async Task SetContainerMetadataAsync_NonLeasedContainerWithLease_ThrowsPreconditionFailureException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+
+            await client.SetContainerMetadataAsync(containerName, new Dictionary<string, string>() { 
+                { "a", "1"},
+                { "b", "2"}
+            }, FakeLeaseId);
+
+            // expects exception
         }
         #endregion
 
@@ -710,6 +818,15 @@ namespace Basic.Azure.Storage.Tests.Integration
             return blob;
         }
 
+        private IDictionary<string, string> GetContainerMetadata(string containerName)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+
+            container.FetchAttributes();
+            return container.Metadata;
+        }
+
         #endregion
 
         #region Setup Mechanics
@@ -736,7 +853,9 @@ namespace Basic.Azure.Storage.Tests.Integration
         {
             var client = _storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
-            return container.AcquireLease(leaseTime, leaseId);
+            var lease = container.AcquireLease(leaseTime, leaseId);
+            _containersToCleanUp[containerName] = lease;
+            return lease;
         }
 
         private void ReleaseContainerLease(string containerName, string lease)

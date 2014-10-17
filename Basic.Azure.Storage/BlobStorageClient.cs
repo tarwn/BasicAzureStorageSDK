@@ -64,6 +64,17 @@ namespace Basic.Azure.Storage
             var response = await request.ExecuteAsync();
             return response.Payload;
         }
+
+        public void SetContainerMetadata(string containerName, Dictionary<string, string> metadata, string lease = null)
+        {
+            var request = new SetContainerMetadataRequest(_account, containerName, metadata, lease);
+            request.Execute();
+        }
+        public async Task SetContainerMetadataAsync(string containerName, Dictionary<string, string> metadata, string lease = null)
+        {
+            var request = new SetContainerMetadataRequest(_account, containerName, metadata, lease);
+            await request.ExecuteAsync();
+        }
         #endregion
 
         #region Blob Operations

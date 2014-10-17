@@ -256,8 +256,8 @@ Container Operations
 
 - Create Container - Yes
 - Get Container Properties - Yes
-- Get Container Metadata - No
-- Set Container Metadata - No
+- Get Container Metadata - Yes
+- Set Container Metadata - Yes
 - Get Container ACL - No
 - Set Container ACL - No
 - Delete Container - No

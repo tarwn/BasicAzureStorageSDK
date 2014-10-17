@@ -40,6 +40,8 @@ namespace Basic.Azure.Storage.Communications.Core
 
             public const string LeaseDuration = "x-ms-lease-duration";
 
+            public const string LeaseId = "x-ms-lease-id";
+
             public const string LeaseState = "x-ms-lease-state";
 
             public const string LeaseStatus = "x-ms-lease-status";

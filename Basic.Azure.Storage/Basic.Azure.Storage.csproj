@@ -48,6 +48,7 @@
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobType.cs" />
     <Compile Include="Communications\BlobService\ContainerAccessType.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\SetContainerMetadataRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\GetContainerMetadataRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\GetContainerPropertiesRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerRequest.cs" />
