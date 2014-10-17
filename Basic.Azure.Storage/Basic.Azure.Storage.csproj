@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="BlobStorageClient.cs" />
     <Compile Include="ClientContracts\IBlobStorageClient.cs" />
+    <Compile Include="ClientContracts\ITableServiceClient.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobType.cs" />
