@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -54,7 +55,7 @@ namespace Basic.Azure.Storage.Communications.Core
                 rawUrl = String.Format("{0}/{1}?{2}",
                     _baseUrl,
                     String.Join("/", _segments),
-                    String.Join("&", _parameters.Select(kvp => String.Format("{0}={1}", kvp.Key, kvp.Value))));
+                    String.Join("&", _parameters.Select(kvp => String.Format("{0}={1}", WebUtility.UrlEncode(kvp.Key), WebUtility.UrlEncode(kvp.Value)))));
             }
 
             var uri = new Uri(rawUrl);
