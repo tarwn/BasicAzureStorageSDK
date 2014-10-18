@@ -417,7 +417,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         [Test]
         [ExpectedException(typeof(LeaseNotPresentWithContainerOperationAzureException))]
-        public void SetContainerMetadata_NonLeasedContainerWithLease_ThrowsPreconditionFailureException()
+        public void SetContainerMetadata_NonLeasedContainerWithLease_ThrowsLeaseNotPresentException()
         {
             IBlobStorageClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
@@ -430,6 +430,24 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithContainerOperationAzureException))]
+        public void SetContainerMetadata_WrongLeasForLeasedContainer_ThrowsLeaseMismatchException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            LeaseContainer(containerName, null, null);
+
+            client.SetContainerMetadata(containerName, new Dictionary<string, string>() { 
+                { "a", "1"},
+                { "b", "2"}
+            }, FakeLeaseId);
+
+            // expects exception
+        }
+
 
         [Test]
         public async Task SetContainerMetadataAsync_ValidContainer_SetsMetadataOnContainer()
@@ -667,6 +685,21 @@ namespace Basic.Azure.Storage.Tests.Integration
             var actual = GetContainerPermissions(containerName);
             Assert.AreEqual(Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Off, actual.PublicAccess);
         }
+        
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithContainerOperationAzureException))]
+        public void SetContainerACL_WrongLeaseForLeasedContainer_ThrowsLeaseMismatchException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            var leaseId = LeaseContainer(containerName, null, null);
+
+            client.SetContainerACL(containerName, ContainerAccessType.None, new List<BlobSignedIdentifier>() { }, FakeLeaseId);
+
+            var actual = GetContainerPermissions(containerName);
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Off, actual.PublicAccess);
+        }
 
         [Test]
         public void SetContainerACL_LeaseForLeasedContainer_SetsPolicySuccesfully()
@@ -717,8 +750,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var actual = GetContainerPermissions(containerName);
             Assert.AreEqual(1, actual.SharedAccessPolicies.Count);
         }
-
-
+        
         [Test]
         public async Task SetContainerACLAsync_ReadPolicyForValidContainer_SetsPolicyAndPublicAccessOnContainer()
         {
@@ -756,6 +788,110 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var actual = GetContainerPermissions(containerName);
             Assert.AreEqual(Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Off, actual.PublicAccess);
+        }
+
+        [Test]
+        public void DeleteContainer_ValidContainer_DeletesTheContainer()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+
+            client.DeleteContainer(containerName);
+
+            AssertContainerDoesNotExist(containerName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMissingAzureException))]
+        public void DeleteContainer_NoLeaseForLeasedContainer_ThrowsLeaseIdMissingException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            var leaseId = LeaseContainer(containerName, null, null);
+
+            client.DeleteContainer(containerName);
+
+            AssertContainerDoesNotExist(containerName);
+        }
+
+        [Test]
+        public void DeleteContainer_LeaseForLeasedContainer_DeletesContainer()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            var leaseId = LeaseContainer(containerName, null, null);
+
+            client.DeleteContainer(containerName, leaseId);
+
+            AssertContainerDoesNotExist(containerName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ContainerNotFoundAzureException))]
+        public void DeleteContainer_NonExistentContainer_ThrowsContainerNotFoundException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+
+            client.DeleteContainer(containerName);
+
+            AssertContainerDoesNotExist(containerName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseNotPresentWithContainerOperationAzureException))]
+        public void DeleteContainer_LeaseForNonLeasedContainer_ThrowsLeaseNotPresentException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+
+            client.DeleteContainer(containerName, FakeLeaseId);
+
+            AssertContainerDoesNotExist(containerName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithContainerOperationAzureException))]
+        public void DeleteContainer_WrongLeaseForLeasedContainer_ThrowsLeaseIdMismatchException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            var leaseId = LeaseContainer(containerName, null, null);
+
+            client.DeleteContainer(containerName, FakeLeaseId);
+
+            AssertContainerDoesNotExist(containerName);
+        }
+
+        [Test]
+        public async Task DeleteContainerAsync_ValidContainer_DeletesTheContainer()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+
+            await client.DeleteContainerAsync(containerName);
+
+            AssertContainerDoesNotExist(containerName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithContainerOperationAzureException))]
+        public async Task DeleteContainerAsync_WrongLeaseForLeasedContainer_ThrowsLeaseIdMismatchException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            LeaseContainer(containerName, null, null);
+
+            await client.DeleteContainerAsync(containerName, FakeLeaseId);
+
+            AssertContainerDoesNotExist(containerName);
         }
 
         #endregion
@@ -1083,7 +1219,15 @@ namespace Basic.Azure.Storage.Tests.Integration
             var client = _storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (!container.Exists())
-                Assert.Fail(String.Format("The container '{0}' does not exist", containerName));
+                Assert.Fail(String.Format("AssertContainerExists: The container '{0}' does not exist", containerName));
+        }
+
+        private void AssertContainerDoesNotExist(string containerName)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            if (container.Exists())
+                Assert.Fail(String.Format("AssertContainerDoesNotExist: The container '{0}' exists", containerName));
         }
 
         private void AssertContainerAccess(string containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType containerAccessType)

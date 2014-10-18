@@ -54,8 +54,12 @@ namespace Basic.Azure.Storage.ClientContracts
                     string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
                     string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0);
 
+        void DeleteContainer(string containerName, string leaseId = null);
+        Task DeleteContainerAsync(string containerName, string leaseId = null);
+
         
         #endregion
+
 
     }
 }

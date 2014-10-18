@@ -101,6 +101,18 @@ namespace Basic.Azure.Storage
             await request.ExecuteAsync();
         }
 
+        public void DeleteContainer(string containerName, string leaseId = null)
+        {
+            var request = new DeleteContainerRequest(_account, containerName, leaseId);
+            request.Execute();
+        }
+        public async Task DeleteContainerAsync(string containerName, string leaseId = null)
+        {
+            var request = new DeleteContainerRequest(_account, containerName, leaseId);
+            await request.ExecuteAsync();
+        }
+
+
         #endregion
 
         #region Blob Operations

@@ -49,6 +49,7 @@
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobType.cs" />
     <Compile Include="Communications\BlobService\ContainerAccessType.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\DeleteContainerRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\GetContainerACLResponse.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\GetContainerACLRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\SetContainerACLRequest.cs" />
