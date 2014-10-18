@@ -13,40 +13,40 @@ namespace Basic.Azure.Storage.Tests.Communications.Common
     public class SharedAccessPermissionParseTests
     {
 
-        [TestCase("a", SharedAccessPermissions.Add)]
-        [TestCase("u", SharedAccessPermissions.Update)]
-        [TestCase("r", SharedAccessPermissions.Read)]
-        [TestCase("w", SharedAccessPermissions.Write)]
-        public void Parse_IndividualCode_ConvertsToMatchingEnum(string code, SharedAccessPermissions expectedPermission)
+        [TestCase("a", QueueSharedAccessPermissions.Add)]
+        [TestCase("u", QueueSharedAccessPermissions.Update)]
+        [TestCase("r", QueueSharedAccessPermissions.Read)]
+        [TestCase("w", QueueSharedAccessPermissions.Write)]
+        public void Parse_IndividualCode_ConvertsToMatchingEnum(string code, QueueSharedAccessPermissions expectedPermission)
         {
-            var result = SharedAccessPermissionParse.Parse(code);
+            var result = SharedAccessPermissionParse.ParseQueue(code);
             Assert.AreEqual(expectedPermission, result);
         }
 
         [Test]
         public void Parse_CombinedCode_ConvertsToMatchingFlagEnum()
         {
-            var expectedPermission = SharedAccessPermissions.Add | SharedAccessPermissions.Read | SharedAccessPermissions.Update | SharedAccessPermissions.Write;
+            var expectedPermission = QueueSharedAccessPermissions.Add | QueueSharedAccessPermissions.Read | QueueSharedAccessPermissions.Update | QueueSharedAccessPermissions.Write;
 
-            var result = SharedAccessPermissionParse.Parse("rwau");
+            var result = SharedAccessPermissionParse.ParseQueue("rwau");
 
             Assert.AreEqual(expectedPermission, result);
         }
 
-        [TestCase(SharedAccessPermissions.Add, "a")]
-        [TestCase(SharedAccessPermissions.Update, "u")]
-        [TestCase(SharedAccessPermissions.Read, "r")]
-        [TestCase(SharedAccessPermissions.Write, "w")]
-        public void ConvertToString_IndividualEnum_ConvertsToMatchingLetter(SharedAccessPermissions permission, string expectedCode)
+        [TestCase(QueueSharedAccessPermissions.Add, "a")]
+        [TestCase(QueueSharedAccessPermissions.Update, "u")]
+        [TestCase(QueueSharedAccessPermissions.Read, "r")]
+        [TestCase(QueueSharedAccessPermissions.Write, "w")]
+        public void ConvertToString_IndividualEnum_ConvertsToMatchingLetter(QueueSharedAccessPermissions permission, string expectedCode)
         {
             var result = SharedAccessPermissionParse.ConvertToString(permission);
             Assert.AreEqual(expectedCode, result);
         }
 
-        [TestCase(SharedAccessPermissions.Add | SharedAccessPermissions.Read, "ar")]
-        [TestCase(SharedAccessPermissions.Update | SharedAccessPermissions.Write, "uw")]
-        [TestCase(SharedAccessPermissions.Add | SharedAccessPermissions.Read | SharedAccessPermissions.Update | SharedAccessPermissions.Write, "aurw")]
-        public void ConvertToString_FlagEnum_ConvertsToStringWithMatchingCodes(SharedAccessPermissions permission, string expectedCode)
+        [TestCase(QueueSharedAccessPermissions.Add | QueueSharedAccessPermissions.Read, "ar")]
+        [TestCase(QueueSharedAccessPermissions.Update | QueueSharedAccessPermissions.Write, "uw")]
+        [TestCase(QueueSharedAccessPermissions.Add | QueueSharedAccessPermissions.Read | QueueSharedAccessPermissions.Update | QueueSharedAccessPermissions.Write, "aurw")]
+        public void ConvertToString_FlagEnum_ConvertsToStringWithMatchingCodes(QueueSharedAccessPermissions permission, string expectedCode)
         {
             var result = SharedAccessPermissionParse.ConvertToString(permission);
             Assert.AreEqual(expectedCode, result);

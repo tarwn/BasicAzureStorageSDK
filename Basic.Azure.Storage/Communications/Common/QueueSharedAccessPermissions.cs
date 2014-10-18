@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Basic.Azure.Storage.Communications.Common
 {
     [Flags]
-    public enum SharedAccessPermissions
+    public enum QueueSharedAccessPermissions
     {
         None = 0,
         Add = 1,

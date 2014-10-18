@@ -14,7 +14,7 @@ Status:
 
 - Queue Service - 15/15
 - Table Service - 1/14
-- Blob Service - 6/28
+- Blob Service - 7/28
 - File Service - 0/19
 
 (Does not include service preflight and stats operations)
@@ -231,7 +231,7 @@ Entity Operations
 - Insert or Replace Entity - No
 - Insert or Merge Entity - No
 
-Blob Service - 6/30 - BlobServiceClient: IBlobServiceClient
+Blob Service - 7/30 - BlobServiceClient: IBlobServiceClient
 -----------------------------------------------------------
 
 Account Operations
@@ -249,7 +249,7 @@ Container Operations
 - Get Container Metadata - Yes
 - Set Container Metadata - Yes
 - Get Container ACL - Yes
-- Set Container ACL - No
+- Set Container ACL - Yes
 - Delete Container - No
 - Lease Container - No
 - List Blobs - No

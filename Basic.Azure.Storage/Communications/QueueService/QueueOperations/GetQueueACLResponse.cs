@@ -17,10 +17,10 @@ namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
     {
         public GetQueueACLResponse()
         {
-            SignedIdentifiers = new ReadOnlyCollection<SignedIdentifier>(new List<SignedIdentifier>());
+            SignedIdentifiers = new ReadOnlyCollection<QueueSignedIdentifier>(new List<QueueSignedIdentifier>());
         }
 
-        public ReadOnlyCollection<SignedIdentifier> SignedIdentifiers { get; protected set; }
+        public ReadOnlyCollection<QueueSignedIdentifier> SignedIdentifiers { get; protected set; }
 
         public string RequestId { get; protected set; }
 
@@ -52,12 +52,12 @@ namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
                 if (content.Length > 0)
                 {
                     var xDoc = XDocument.Parse(content);
-                    var signedIdentifiers = new List<SignedIdentifier>();
+                    var signedIdentifiers = new List<QueueSignedIdentifier>();
 
                     foreach (var identifierResponse in xDoc.Root.Elements().Where(e => e.Name.LocalName.Equals("SignedIdentifier")))
                     {
-                        var identifier = new SignedIdentifier();
-                        identifier.AccessPolicy = new AccessPolicy();
+                        var identifier = new QueueSignedIdentifier();
+                        identifier.AccessPolicy = new QueueAccessPolicy();
 
                         foreach (var element in identifierResponse.Elements())
                         {
@@ -70,7 +70,7 @@ namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
                                     {
                                         switch (apElement.Name.LocalName) { 
                                             case "Permission":
-                                                identifier.AccessPolicy.Permission = SharedAccessPermissionParse.Parse(apElement.Value);
+                                                identifier.AccessPolicy.Permission = SharedAccessPermissionParse.ParseQueue(apElement.Value);
                                                 break;
                                             case "Start":
                                                 identifier.AccessPolicy.StartTime = DateParse.Parse(apElement.Value);
@@ -87,7 +87,7 @@ namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
                         signedIdentifiers.Add(identifier);
                     }
 
-                    SignedIdentifiers = new ReadOnlyCollection<SignedIdentifier>(signedIdentifiers);
+                    SignedIdentifiers = new ReadOnlyCollection<QueueSignedIdentifier>(signedIdentifiers);
                 }
             }
         }

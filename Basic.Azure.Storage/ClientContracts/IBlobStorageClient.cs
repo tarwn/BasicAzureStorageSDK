@@ -1,6 +1,7 @@
 ﻿using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Basic.Azure.Storage.Communications.BlobService.ContainerOperations;
+using Basic.Azure.Storage.Communications.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,9 @@ namespace Basic.Azure.Storage.ClientContracts
         GetContainerACLResponse GetContainerACL(string containerName);
         Task<GetContainerACLResponse> GetContainerACLAsync(string containerName);
 
+        void SetContainerACL(string containerName, ContainerAccessType containerAccess, List<BlobSignedIdentifier> signedIdentifiers, string leaseId = null);
+        Task SetContainerACLAsync(string containerName, ContainerAccessType containerAccess, List<BlobSignedIdentifier> signedIdentifiers, string leaseId = null);
+
         #endregion
 
         #region Blob Operations
@@ -53,10 +57,5 @@ namespace Basic.Azure.Storage.ClientContracts
         
         #endregion
 
-
-
-
-
-        
     }
 }

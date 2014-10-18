@@ -522,7 +522,6 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.AreEqual(ContainerAccessType.None, result.PublicAccess);
         }
 
-
         [Test]
         [ExpectedException(typeof(ContainerNotFoundAzureException))]
         public void GetContainerACL_NonexistentQueue_ThrowsQueueNotFoundException()
@@ -534,8 +533,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
-
-
+        
         [Test]
         public async Task GetContainerACLAsync_HasAccessPolicies_ReturnsListConstainingThosePolicies()
         {
@@ -564,6 +562,200 @@ namespace Basic.Azure.Storage.Tests.Integration
             var result = await client.GetContainerACLAsync(containerName);
 
             // expects exception
+        }
+
+        [Test]
+        public void SetContainerACL_ReadPolicyForValidContainer_SetsPolicyAndPublicAccessOnContainer()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            var expectedStartTime = GetTruncatedUtcNow();
+            var expectedIdentifier = new BlobSignedIdentifier()
+            {
+                Id = "abc-123",
+                AccessPolicy = new BlobAccessPolicy()
+                {
+                    StartTime = expectedStartTime,
+                    Expiry = expectedStartTime.AddHours(1),
+                    Permission = BlobSharedAccessPermissions.Read
+                }
+            };
+
+            client.SetContainerACL(containerName, ContainerAccessType.PublicContainer, new List<BlobSignedIdentifier>() { expectedIdentifier });
+
+            var actual = GetContainerPermissions(containerName);
+            Assert.AreEqual(1, actual.SharedAccessPolicies.Count);
+            AssertIdentifierInSharedAccessPolicies(actual.SharedAccessPolicies, expectedIdentifier, Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPermissions.Read);
+        }
+
+        [Test]
+        public void SetContainerACL_AllPolicyForValidContainer_SetsPolicyAndPublicAccessOnContainer()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            var expectedStartTime = GetTruncatedUtcNow();
+            var expectedIdentifier = new BlobSignedIdentifier()
+            {
+                Id = "abc-123",
+                AccessPolicy = new BlobAccessPolicy()
+                {
+                    StartTime = expectedStartTime,
+                    Expiry = expectedStartTime.AddHours(1),
+                    Permission = BlobSharedAccessPermissions.Read | BlobSharedAccessPermissions.Write | BlobSharedAccessPermissions.Delete | BlobSharedAccessPermissions.List
+                }
+            };
+
+            client.SetContainerACL(containerName, ContainerAccessType.PublicContainer, new List<BlobSignedIdentifier>() { expectedIdentifier });
+
+            var actual = GetContainerPermissions(containerName);
+            Assert.AreEqual(1, actual.SharedAccessPolicies.Count);
+            AssertIdentifierInSharedAccessPolicies(actual.SharedAccessPolicies, expectedIdentifier, Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPermissions.Read | Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPermissions.Write | Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPermissions.List | Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPermissions.Delete);
+        }
+
+        [Test]
+        public void SetContainerACL_PublicAccessAndNoPolicyForValidContainer_SetsPublicAccessOnContainer()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+           
+            client.SetContainerACL(containerName, ContainerAccessType.PublicBlob, new List<BlobSignedIdentifier>() { });
+
+            var actual = GetContainerPermissions(containerName);
+            Assert.AreEqual(0, actual.SharedAccessPolicies.Count);
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Blob, actual.PublicAccess);
+        }
+
+        [Test]
+        public void SetContainerACL_NoPublicAccessAndPolicyForValidContainer_ClearsPublicAccessOnContainer()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            AddContainerAccessPolicy(containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Container);
+
+            client.SetContainerACL(containerName, ContainerAccessType.None, new List<BlobSignedIdentifier>() { });
+
+            var actual = GetContainerPermissions(containerName);
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Off, actual.PublicAccess);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ContainerNotFoundAzureException))]
+        public void SetContainerACL_InvalidContainer_ThrowsContainerNotFoundException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+
+            client.SetContainerACL(containerName, ContainerAccessType.None, new List<BlobSignedIdentifier>() { });
+
+            // expects exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseNotPresentWithContainerOperationAzureException))]
+        public void SetContainerACL_LeaseForNonLeasedContainer_ThrowsLeaseNotPresentException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+
+            client.SetContainerACL(containerName, ContainerAccessType.None, new List<BlobSignedIdentifier>() { }, FakeLeaseId);
+
+            var actual = GetContainerPermissions(containerName);
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Off, actual.PublicAccess);
+        }
+
+        [Test]
+        public void SetContainerACL_LeaseForLeasedContainer_SetsPolicySuccesfully()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            string leaseId = LeaseContainer(containerName, null, null);
+            var expectedStartTime = GetTruncatedUtcNow();
+            var expectedIdentifier = new BlobSignedIdentifier()
+            {
+                Id = "abc-123",
+                AccessPolicy = new BlobAccessPolicy()
+                {
+                    StartTime = expectedStartTime,
+                    Expiry = expectedStartTime.AddHours(1),
+                    Permission = BlobSharedAccessPermissions.Read | BlobSharedAccessPermissions.Write | BlobSharedAccessPermissions.Delete | BlobSharedAccessPermissions.List
+                }
+            };
+
+            client.SetContainerACL(containerName, ContainerAccessType.PublicContainer, new List<BlobSignedIdentifier>() { expectedIdentifier }, leaseId);
+
+            var actual = GetContainerPermissions(containerName);
+            Assert.AreEqual(1, actual.SharedAccessPolicies.Count);
+        }
+
+        [Test]
+        public void SetContainerACL_NoLeaseForLeasedContainer_SetsPolicySuccesfully()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            string leaseId = LeaseContainer(containerName, null, null);
+            var expectedStartTime = GetTruncatedUtcNow();
+            var expectedIdentifier = new BlobSignedIdentifier()
+            {
+                Id = "abc-123",
+                AccessPolicy = new BlobAccessPolicy()
+                {
+                    StartTime = expectedStartTime,
+                    Expiry = expectedStartTime.AddHours(1),
+                    Permission = BlobSharedAccessPermissions.Read | BlobSharedAccessPermissions.Write | BlobSharedAccessPermissions.Delete | BlobSharedAccessPermissions.List
+                }
+            };
+
+            client.SetContainerACL(containerName, ContainerAccessType.PublicContainer, new List<BlobSignedIdentifier>() { expectedIdentifier });
+
+            var actual = GetContainerPermissions(containerName);
+            Assert.AreEqual(1, actual.SharedAccessPolicies.Count);
+        }
+
+
+        [Test]
+        public async Task SetContainerACLAsync_ReadPolicyForValidContainer_SetsPolicyAndPublicAccessOnContainer()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            var expectedStartTime = GetTruncatedUtcNow();
+            var expectedIdentifier = new BlobSignedIdentifier()
+            {
+                Id = "abc-123",
+                AccessPolicy = new BlobAccessPolicy()
+                {
+                    StartTime = expectedStartTime,
+                    Expiry = expectedStartTime.AddHours(1),
+                    Permission = BlobSharedAccessPermissions.Read
+                }
+            };
+
+            await client.SetContainerACLAsync(containerName, ContainerAccessType.PublicContainer, new List<BlobSignedIdentifier>() { expectedIdentifier });
+
+            var actual = GetContainerPermissions(containerName);
+            Assert.AreEqual(1, actual.SharedAccessPolicies.Count);
+            AssertIdentifierInSharedAccessPolicies(actual.SharedAccessPolicies, expectedIdentifier, Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPermissions.Read);
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseNotPresentWithContainerOperationAzureException))]
+        public async Task SetContainerACLAsync_LeaseForNonLeasedContainer_ThrowsLeaseNotPresentException()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+
+            await client.SetContainerACLAsync(containerName, ContainerAccessType.None, new List<BlobSignedIdentifier>() { }, FakeLeaseId);
+
+            var actual = GetContainerPermissions(containerName);
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Off, actual.PublicAccess);
         }
 
         #endregion
@@ -928,6 +1120,15 @@ namespace Basic.Azure.Storage.Tests.Integration
             return container.Metadata;
         }
 
+        private void AssertIdentifierInSharedAccessPolicies(Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPolicies sharedAccessPolicies, BlobSignedIdentifier expectedIdentifier, Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPermissions permissions)
+        {
+            var policy = sharedAccessPolicies.Where(i => i.Key.Equals(expectedIdentifier.Id, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            Assert.IsNotNull(policy);
+            Assert.AreEqual(expectedIdentifier.AccessPolicy.StartTime, policy.Value.SharedAccessStartTime.Value.UtcDateTime);
+            Assert.AreEqual(expectedIdentifier.AccessPolicy.Expiry, policy.Value.SharedAccessExpiryTime.Value.UtcDateTime);
+            Assert.IsTrue(policy.Value.Permissions.HasFlag(permissions));
+        }
+
         #endregion
 
         #region Setup Mechanics
@@ -991,6 +1192,13 @@ namespace Basic.Azure.Storage.Tests.Integration
             container.SetPermissions(permissions);
         }
 
+        private Microsoft.WindowsAzure.Storage.Blob.BlobContainerPermissions GetContainerPermissions(string containerName)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            var permissions = container.GetPermissions();
+            return permissions;
+        }
 
         private void CreateBlob(string containerName, string blobName)
         {

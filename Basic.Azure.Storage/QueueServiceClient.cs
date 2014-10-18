@@ -124,12 +124,12 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
-        public void SetQueueACL(string queueName, List<SignedIdentifier> signedIdentifiers)
+        public void SetQueueACL(string queueName, List<QueueSignedIdentifier> signedIdentifiers)
         {
             var request = new SetQueueACLRequest(_account, queueName, signedIdentifiers);
             request.Execute();
         }
-        public async Task SetQueueACLAsync(string queueName, List<SignedIdentifier> signedIdentifiers)
+        public async Task SetQueueACLAsync(string queueName, List<QueueSignedIdentifier> signedIdentifiers)
         {
             var request = new SetQueueACLRequest(_account, queueName, signedIdentifiers);
             await request.ExecuteAsync();

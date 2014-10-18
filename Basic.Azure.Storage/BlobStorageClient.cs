@@ -2,6 +2,7 @@
 using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Basic.Azure.Storage.Communications.BlobService.ContainerOperations;
+using Basic.Azure.Storage.Communications.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -87,6 +88,17 @@ namespace Basic.Azure.Storage
             var request = new GetContainerACLRequest(_account, containerName);
             var response = await request.ExecuteAsync();
             return response.Payload;
+        }
+
+        public void SetContainerACL(string containerName, ContainerAccessType containerAccess, List<BlobSignedIdentifier> signedIdentifiers, string leaseId = null)
+        {
+            var request = new SetContainerACLRequest(_account, containerName, containerAccess, signedIdentifiers, leaseId);
+            request.Execute();
+        }
+        public async Task SetContainerACLAsync(string containerName, ContainerAccessType containerAccess, List<BlobSignedIdentifier> signedIdentifiers, string leaseId = null)
+        {
+            var request = new SetContainerACLRequest(_account, containerName, containerAccess, signedIdentifiers, leaseId);
+            await request.ExecuteAsync();
         }
 
         #endregion

@@ -18,10 +18,10 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
     {
         public GetContainerACLResponse()
         {
-            SignedIdentifiers = new ReadOnlyCollection<SignedIdentifier>(new List<SignedIdentifier>());
+            SignedIdentifiers = new ReadOnlyCollection<BlobSignedIdentifier>(new List<BlobSignedIdentifier>());
         }
 
-        public ReadOnlyCollection<SignedIdentifier> SignedIdentifiers { get; protected set; }
+        public ReadOnlyCollection<BlobSignedIdentifier> SignedIdentifiers { get; protected set; }
 
         public ContainerAccessType PublicAccess { get; set; }
 
@@ -76,12 +76,12 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
                 if (content.Length > 0)
                 {
                     var xDoc = XDocument.Parse(content);
-                    var signedIdentifiers = new List<SignedIdentifier>();
+                    var signedIdentifiers = new List<BlobSignedIdentifier>();
 
                     foreach (var identifierResponse in xDoc.Root.Elements().Where(e => e.Name.LocalName.Equals("SignedIdentifier")))
                     {
-                        var identifier = new SignedIdentifier();
-                        identifier.AccessPolicy = new AccessPolicy();
+                        var identifier = new BlobSignedIdentifier();
+                        identifier.AccessPolicy = new BlobAccessPolicy();
 
                         foreach (var element in identifierResponse.Elements())
                         {
@@ -96,7 +96,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
                                         switch (apElement.Name.LocalName)
                                         {
                                             case "Permission":
-                                                identifier.AccessPolicy.Permission = SharedAccessPermissionParse.Parse(apElement.Value);
+                                                identifier.AccessPolicy.Permission = SharedAccessPermissionParse.ParseBlob(apElement.Value);
                                                 break;
                                             case "Start":
                                                 identifier.AccessPolicy.StartTime = DateParse.Parse(apElement.Value);
@@ -113,7 +113,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
                         signedIdentifiers.Add(identifier);
                     }
 
-                    SignedIdentifiers = new ReadOnlyCollection<SignedIdentifier>(signedIdentifiers);
+                    SignedIdentifiers = new ReadOnlyCollection<BlobSignedIdentifier>(signedIdentifiers);
                 }
             }
         }

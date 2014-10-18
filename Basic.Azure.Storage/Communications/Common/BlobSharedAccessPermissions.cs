@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage.Communications.Common
 {
-    public class SignedIdentifier
+    [Flags]
+    public enum BlobSharedAccessPermissions
     {
-        public string Id { get; set; }
-
-        public AccessPolicy AccessPolicy { get; set; }
+        None = 0,
+        Read = 1,
+        Write = 2,
+        Delete = 4,
+        List = 8
     }
 }

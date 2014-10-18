@@ -42,8 +42,8 @@ namespace Basic.Azure.Storage.ClientContracts
         GetQueueACLResponse GetQueueACL(string queueName);
         Task<GetQueueACLResponse> GetQueueACLAsync(string queueName);
 
-        void SetQueueACL(string queueName, List<SignedIdentifier> signedIdentifiers);
-        Task SetQueueACLAsync(string queueName, List<SignedIdentifier> signedIdentifiers);
+        void SetQueueACL(string queueName, List<QueueSignedIdentifier> signedIdentifiers);
+        Task SetQueueACLAsync(string queueName, List<QueueSignedIdentifier> signedIdentifiers);
 
         #endregion
 

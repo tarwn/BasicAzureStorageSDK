@@ -20,7 +20,7 @@ namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
         private string _queueName;
         private byte[] _content;
 
-        public SetQueueACLRequest(StorageAccountSettings settings, string queueName, List<SignedIdentifier> signedIdentifiers)
+        public SetQueueACLRequest(StorageAccountSettings settings, string queueName, List<QueueSignedIdentifier> signedIdentifiers)
             : base(settings)
         {
             _queueName = queueName;
@@ -39,7 +39,7 @@ namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
             return builder;
         }
 
-        private byte[] PrepareContent(List<SignedIdentifier> signedIdentifiers)
+        private byte[] PrepareContent(List<QueueSignedIdentifier> signedIdentifiers)
         {
             var sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<SignedIdentifiers>");
             foreach (var identifier in signedIdentifiers)

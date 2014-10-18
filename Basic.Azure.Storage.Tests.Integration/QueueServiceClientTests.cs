@@ -650,18 +650,18 @@ namespace Basic.Azure.Storage.Tests.Integration
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
             var expectedStartTime = GetTruncatedUtcNow();
-            var expectedIdentifier = new SignedIdentifier()
+            var expectedIdentifier = new QueueSignedIdentifier()
             {
                 Id = "abc-123",
-                AccessPolicy = new AccessPolicy()
+                AccessPolicy = new QueueAccessPolicy()
                 {
                     StartTime = expectedStartTime,
                     Expiry = expectedStartTime.AddHours(1),
-                    Permission = SharedAccessPermissions.Add
+                    Permission = QueueSharedAccessPermissions.Add
                 }
             };
 
-            client.SetQueueACL(queueName, new List<SignedIdentifier>() { expectedIdentifier });
+            client.SetQueueACL(queueName, new List<QueueSignedIdentifier>() { expectedIdentifier });
 
             var actual = GetQueuePermissions(queueName);
             Assert.AreEqual(1, actual.SharedAccessPolicies.Count);
@@ -675,25 +675,25 @@ namespace Basic.Azure.Storage.Tests.Integration
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
             var expectedStartTime = GetTruncatedUtcNow();
-            var expectedIdentifiers = new List<SignedIdentifier>(){
-                new SignedIdentifier()
+            var expectedIdentifiers = new List<QueueSignedIdentifier>(){
+                new QueueSignedIdentifier()
                 {
                     Id = "abc-123a",
-                    AccessPolicy = new AccessPolicy()
+                    AccessPolicy = new QueueAccessPolicy()
                     {
                         StartTime = expectedStartTime.AddMinutes(12),
                         Expiry = expectedStartTime.AddHours(1),
-                        Permission = SharedAccessPermissions.Add
+                        Permission = QueueSharedAccessPermissions.Add
                     }
                 },
-                new SignedIdentifier()
+                new QueueSignedIdentifier()
                 {
                     Id = "abc-123b",
-                    AccessPolicy = new AccessPolicy()
+                    AccessPolicy = new QueueAccessPolicy()
                     {
                         StartTime = expectedStartTime.AddMinutes(34),
                         Expiry = expectedStartTime.AddHours(1),
-                        Permission = SharedAccessPermissions.Add
+                        Permission = QueueSharedAccessPermissions.Add
                     }
                 }
             };
@@ -715,18 +715,18 @@ namespace Basic.Azure.Storage.Tests.Integration
             IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
             var expectedStartTime = GetTruncatedUtcNow();
-            var expectedIdentifier = new SignedIdentifier()
+            var expectedIdentifier = new QueueSignedIdentifier()
             {
                 Id = "abc-123",
-                AccessPolicy = new AccessPolicy()
+                AccessPolicy = new QueueAccessPolicy()
                 {
                     StartTime = expectedStartTime,
                     Expiry = expectedStartTime.AddHours(1),
-                    Permission = SharedAccessPermissions.Add
+                    Permission = QueueSharedAccessPermissions.Add
                 }
             };
 
-            client.SetQueueACL(queueName, new List<SignedIdentifier>() { expectedIdentifier });
+            client.SetQueueACL(queueName, new List<QueueSignedIdentifier>() { expectedIdentifier });
 
             //expects exception
         }
@@ -738,18 +738,18 @@ namespace Basic.Azure.Storage.Tests.Integration
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
             var expectedStartTime = GetTruncatedUtcNow();
-            var expectedIdentifier = new SignedIdentifier()
+            var expectedIdentifier = new QueueSignedIdentifier()
             {
                 Id = "abc-123",
-                AccessPolicy = new AccessPolicy()
+                AccessPolicy = new QueueAccessPolicy()
                 {
                     StartTime = expectedStartTime,
                     Expiry = expectedStartTime.AddHours(1),
-                    Permission = SharedAccessPermissions.Add
+                    Permission = QueueSharedAccessPermissions.Add
                 }
             };
 
-            await client.SetQueueACLAsync(queueName, new List<SignedIdentifier>() { expectedIdentifier });
+            await client.SetQueueACLAsync(queueName, new List<QueueSignedIdentifier>() { expectedIdentifier });
 
             var actual = GetQueuePermissions(queueName);
             Assert.AreEqual(1, actual.SharedAccessPolicies.Count);
@@ -764,18 +764,18 @@ namespace Basic.Azure.Storage.Tests.Integration
             IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
             var expectedStartTime = GetTruncatedUtcNow();
-            var expectedIdentifier = new SignedIdentifier()
+            var expectedIdentifier = new QueueSignedIdentifier()
             {
                 Id = "abc-123",
-                AccessPolicy = new AccessPolicy()
+                AccessPolicy = new QueueAccessPolicy()
                 {
                     StartTime = expectedStartTime,
                     Expiry = expectedStartTime.AddHours(1),
-                    Permission = SharedAccessPermissions.Add
+                    Permission = QueueSharedAccessPermissions.Add
                 }
             };
 
-            await client.SetQueueACLAsync(queueName, new List<SignedIdentifier>() { expectedIdentifier });
+            await client.SetQueueACLAsync(queueName, new List<QueueSignedIdentifier>() { expectedIdentifier });
 
             //expects exception
         }
@@ -1412,7 +1412,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             }
         }
 
-        private void AssertIdentifierInSharedAccessPolicies(Microsoft.WindowsAzure.Storage.Queue.SharedAccessQueuePolicies sharedAccessPolicies, SignedIdentifier expectedIdentifier)
+        private void AssertIdentifierInSharedAccessPolicies(Microsoft.WindowsAzure.Storage.Queue.SharedAccessQueuePolicies sharedAccessPolicies, QueueSignedIdentifier expectedIdentifier)
         {
             var policy = sharedAccessPolicies.Where(i => i.Key.Equals(expectedIdentifier.Id, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             Assert.IsNotNull(policy);
