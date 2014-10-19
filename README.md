@@ -14,7 +14,7 @@ Status:
 
 - Queue Service - 15/15
 - Table Service - 1/14
-- Blob Service - 8/28
+- Blob Service - 9/28
 - File Service - 0/19
 
 (Does not include service preflight and stats operations)
@@ -99,10 +99,25 @@ Parameters that are required in the documentation are required by operations in 
 are optional in the documentation are optional in the client. If there is only a limited set of input options
 allowed, an enum will exist that has those options.
 
-*PutBlob* Currently PutBlob is an exception, as it has been split into a PutBlockBlob and PutPageBlob. In the API,
-some of the parameters are truly optional and some are only optional depending on which flavor you are uploading,
-so I chose to split it into two methods so that only the truly optional parameters would be optional and the ones
-that are type dependeant are not available for the opposite call.
+_Differences_
+
+For the most part, each API call will have 1 matching Request object. However, there are a few API calls that
+are actually multiple actions in a single call, and for those I have decided to make alter the pattern so the
+end consumer only has to deal with what is required/allowed for a specific action of the call rather than
+all possible inputs for all possible actions on one request.
+
+**PutBlob** has been split into a PutBlockBlob and PutPageBlob. In the API, some of the parameters are truly 
+optional and some are only optional depending on which flavor you are uploading, so I chose to split it into
+two methods so that only the truly optional parameters would be optional and the ones that are type dependeant
+are not available for the opposite call.
+
+**LeaseContainer** Has 5 actions with different allowed and required inputs and different expected responses.
+I have split this into 5 calls because I would prefer to make it clear and simple which arguments are 
+necessary for each call, even if it does somewhat break the model of 1 API call = 1 Request object.
+
+Note: This is an area that I find questionable in the API. I'm not sure why they chose to embed multiple 
+actions into common requests like this, I think they generally did a good idea of making the API clear and 
+these points stand out in contradiction to the rest.
 
 _Responses_
 
@@ -231,7 +246,7 @@ Entity Operations
 - Insert or Replace Entity - No
 - Insert or Merge Entity - No
 
-Blob Service - 8/30 - BlobServiceClient: IBlobServiceClient
+Blob Service - 9/30 - BlobServiceClient: IBlobServiceClient
 -----------------------------------------------------------
 
 Account Operations
@@ -251,7 +266,7 @@ Container Operations
 - Get Container ACL - Yes
 - Set Container ACL - Yes
 - Delete Container - Yes
-- Lease Container - No
+- Lease Container - Yes
 - List Blobs - No
 
 Blob Operations

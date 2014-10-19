@@ -49,6 +49,14 @@
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobType.cs" />
     <Compile Include="Communications\BlobService\ContainerAccessType.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerChangeRequest.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerBreakRequest.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerReleaseRequest.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerRenewResponse.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerChangeResponse.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerRenewRequest.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerAcquireResponse.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerAcquireRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\DeleteContainerRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\GetContainerACLResponse.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\GetContainerACLRequest.cs" />
@@ -61,6 +69,7 @@
     <Compile Include="Communications\BlobService\ContainerOperations\GetContainerPropertiesResponse.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerResponse.cs" />
     <Compile Include="Communications\Common\BlobAccessPolicy.cs" />
+    <Compile Include="Communications\Common\LeaseAction.cs" />
     <Compile Include="Communications\Common\QueueAccessPolicy.cs" />
     <Compile Include="Communications\Common\LeaseDuration.cs" />
     <Compile Include="Communications\Common\LeaseState.cs" />
@@ -143,6 +152,8 @@
     <Compile Include="Communications\TableService\CreateTableResponse.cs" />
     <Compile Include="Communications\TableService\MetadataPreference.cs" />
     <Compile Include="Communications\Utility\DateParse.cs" />
+    <Compile Include="Communications\Utility\Guard.cs" />
+    <Compile Include="Communications\Utility\GuardRange.cs" />
     <Compile Include="Communications\Utility\IdentifierValidation.cs" />
     <Compile Include="ClientContracts\IQueueServiceClient.cs" />
     <Compile Include="Communications\Utility\SharedAccessPermissionParse.cs" />

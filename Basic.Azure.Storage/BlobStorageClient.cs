@@ -112,7 +112,63 @@ namespace Basic.Azure.Storage
             await request.ExecuteAsync();
         }
 
+        public LeaseContainerAcquireResponse LeaseContainerAcquire(string containerName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
+        {
+            var request = new LeaseContainerAcquireRequest(_account, containerName, leaseDurationInSeconds, proposedLeaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<LeaseContainerAcquireResponse> LeaseContainerAcquireAsync(string containerName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
+        {
+            var request = new LeaseContainerAcquireRequest(_account, containerName, leaseDurationInSeconds, proposedLeaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
 
+        public LeaseContainerRenewResponse LeaseContainerRenew(string containerName, string leaseId)
+        {
+            var request = new LeaseContainerRenewRequest(_account, containerName, leaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<LeaseContainerRenewResponse> LeaseContainerRenewAsync(string containerName, string leaseId)
+        {
+            var request = new LeaseContainerRenewRequest(_account, containerName, leaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+        public LeaseContainerChangeResponse LeaseContainerChange(string containerName, string currentLeaseid, string proposedLeaseId)
+        {
+            var request = new LeaseContainerChangeRequest(_account, containerName, currentLeaseid, proposedLeaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<LeaseContainerChangeResponse> LeaseContainerChangeAsync(string containerName, string currentLeaseid, string proposedLeaseId)
+        {
+            var request = new LeaseContainerChangeRequest(_account, containerName, currentLeaseid, proposedLeaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+        public void LeaseContainerRelease(string containerName, string leaseId)
+        {
+            var request = new LeaseContainerReleaseRequest(_account, containerName, leaseId);
+            request.Execute();
+        }
+        public async Task LeaseContainerReleaseAsync(string containerName, string leaseId)
+        {
+            var request = new LeaseContainerReleaseRequest(_account, containerName, leaseId);
+            await request.ExecuteAsync();
+        }
+        public void LeaseContainerBreak(string containerName, string leaseId, int leaseBreakPeriod)
+        {
+            var request = new LeaseContainerBreakRequest(_account, containerName, leaseId, leaseBreakPeriod);
+            request.Execute();
+        }
+        public async Task LeaseContainerBreakAsync(string containerName, string leaseId, int leaseBreakPeriod)
+        {
+            var request = new LeaseContainerBreakRequest(_account, containerName, leaseId, leaseBreakPeriod);
+            await request.ExecuteAsync();
+        }
         #endregion
 
         #region Blob Operations

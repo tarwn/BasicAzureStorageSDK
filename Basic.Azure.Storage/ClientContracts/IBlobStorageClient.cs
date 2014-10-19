@@ -57,8 +57,22 @@ namespace Basic.Azure.Storage.ClientContracts
         void DeleteContainer(string containerName, string leaseId = null);
         Task DeleteContainerAsync(string containerName, string leaseId = null);
 
-        
+        LeaseContainerAcquireResponse LeaseContainerAcquire(string containerName, int leaseDurationInSeconds = -1, string proposedLeaseId = null);
+        Task<LeaseContainerAcquireResponse> LeaseContainerAcquireAsync(string containerName, int leaseDurationInSeconds = -1, string proposedLeaseId = null);
+        LeaseContainerRenewResponse LeaseContainerRenew(string containerName, string leaseId);
+        Task<LeaseContainerRenewResponse> LeaseContainerRenewAsync(string containerName, string leaseId);
+        LeaseContainerChangeResponse LeaseContainerChange(string containerName, string currentLeaseId, string proposedLeaseId);
+        Task<LeaseContainerChangeResponse> LeaseContainerChangeAsync(string containerName, string currentLeaseId, string proposedLeaseId);
+        void LeaseContainerRelease(string containerName, string leaseId);
+        Task LeaseContainerReleaseAsync(string containerName, string leaseId);
+        void LeaseContainerBreak(string containerName, string leaseId, int leaseBreakPeriod);
+        Task LeaseContainerBreakAsync(string containerName, string leaseId, int leaseBreakPeriod);
         #endregion
+
+
+
+
+
 
 
     }

@@ -38,6 +38,10 @@ namespace Basic.Azure.Storage.Communications.Core
 
             public const string LastModified = "Last-Modified";
 
+            public const string LeaseAction = "x-ms-lease-action";
+
+            public const string LeaseBreakPeriod = "x-ms-lease-break-period";
+
             public const string LeaseDuration = "x-ms-lease-duration";
 
             public const string LeaseId = "x-ms-lease-id";
@@ -49,6 +53,8 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string MetaDataPrefix = "x-ms-meta-";
 
             public const string OperationDate = "Date";
+
+            public const string ProposedLeaseId = "x-ms-proposed-lease-id";
 
             public const string PopReceipt = "x-ms-popreceipt";
 
@@ -83,6 +89,15 @@ namespace Basic.Azure.Storage.Communications.Core
 
                 public const string Page = "PageBlob";
 
+            }
+
+            public class LeaseAction
+            {
+                public const string Acquire = "acquire";
+                public const string Renew = "renew";
+                public const string Change = "change";
+                public const string Release = "release";
+                public const string Break = "break";
             }
 
             public static class LeaseDuration
@@ -163,6 +178,8 @@ namespace Basic.Azure.Storage.Communications.Core
 
             public static class Comp
             {
+                public const string Lease = "lease";
+
                 public const string Properties = "properties";
             }
 

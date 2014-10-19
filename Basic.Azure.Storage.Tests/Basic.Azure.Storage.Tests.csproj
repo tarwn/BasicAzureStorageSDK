@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobRequestTests.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerAcquireTests.cs" />
     <Compile Include="Communications\Common\SharedAccessPermissionParseTests.cs" />
     <Compile Include="Communications\Core\ExceptionRetryStrategyTests.cs" />
     <Compile Include="Communications\Core\RequestBaseTests.AzureExceptions.cs" />
