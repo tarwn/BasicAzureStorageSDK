@@ -6,6 +6,7 @@ using Microsoft.WindowsAzure.Storage;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -1232,8 +1233,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
-
-
+        
         [Test]
         public async Task LeaseContainerBreakAsync_LeasedContainerWithLongBreakPeriod_SetLeaseToBreakinge()
         {
@@ -1259,6 +1259,205 @@ namespace Basic.Azure.Storage.Tests.Integration
             await client.LeaseContainerBreakAsync(containerName, FakeLeaseId, 0);
 
             // expects exception
+        }
+
+        [Test]
+        public void ListBlobs_EmptyContainer_ReturnsEmptyList()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+
+            var result = client.ListBlobs(containerName);
+
+            Assert.IsEmpty(result.BlobList);
+        }
+
+        [Test]
+        public void ListBlobs_PopulatedContainer_ReturnsExpectedBlobsInList()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, "blob/UnitTest/SampleA");
+            CreateBlob(containerName, "blob/UnitTest/SampleB");
+
+            var result = client.ListBlobs(containerName);
+
+            Assert.AreEqual(2, result.BlobList.Count);
+            Assert.IsTrue(result.BlobList.Any(b => b.Name == "blob/UnitTest/SampleA"));
+            Assert.IsTrue(result.BlobList.Any(b => b.Name == "blob/UnitTest/SampleB"));
+        }
+        
+        [Test]
+        public void ListBlobs_PrefixSupplied_ReturnsOnlyBlobsMatchingThatPrefix()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, "blob/UnitTest/SampleA");
+            CreateBlob(containerName, "blob/UnitTest/SampleB");
+            CreateBlob(containerName, "SomethingElse.txt");
+
+            var result = client.ListBlobs(containerName, prefix: "blob");
+
+            Assert.AreEqual(2, result.BlobList.Count);
+            Assert.IsTrue(result.BlobList.Any(b => b.Name == "blob/UnitTest/SampleA"));
+            Assert.IsTrue(result.BlobList.Any(b => b.Name == "blob/UnitTest/SampleB"));
+        }
+
+        [Test]
+        public void ListBlobs_PrefixAndDelimiterSupplied_ReturnsOnlyBlobsMatchingThatPrefixWithNamesTruncatedAtDelimiter()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, "blob/UnitTest/SampleA");
+            CreateBlob(containerName, "blob/UnitTest/SampleB");
+            CreateBlob(containerName, "SomethingElse.txt");
+            string expectedPrefix = "blob/UnitTest/";
+
+            var result = client.ListBlobs(containerName, prefix: expectedPrefix, delimiter: "/");
+
+            Assert.AreEqual(2, result.BlobList.Count);
+            Assert.AreEqual(expectedPrefix, result.Prefix);
+            Assert.IsTrue(result.BlobList.Any(b => b.Name == "blob/UnitTest/SampleA"));
+            Assert.IsTrue(result.BlobList.Any(b => b.Name == "blob/UnitTest/SampleB"));
+        }
+
+        [Test]
+        public void ListBlobs_SmallerMaxResultsThanBlobCount_ReturnsResultsAndContinuationMarker()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, "blob1");
+            CreateBlob(containerName, "blob2");
+            CreateBlob(containerName, "blob3");
+            
+            var result = client.ListBlobs(containerName, maxResults: 2);
+
+            Assert.AreEqual(2, result.BlobList.Count);
+            Assert.AreEqual(2, result.MaxResults);
+            Assert.IsNotNullOrEmpty(result.NextMarker);
+        }
+
+        [Test]
+        public void ListBlobs_MarkerSuppliedForLongerList_ReturnsNextSetofResults()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, "blob1");
+            CreateBlob(containerName, "blob2");
+            CreateBlob(containerName, "blob3");
+
+            var result = client.ListBlobs(containerName, maxResults: 2);
+            var nextMarker = result.NextMarker;
+            var remainingResult = client.ListBlobs(containerName, marker: nextMarker);
+
+            Assert.AreEqual(1, remainingResult.BlobList.Count);
+            Assert.IsNotNullOrEmpty(remainingResult.Marker);
+        }
+
+        [Test]
+        public void ListBlobs_IncludeMetadata_ReturnsMetadataInResults()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, "blob1", new Dictionary<string, string>() { 
+                { "a", "1"},
+                { "b", "2"}
+            });
+
+            var result = client.ListBlobs(containerName, include: ListBlobsInclude.Metadata);
+
+            Assert.AreEqual("blob1", result.BlobList[0].Name, "The list blob results did not include the test blob we setup with metadata as the first entry");
+            Assert.IsNotEmpty(result.BlobList[0].Metadata);
+            Assert.AreEqual(2, result.BlobList[0].Metadata.Count);
+            Assert.IsTrue(result.BlobList[0].Metadata.Any(kvp => kvp.Key == "a" && kvp.Value == "1"));
+            Assert.IsTrue(result.BlobList[0].Metadata.Any(kvp => kvp.Key == "b" && kvp.Value == "2"));
+        }
+
+        [Test]
+        public void ListBlobs_IncludeCopy_ReturnsCopyStatus()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, "blob1");
+            CopyBlob(containerName, "blob1", "blob1copy");
+
+            var result = client.ListBlobs(containerName, include: ListBlobsInclude.Copy);
+
+            var copiedBlob = result.BlobList.Where(b => b.Name == "blob1copy").FirstOrDefault();
+            Assert.IsNotNull(copiedBlob);
+            Assert.IsNotEmpty(copiedBlob.Properties.CopyId);
+            Assert.IsNotNull(copiedBlob.Properties.CopySource);
+            Assert.IsNotEmpty(copiedBlob.Properties.CopyProgress);
+            Assert.IsNotNull(copiedBlob.Properties.CopyStatus);
+        }
+
+        [Test]
+        public void ListBlobs_IncludeSnapshots_ReturnsSnapshotDetails()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, "blob1");
+            SnapshotBlob(containerName, "blob1");
+
+            var result = client.ListBlobs(containerName, include: ListBlobsInclude.Snapshots);
+
+            Assert.AreEqual(2, result.BlobList.Count);
+            Assert.IsTrue(result.BlobList.Any(b => b.Snapshot.HasValue));
+            Assert.IsTrue(result.BlobList.Any(b => !b.Snapshot.HasValue));
+        }
+        
+        [Test]
+        public void ListBlobs_IncludeUncommittedBlobs_ReturnsUncommittedBlobs()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            CreateBlobUncommitted(containerName, "blob1");
+
+            var result = client.ListBlobs(containerName, include: ListBlobsInclude.UncomittedBlobs);
+
+            Assert.AreEqual(1, result.BlobList.Count);
+        }
+        
+        [Test]
+        public void ListBlobs_BlockAndPageBlobs_ReturnsBothTypes()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, "blob1");
+            CreatePageBlob(containerName, "blob2");
+
+            var result = client.ListBlobs(containerName);
+
+            Assert.AreEqual(2, result.BlobList.Count);
+            Assert.IsTrue(result.BlobList.Any(b => b.Properties.BlobType == Communications.Common.BlobType.Block));
+            Assert.IsTrue(result.BlobList.Any(b => b.Properties.BlobType == Communications.Common.BlobType.Page));
+        }
+
+        [Test]
+        public async Task ListBlobsAsync_PopulatedContainer_ReturnsExpectedBlobsInList()
+        {
+            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, "blob/UnitTest/SampleA");
+            CreateBlob(containerName, "blob/UnitTest/SampleB");
+
+            var result = await client.ListBlobsAsync(containerName);
+
+            Assert.AreEqual(2, result.BlobList.Count);
+            Assert.IsTrue(result.BlobList.Any(b => b.Name == "blob/UnitTest/SampleA"));
+            Assert.IsTrue(result.BlobList.Any(b => b.Name == "blob/UnitTest/SampleB"));
         }
 
         #endregion
@@ -1754,7 +1953,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             return container.Properties.LeaseState;
         }
 
-        private void CreateBlob(string containerName, string blobName)
+        private void CreateBlob(string containerName, string blobName, Dictionary<string,string> metadata = null)
         {
             var client = _storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
@@ -1762,7 +1961,69 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             byte[] data = UTF8Encoding.UTF8.GetBytes("Generic content");
             blob.UploadFromByteArray(data, 0, data.Length);
+
+            if (metadata != null)
+            {
+                foreach (var key in metadata.Keys)
+                {
+                    blob.Metadata.Add(key, metadata[key]);
+                }
+                blob.SetMetadata();
+            }
         }
+
+        private void CreatePageBlob(string containerName, string blobName, Dictionary<string, string> metadata = null)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            var blob = container.GetPageBlobReference(blobName);
+
+            byte[] data = UTF8Encoding.UTF8.GetBytes("Generic content");
+            var necessarySize = data.Length + (512 - (data.Length % 512));
+            var pageData = new byte[necessarySize];
+            data.CopyTo(pageData, 0);
+            blob.UploadFromByteArray(pageData, 0, pageData.Length);
+
+            if (metadata != null)
+            {
+                foreach (var key in metadata.Keys)
+                {
+                    blob.Metadata.Add(key, metadata[key]);
+                }
+                blob.SetMetadata();
+            }
+        }
+
+        private void CreateBlobUncommitted(string containerName, string blobName)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            var blob = container.GetBlockBlobReference(blobName);
+
+            byte[] data = UTF8Encoding.UTF8.GetBytes("Generic content");
+            // non-Base64 values fail?
+            var blockId = Convert.ToBase64String(Encoding.UTF8.GetBytes("A"));
+            blob.PutBlock(blockId, new MemoryStream(data), null);
+        }
+
+        private void CopyBlob(string containerName, string sourceBlobName, string targetBlobName)
+        {
+            // could we have made this require more work?
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            var sourceBlob = container.GetBlockBlobReference(sourceBlobName);
+            var targetBlob = container.GetBlockBlobReference(targetBlobName);
+            targetBlob.StartCopyFromBlob(sourceBlob);
+        }
+
+        private void SnapshotBlob(string containerName, string blobName)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            var blob = container.GetBlockBlobReference(blobName);
+            blob.CreateSnapshot();
+        }
+
 
         #endregion
 

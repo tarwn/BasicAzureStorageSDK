@@ -144,6 +144,8 @@ namespace Basic.Azure.Storage.Communications.Core
         {
             public const string Comp = "comp";
 
+            public const string Delimiter = "delimiter";
+
             public const string Include = "include";
 
             public const string Marker = "marker";

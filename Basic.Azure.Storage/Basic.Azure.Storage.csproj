@@ -49,6 +49,8 @@
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobType.cs" />
     <Compile Include="Communications\BlobService\ContainerAccessType.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\ListBlobsResponse.cs" />
+    <Compile Include="Communications\BlobService\ContainerOperations\ListBlobsRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerChangeRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerBreakRequest.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerReleaseRequest.cs" />
@@ -69,7 +71,12 @@
     <Compile Include="Communications\BlobService\ContainerOperations\GetContainerPropertiesResponse.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\CreateContainerResponse.cs" />
     <Compile Include="Communications\Common\BlobAccessPolicy.cs" />
+    <Compile Include="Communications\Common\BlobType.cs" />
+    <Compile Include="Communications\Common\CopyStatus.cs" />
     <Compile Include="Communications\Common\LeaseAction.cs" />
+    <Compile Include="Communications\Common\ListBlobsInclude.cs" />
+    <Compile Include="Communications\Common\ListBlobsItem.cs" />
+    <Compile Include="Communications\Common\ListBlobsItemProperties.cs" />
     <Compile Include="Communications\Common\QueueAccessPolicy.cs" />
     <Compile Include="Communications\Common\LeaseDuration.cs" />
     <Compile Include="Communications\Common\LeaseState.cs" />
@@ -151,6 +158,7 @@
     <Compile Include="Communications\TableService\CreateTableRequest.cs" />
     <Compile Include="Communications\TableService\CreateTableResponse.cs" />
     <Compile Include="Communications\TableService\MetadataPreference.cs" />
+    <Compile Include="Communications\Utility\BlobListIncludeParse.cs" />
     <Compile Include="Communications\Utility\DateParse.cs" />
     <Compile Include="Communications\Utility\Guard.cs" />
     <Compile Include="Communications\Utility\GuardRange.cs" />

@@ -67,7 +67,12 @@ namespace Basic.Azure.Storage.ClientContracts
         Task LeaseContainerReleaseAsync(string containerName, string leaseId);
         void LeaseContainerBreak(string containerName, string leaseId, int leaseBreakPeriod);
         Task LeaseContainerBreakAsync(string containerName, string leaseId, int leaseBreakPeriod);
+
+        ListBlobsResponse ListBlobs(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null);
+        Task<ListBlobsResponse> ListBlobsAsync(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null);
+
         #endregion
+
 
 
 

@@ -14,10 +14,15 @@ Status:
 
 - Queue Service - 15/15
 - Table Service - 1/14
-- Blob Service - 9/28
+- Blob Service - 10/28
 - File Service - 0/19
 
 (Does not include service preflight and stats operations)
+
+License
+====================
+
+See LICENSE.txt
 
 Motivation
 ====================
@@ -88,7 +93,7 @@ Using the Library
 
 These are the objects you would access while using the library.
 
-_Clients_
+### Clients
 
 - BlobStorageClient - operations for Blob Storage Service - http://msdn.microsoft.com/en-us/library/azure/dd135733.aspx
 - QueueServiceClient - operations for Queue Service - http://msdn.microsoft.com/en-us/library/azure/dd179363.aspx
@@ -99,7 +104,7 @@ Parameters that are required in the documentation are required by operations in 
 are optional in the documentation are optional in the client. If there is only a limited set of input options
 allowed, an enum will exist that has those options.
 
-_Differences_
+### Differences
 
 For the most part, each API call will have 1 matching Request object. However, there are a few API calls that
 are actually multiple actions in a single call, and for those I have decided to make alter the pattern so the
@@ -119,13 +124,13 @@ Note: This is an area that I find questionable in the API. I'm not sure why they
 actions into common requests like this, I think they generally did a good idea of making the API clear and 
 these points stand out in contradiction to the rest.
 
-_Responses_
+### Responses
 
 Storage API calls that returns responses will have a matching response object defined in the library that
 is named after the operation. Executing a CreateContainer operation, for instance, will return a 
 CreateContainerResponse.
 
-_Exceptions_
+### Exceptions
 
 There is a specific exception for each error listed in the documented API error tables.
 
@@ -139,7 +144,7 @@ Reference: http://msdn.microsoft.com/en-us/library/azure/dd179382.aspx
 They all share a common base AzureException, so you have the option of handling all Azure Exceptions in a single
 catch statement, or add logic for specific errors (such as BlobNotFoundAzureException).
 
-_Retries_
+### Retries
 
 There is a default retry Policy currently in place that will be exposed later. When this retry policy is exhausted,
 it wraps the final specific exception in a RetriedException so you have both the final exception details as well
@@ -148,31 +153,47 @@ as information on how many times the operation was tried before giving up.
 Internal Geography
 -------------------
 
-Expanding on the usage above, the internals try to follow a consistent pattern to make it easy to match up with
-the API documentation.
+The layout of the code internally follows some patterns as well.
 
-_Services and Operation Requests and Responses_
+- /ClientContracts - the interfaces for the Blob/Table/Queue client objects above
+- /Communications/BlobService - the blob service operations
+- /Communications/Common - common data objects and enums used in API operations
+- /Communications/Core - the core logic for Requests and Responses distilled into one place so Request/Response for Operations only reflect the specific requirements for the operation
+- /Communications/QueueService - the Queue Service operations
+- /Communications/ServiceExceptions - concrete exception for each documented service exception, a base AzureException, and an AzureResponseParseException
+- /Communications/TableService - the Table Service operations
+- /Communications/Utility - utility classes for parsing and formatting of data used by Request and Response objects
 
-The services folder structure follows the documentation folder structure. 
+### Service Folder Structures
 
-See http://msdn.microsoft.com/en-us/library/azure/dd179355.aspx
+The services folder structure follows the documentation folder structure, with a single high level folder for the 
+service, sub-folders for the categories of operations, and then Request and Response objects named the same as the 
+API operations.
 
-Each service type (Blob, Queue, table) has a corresponding folder in Communications. They then have the same 
-sub-folders as the documentation. 
+Example: Create Container - http://msdn.microsoft.com/en-us/library/windowsazure/dd179468.aspx
+Library Location: /Communications/BlobService/ContainerOperations/CreateContainerRequest
+Documentation: Blob Service / Operations on Containers / Create Contaner
 
-Example: Put Blob
-Library Location: /Communications/BlobService/BlobOperations/PutBlobRequest
-Documentation: Blob Service - Operations on Blobs - Put Blob
+_Note: I'm not sure if MSDN renamed the "Operations" level or if I was inconsistent about it, the documentation has 
+moved since I initially started this._
 
-I'm not sure if MSDN renamed the "Operations" level or if I was inconsistent about it, the documentation has 
-moved since I initially started this.
+### Service Exceptions
 
-_Exceptions_
+Service Exceptions are generated from the documentated tables of errors in the API, using regular expressions to 
+tweak the output and then T4 to generate the actual classes. They have a common base class, giving you the freedom
+to catch exceptions as specifically or generally as you want. 
 
-Exceptions live at Communications/Exceptions. They are generated from the documentated tables of errors in the API,
-using regular expressions to tweak the output and then T4 to generate the actual classes.
+These exceptions also include all of the details available. The API often provides more details for errors than are
+surfaced in the standard Azure Storage SDK; these exceptions surface all of that additional information.
 
-_Core Logic_
+### Retried Exceptions
+
+When the retry policy is exhausted, the final exception is wrapped in a RetriedException to provide information that
+the Operation was retried multiple times, including the number of times it was tried. This is often one of the first
+things that Azure support asks. later I may also add the full collection of exceptions that happened, as there is at
+least one outstanding issue around popreceipts that requires you to know about the first error that occurred.
+
+### Core Logic
 
 The core logic includes the RequestBase, the Response wrapper that wraps around the specific resposne payload 
 expected for an operation, the RetriedException that is returned when we give up after exhausting the retry policy,
@@ -246,7 +267,7 @@ Entity Operations
 - Insert or Replace Entity - No
 - Insert or Merge Entity - No
 
-Blob Service - 9/30 - BlobServiceClient: IBlobServiceClient
+Blob Service - 10/30 - BlobServiceClient: IBlobServiceClient
 -----------------------------------------------------------
 
 Account Operations
@@ -267,7 +288,7 @@ Container Operations
 - Set Container ACL - Yes
 - Delete Container - Yes
 - Lease Container - Yes
-- List Blobs - No
+- List Blobs - Yes
 
 Blob Operations
 
@@ -327,3 +348,20 @@ File Operations
 - Get File Metadata - No
 - Set File Metadata - No
 - Delete File - No
+
+Horizantal ToDo List
+======================
+
+On top of finishing the operations above, there are several horizantal tasks I want to complete as well:
+
+- Guard statements in every request, especially the ones with format restrictions (ie, strings that look like Guids, integers with specific valid ranges)
+- Expose the Retry policy
+- Method to automatically retry 500 Operation Timeout errors for Clear Queue request (large queues timeout and should be retried, per documentation)
+- Method to automatically download all continuations via marker for operations like List Queues and List Blobs
+
+And then less necessary features that seem like a good idea:
+
+- Expose method to collect/log all requests and responses (all, any operation with 1 or more retries, only failed operations)
+- Expose ability to set timeout and client id values for outgoing requests
+- Evaluate performance of current XML LINQ parsing for responses vs alteratives and switch
+

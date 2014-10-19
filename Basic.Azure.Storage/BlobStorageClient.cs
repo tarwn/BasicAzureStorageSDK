@@ -169,6 +169,20 @@ namespace Basic.Azure.Storage
             var request = new LeaseContainerBreakRequest(_account, containerName, leaseId, leaseBreakPeriod);
             await request.ExecuteAsync();
         }
+
+        public ListBlobsResponse ListBlobs(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null)
+        {
+            var request = new ListBlobsRequest(_account, containerName, prefix, delimiter, marker, maxResults, include);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<ListBlobsResponse> ListBlobsAsync(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null)
+        {
+            var request = new ListBlobsRequest(_account, containerName, prefix, delimiter, marker, maxResults, include);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         #endregion
 
         #region Blob Operations
