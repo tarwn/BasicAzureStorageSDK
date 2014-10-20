@@ -40,6 +40,8 @@ Azure Storage SDK for .Net, I've continued to be annoyed by several things:
    lack of support in the emulator
 
 4) Information: The generic way exceptions are handled and thrown compared to the detail available from the API
+   _Note: There is extended info in the Storage SDK exception, you just have to dig to find it and it has moved
+          a couple times_
 
 5) Information: The lack of information about failed retries
 
@@ -74,10 +76,12 @@ I've written an implementation of the Azure API before, but I wanted to start wr
 7) Is easily mockable for unit testing code that interacts with the library.
 
 8) Does not force you to use asynchronous patterns throughout your codebase (except where the API requires them)
+   _Note: The standard Storage SDK doesn't force this, but many other libraries these days use only Async methods,
+          assuming that converting an entire existing application to async/await is an easy process_
 
 9) Requires no magic. There are no exposed properties that are only correct after another call is made, no
    enumerated values that are not enums, no properties that actually call the API behind the scenes,  and when a
-   parametr has character or length restrictions, the library should be smart enough to tell you about them.
+   parameter has character or length restrictions, the library should be smart enough to tell you about them.
 
 Currently retries are only communicated upward at the end of a failed operation rather than providing hooks to 
 gather information on each individual failed retry. Restrictions on length and character usage have also not been 
