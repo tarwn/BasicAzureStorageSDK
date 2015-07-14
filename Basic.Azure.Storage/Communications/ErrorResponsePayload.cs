@@ -21,12 +21,12 @@ namespace Basic.Azure.Storage.Communications
         public string ErrorMessage { get; set; }
         public Dictionary<string,string> Details { get; set; }
 
-        public void ParseResponseBody(Stream responseStream)
+        public async Task ParseResponseBodyAsync(Stream responseStream)
         {
             using (StreamReader sr = new StreamReader(responseStream))
             {
                                
-                var content = sr.ReadToEnd();
+                var content = await sr.ReadToEndAsync();
                 if (content.Length > 0)
                 {
                     ErrorCode = "CodeNotProvided";

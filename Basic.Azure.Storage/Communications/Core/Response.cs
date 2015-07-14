@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage.Communications.Core
 {
-    public class Response<T>
+    public class Response<T> : IDisposable
         where T : IResponsePayload, new()
     {
         private T _payload;
+        private Stream _responseStreamToDisposeOf;
 
         public Response(HttpWebResponse httpWebResponse)
         {
@@ -21,12 +22,18 @@ namespace Basic.Azure.Storage.Communications.Core
             HttpStatusDescription = httpWebResponse.StatusDescription;
 
             ParseHeaders(httpWebResponse);
+        }
 
-            var responseStream = httpWebResponse.GetResponseStream();
+        // seperated from constructor because I don't like doing network calls in ctor and 
+        // we want to move disposal of stream later in lifecycle so we can optionally expose
+        // the stream directly to caller
+        public async Task ProcessResponseStreamAsync(HttpWebResponse httpWebResponse)
+        {
+            _responseStreamToDisposeOf = httpWebResponse.GetResponseStream();
             if (ExpectsResponseBody)
-                ((IReceiveDataWithResponse)_payload).ParseResponseBody(responseStream);
+                await ((IReceiveDataWithResponse)_payload).ParseResponseBodyAsync(_responseStreamToDisposeOf);
             else
-                ReadResponseToNull(responseStream);
+                await ReadResponseToNull(_responseStreamToDisposeOf);
         }
 
         public int NumberOfAttempts { get; set; }
@@ -55,11 +62,11 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        private void ReadResponseToNull(Stream stream)
+        private async Task ReadResponseToNull(Stream stream)
         {
             using (var sr = new StreamReader(stream))
             {
-                sr.ReadToEnd();
+                await sr.ReadToEndAsync();
             }
         }
 
@@ -71,6 +78,10 @@ namespace Basic.Azure.Storage.Communications.Core
             if (ExpectsResponseHeaders)
                 ((IReceiveAdditionalHeadersWithResponse)_payload).ParseHeaders(response);
         }
-
+        
+        public void Dispose()
+        {
+            _responseStreamToDisposeOf.Dispose();
+        }
     }
 }

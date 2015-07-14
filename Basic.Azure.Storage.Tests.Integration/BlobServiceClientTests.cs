@@ -62,6 +62,10 @@ namespace Basic.Azure.Storage.Tests.Integration
             }
         }
 
+        #region Account Operations
+
+        #endregion
+
         #region Container Operations Tests
 
         [Test]
@@ -1776,6 +1780,93 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
 
+        [Test]
+        public void GetBlob_ExistingBlob_DownloadsBlobBytes()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            var client = new BlobServiceClient(_accountSettings);
+
+            var response = client.GetBlob(containerName, blobName);
+            var data = response.GetDataBytes();
+
+            Assert.AreEqual(expectedContent, UTF8Encoding.UTF8.GetString(data));
+        }
+
+        [Test]
+        public async Task GetBlobAsync_ExistingBlob_DownloadsBlobBytes()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            var client = new BlobServiceClient(_accountSettings);
+
+            var response = await client.GetBlobAsync(containerName, blobName);
+            var data = response.GetDataBytes();
+
+            Assert.AreEqual(expectedContent, UTF8Encoding.UTF8.GetString(data));
+        }
+
+        [Test]
+        public void GetBlob_ExistingBlob_DownloadsBlobStream()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            var client = new BlobServiceClient(_accountSettings);
+
+            var response = client.GetBlob(containerName, blobName);
+            byte[] data;
+            using (var stream = response.GetDataStream()) 
+            {
+                var ms = new MemoryStream();
+                stream.CopyTo(ms);
+                data = ms.ToArray();
+            }
+
+            Assert.AreEqual(expectedContent, UTF8Encoding.UTF8.GetString(data));
+        }
+
+        [Test]
+        public async Task GetBlobAsync_ExistingBlob_DownloadsBlobStream()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            var client = new BlobServiceClient(_accountSettings);
+
+            var response = await client.GetBlobAsync(containerName, blobName);
+            byte[] data;
+            using (var stream = response.GetDataStream())
+            {
+                var ms = new MemoryStream();
+                stream.CopyTo(ms);
+                data = ms.ToArray();
+            }
+
+            Assert.AreEqual(expectedContent, UTF8Encoding.UTF8.GetString(data));
+        }
+
+        //[Test]
+        //public void GetBlobProperties_ValidBlob_ReturnsProperties()
+        //{
+        //    IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+        //    var containerName = GenerateSampleContainerName();
+        //    CreateContainer(containerName);
+        //    CreateBlob(containerName, "blob1");
+
+        //    var response = client.GetProperties(containerName, "blob1");
+        //}
+
         #endregion
 
         #region Assertions
@@ -1953,13 +2044,13 @@ namespace Basic.Azure.Storage.Tests.Integration
             return container.Properties.LeaseState;
         }
 
-        private void CreateBlob(string containerName, string blobName, Dictionary<string,string> metadata = null)
+        private void CreateBlob(string containerName, string blobName, Dictionary<string,string> metadata = null, string content = "Generic content")
         {
             var client = _storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             var blob = container.GetBlockBlobReference(blobName);
 
-            byte[] data = UTF8Encoding.UTF8.GetBytes("Generic content");
+            byte[] data = UTF8Encoding.UTF8.GetBytes(content);
             blob.UploadFromByteArray(data, 0, data.Length);
 
             if (metadata != null)

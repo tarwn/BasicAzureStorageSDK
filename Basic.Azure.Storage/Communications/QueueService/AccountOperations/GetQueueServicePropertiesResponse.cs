@@ -29,13 +29,13 @@ namespace Basic.Azure.Storage.Communications.QueueService.AccountOperations
             Version = response.Headers[ProtocolConstants.Headers.Version];
         }
 
-        public void ParseResponseBody(Stream responseStream)
+        public async Task ParseResponseBodyAsync(Stream responseStream)
         {
             Properties = new StorageServiceProperties();
 
             using (StreamReader sr = new StreamReader(responseStream))
             {
-                var content = sr.ReadToEnd();
+                var content = await sr.ReadToEndAsync();
                 if (content.Length > 0)
                 {
                     var xDoc = XDocument.Parse(content);

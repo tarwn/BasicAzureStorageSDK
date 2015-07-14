@@ -226,6 +226,21 @@ namespace Basic.Azure.Storage
             var response = await request.ExecuteAsync();
             return response.Payload;
         }
+
+        public GetBlobResponse GetBlob(string containerName, string blobName)
+        {
+            var request = new GetBlobRequest(_account, containerName, blobName);
+            var response = request.Execute();
+            return response.Payload;
+        }
+
+        public async Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName)
+        {
+            var request = new GetBlobRequest(_account, containerName, blobName);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         #endregion
 
 

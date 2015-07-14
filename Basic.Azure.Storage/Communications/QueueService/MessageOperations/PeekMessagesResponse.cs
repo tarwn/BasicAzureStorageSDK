@@ -45,11 +45,11 @@ namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
             Date = ParseDate(response.Headers[ProtocolConstants.Headers.OperationDate]);
         }
 
-        public void ParseResponseBody(System.IO.Stream responseStream)
+        public async Task ParseResponseBodyAsync(System.IO.Stream responseStream)
         {
             using (StreamReader sr = new StreamReader(responseStream))
             {
-                var content = sr.ReadToEnd();
+                var content = await sr.ReadToEndAsync();
                 if (content.Length > 0)
                 {
                     var xDoc = XDocument.Parse(content);

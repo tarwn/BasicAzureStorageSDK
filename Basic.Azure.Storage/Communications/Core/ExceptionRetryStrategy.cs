@@ -13,6 +13,11 @@ namespace Basic.Azure.Storage.Communications.Core
     {
         public bool IsTransient(Exception ex)
         {
+            if (ex.GetType().IsAssignableFrom(typeof(AggregateException)))
+            {
+                return IsTransient(ex.InnerException);
+            }
+
             if (ex.InnerException != null && ex.InnerException is WebException)
             {
                 var webException = ex.InnerException as WebException;

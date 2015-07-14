@@ -159,7 +159,7 @@ namespace Basic.Azure.Storage.Communications.Core
                         return result;
                     }
                     catch (Exception exc) {
-                        throw GetAzureExceptionFor(exc);
+                        throw GetAzureExceptionForAsync(exc).Result;
                     }
                 });
             }
@@ -181,24 +181,17 @@ namespace Basic.Azure.Storage.Communications.Core
                 await stream.WriteAsync(content, 0, content.Length);
             }
             var response = await request.GetResponseAsync();
-            return ReceiveResponse((HttpWebResponse)response);
+            return await ReceiveResponseAsync((HttpWebResponse)response);
         }
 
-        private Response<TPayload> ReceiveResponse(HttpWebResponse httpWebResponse)
+        private async Task<Response<TPayload>> ReceiveResponseAsync(HttpWebResponse httpWebResponse)
         {
-            try
-            {
-                // TODO: convert this to an async method so we don't have a sync wait when downloading response streams
-                var response = new Response<TPayload>(httpWebResponse);
-                return response;
-            }
-            finally
-            {
-                httpWebResponse.Close();
-            }
+            var response = new Response<TPayload>(httpWebResponse);
+            await response.ProcessResponseStreamAsync(httpWebResponse);
+            return response;
         }
 
-        private Exception GetAzureExceptionFor(Exception exception)
+        private async Task<Exception> GetAzureExceptionForAsync(Exception exception)
         {
             if (exception is WebException)
             {
@@ -206,6 +199,7 @@ namespace Basic.Azure.Storage.Communications.Core
                 if (wexc.Response != null && typeof(HttpWebResponse).IsAssignableFrom(wexc.Response.GetType()))
                 {
                     var response = new Response<ErrorResponsePayload>((HttpWebResponse)wexc.Response);
+                    await response.ProcessResponseStreamAsync((HttpWebResponse)wexc.Response);
                     return GetAzureExceptionFor(response, wexc);
                 }
                 else

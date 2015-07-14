@@ -32,11 +32,11 @@ namespace Basic.Azure.Storage.Communications.TableService
 
         }
 
-        public void ParseResponseBody(System.IO.Stream responseStream)
+        public async Task ParseResponseBodyAsync(System.IO.Stream responseStream)
         {
             using (StreamReader sr = new StreamReader(responseStream))
             {
-                var content = sr.ReadToEnd();
+                var content = await sr.ReadToEndAsync();
 
                 //TODO: add test with non-XML response so we can wrap that in a readable error
                 var doc = XDocument.Parse(content);
