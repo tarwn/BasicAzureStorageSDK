@@ -26,6 +26,15 @@ namespace Basic.Azure.Storage.Communications.Utility
             throw new ArgumentOutOfRangeException(parameterName, String.Format("The value {0} is not in the list of allowed values: {1}", parameterValue, String.Join(",", allowedRanges.Select(ar => ar.GetText()))));
         }
 
+        public static void ArgumentGreaterThan<T>(string parameterName, T parameterValue, string minimumParameterName, T minimumParameterValue)
+            where T : IComparable
+        {
+            if (parameterValue.CompareTo(minimumParameterValue) <= 0)
+            {
+                throw new ArgumentOutOfRangeException(parameterName, String.Format("The value {0} for parameter {1} must be greater than the value for parameter {2} (currently {3})", parameterValue, parameterName, minimumParameterName, minimumParameterValue));
+            }
+        }
+
         internal static void ArgumentIsAGuid(string parameterName, string parameterValue)
         {
             Guid g;
@@ -42,5 +51,6 @@ namespace Basic.Azure.Storage.Communications.Utility
                 throw new ArgumentNullException(parameterName, String.Format("The provided {0} parameter is null or empty", parameterName));
             }
         }
+
     }
 }

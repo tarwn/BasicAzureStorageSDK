@@ -1856,6 +1856,98 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.AreEqual(expectedContent, UTF8Encoding.UTF8.GetString(data));
         }
 
+        [Test]
+        [ExpectedException(typeof(BlobNotFoundAzureException))]
+        public void GetBlob_NonExistentBlob_ThrowsBlobDoesNotExistException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+
+            var response = client.GetBlob(containerName, blobName);
+
+            // expects exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(BlobNotFoundAzureException))]
+        public async Task GetBlobAsync_NonExistentBlob_ThrowsBlobDoesNotExistException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+
+            var response = await client.GetBlobAsync(containerName, blobName);
+
+            // expects exception
+        }
+        
+        [Test]
+        public void GetBlob_ExistingBlobByValidStartRange_DownloadBlobRangeOnly()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            var client = new BlobServiceClient(_accountSettings);
+
+            var response = client.GetBlob(containerName, blobName, range: new BlobRange(2));
+            var data = response.GetDataBytes();
+
+            Assert.AreEqual(expectedContent.Substring(2), UTF8Encoding.UTF8.GetString(data));
+        }
+
+        [Test]
+        public async void GetBlobAsync_ExistingBlobByValidStartRange_DownloadBlobRangeOnly()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            var client = new BlobServiceClient(_accountSettings);
+
+            var response = await client.GetBlobAsync(containerName, blobName, range: new BlobRange(2));
+            var data = response.GetDataBytes();
+
+            Assert.AreEqual(expectedContent.Substring(2), UTF8Encoding.UTF8.GetString(data));
+        }
+
+        [Test]
+        public void GetBlob_ExistingBlobByValidStartAndEndRange_DownloadBlobRangeOnly()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            var client = new BlobServiceClient(_accountSettings);
+
+            var response = client.GetBlob(containerName, blobName, range: new BlobRange(2,6));
+            var data = response.GetDataBytes();
+
+            Assert.AreEqual(expectedContent.Substring(2, 5), UTF8Encoding.UTF8.GetString(data));
+        }
+
+        [Test]
+        public async void GetBlobAsync_ExistingBlobByValidStartAndEndRange_DownloadBlobRangeOnly()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            var client = new BlobServiceClient(_accountSettings);
+
+            var response = await client.GetBlobAsync(containerName, blobName, range: new BlobRange(2,6));
+            var data = response.GetDataBytes();
+
+            Assert.AreEqual(expectedContent.Substring(2, 5), UTF8Encoding.UTF8.GetString(data));
+        }
+
         //[Test]
         //public void GetBlobProperties_ValidBlob_ReturnsProperties()
         //{
