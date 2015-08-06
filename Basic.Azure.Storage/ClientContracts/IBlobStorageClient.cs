@@ -1,12 +1,9 @@
-﻿using Basic.Azure.Storage.Communications.BlobService;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Basic.Azure.Storage.Communications.BlobService.ContainerOperations;
 using Basic.Azure.Storage.Communications.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage.ClientContracts
 {
@@ -70,6 +67,9 @@ namespace Basic.Azure.Storage.ClientContracts
 
         ListBlobsResponse ListBlobs(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null);
         Task<ListBlobsResponse> ListBlobsAsync(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null);
+
+        GetBlobResponse GetBlob(string containerName, string blobName);
+        Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName);
 
         #endregion
 

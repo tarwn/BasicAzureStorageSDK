@@ -10,6 +10,11 @@ namespace Basic.Azure.Storage.Communications.Core
     public static class ProtocolConstants
     {
 
+        public static class Parsing
+        {
+            public const string DateTimeToStringFormat = "O";
+        }
+
         public static class Headers
         {
             public const string ApproximateMessagesCount = "x-ms-approximate-messages-count";
@@ -161,6 +166,8 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string Prefix = "prefix";
 
             public const string ResType = "restype";
+
+            public const string Snapshot = "snapshot";
 
             public const string Timeout = "timeout";
 
