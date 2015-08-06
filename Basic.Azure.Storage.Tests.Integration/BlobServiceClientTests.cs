@@ -1795,8 +1795,40 @@ namespace Basic.Azure.Storage.Tests.Integration
             var data = response.GetDataBytes();
 
             Assert.AreEqual(expectedContent, UTF8Encoding.UTF8.GetString(data));
-            
+
             client.DeleteBlob(containerName, blobName);
+
+            // blob does not exist post-delete
+            var didNotExist = false;
+            try
+            {
+                client.GetBlob(containerName, blobName);
+            }
+            catch (BlobNotFoundAzureException)
+            {
+                didNotExist = true;
+            }
+
+            Assert.AreEqual(didNotExist, true);
+        }
+
+        [Test]
+        public async Task DeleteBlobAsync_ExistingBlob()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            var client = new BlobServiceClient(_accountSettings);
+
+            // blob exists pre-delete
+            var response = client.GetBlob(containerName, blobName);
+            var data = response.GetDataBytes();
+
+            Assert.AreEqual(expectedContent, UTF8Encoding.UTF8.GetString(data));
+
+            await client.DeleteBlobAsync(containerName, blobName);
 
             // blob does not exist post-delete
             var didNotExist = false;
@@ -1816,7 +1848,6 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(BlobNotFoundAzureException))]
         public void DeleteBlob_NonExistingBlob()
         {
-            var expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -1824,6 +1855,19 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // delete blog that doesn't exist => should throw an exception
             client.DeleteBlob(containerName, blobName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(BlobNotFoundAzureException))]
+        public async void DeleteBlobAsync_NonExistingBlob()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+
+            // delete blog that doesn't exist => should throw an exception
+            await client.DeleteBlobAsync(containerName, blobName);
         }
 
         [Test]
