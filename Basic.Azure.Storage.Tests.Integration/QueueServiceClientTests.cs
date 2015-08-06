@@ -1054,37 +1054,20 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        public void PeekMessages_RequestItemWithVisibility_ReturnsItemWithFutureVisibility()
+        public void PeekMessages_RequestItem_DoesNotDequeueTheItem()
         {
             IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
             CreateQueue(queueName);
             AddItemsToQueue(queueName, new List<string>() { "1" });
 
-            var response = client.PeekMessages(queueName, 1, 30);
+            var peekResponse = client.PeekMessages(queueName, 1);
+            Assert.AreEqual(1, peekResponse.Messages.Count);
 
-            Assert.AreEqual(1, response.Messages.Count);
-            var message = response.Messages.Single();
-            Assert.Less(message.InsertionTime, DateTime.UtcNow);
-            Assert.Greater(message.ExpirationTime, DateTime.UtcNow);
-            Assert.Greater(message.TimeNextVisible, DateTime.UtcNow);
+            var getResponse = client.GetMessages(queueName, 1);
+            Assert.AreEqual(1, getResponse.Messages.Count);
         }
 
-        [Test]
-        public void PeekMessages_RequestItemFromPopulatedQueue_ReturnsItemWithPopReceiptAndDequeueCount()
-        {
-            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
-            var queueName = GenerateSampleQueueName();
-            CreateQueue(queueName);
-            AddItemsToQueue(queueName, new List<string>() { "1" });
-
-            var response = client.PeekMessages(queueName, 1, 30);
-
-            Assert.AreEqual(1, response.Messages.Count);
-            var message = response.Messages.Single();
-            Assert.IsNotNullOrEmpty(message.PopReceipt);
-            Assert.Greater(message.DequeueCount, 0);
-        }
         [Test]
         public async Task PeekMessagesAsync_EmptyQueue_ReturnsEmptyCollection()
         {

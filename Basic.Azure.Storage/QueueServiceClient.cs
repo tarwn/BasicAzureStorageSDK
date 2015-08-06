@@ -162,15 +162,15 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
-        public PeekMessagesResponse PeekMessages(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null)
+        public PeekMessagesResponse PeekMessages(string queueName, int numofMessages = 1, int? messageTtl = null)
         {
-            var request = new PeekMessagesRequest(_account, queueName, numofMessages, visibilityTimeout, messageTtl);
+            var request = new PeekMessagesRequest(_account, queueName, numofMessages, messageTtl);
             var response = request.Execute();
             return response.Payload;
         }
-        public async Task<PeekMessagesResponse> PeekMessagesAsync(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null)
+        public async Task<PeekMessagesResponse> PeekMessagesAsync(string queueName, int numofMessages = 1, int? messageTtl = null)
         {
-            var request = new PeekMessagesRequest(_account, queueName, numofMessages, visibilityTimeout, messageTtl);
+            var request = new PeekMessagesRequest(_account, queueName, numofMessages, messageTtl);
             var response = await request.ExecuteAsync();
             return response.Payload;
         }
