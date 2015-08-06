@@ -42,8 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlobStorageClient.cs" />
-    <Compile Include="ClientContracts\IBlobStorageClient.cs" />
+    <Compile Include="BlobServiceClient.cs" />
+    <Compile Include="ClientContracts\IBlobServiceClient.cs" />
     <Compile Include="ClientContracts\ITableServiceClient.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobResponse.cs" />

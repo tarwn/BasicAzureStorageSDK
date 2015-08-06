@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage
 {
-    public class BlobServiceClient : IBlobStorageClient
+    public class BlobServiceClient : IBlobServiceClient
     {
         private StorageAccountSettings _account;
 
