@@ -227,6 +227,18 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
+        public void DeleteBlob(string containerName, string blobName)
+        {
+            var request = new DeleteBlobRequest(_account, containerName, blobName);
+            request.Execute();
+        }
+
+        public async Task DeleteBlobAsync(string containerName, string blobName)
+        {
+            var request = new DeleteBlobRequest(_account, containerName, blobName);
+            await request.ExecuteAsync();
+        }
+
         public GetBlobResponse GetBlob(string containerName, string blobName)
         {
             var request = new GetBlobRequest(_account, containerName, blobName);

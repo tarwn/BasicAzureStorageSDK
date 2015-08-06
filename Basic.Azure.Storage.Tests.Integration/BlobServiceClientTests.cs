@@ -22,7 +22,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         private StorageAccountSettings _accountSettings = new LocalEmulatorAccountSettings();
         private CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
 
-        private Dictionary<string, string> _containersToCleanUp = new Dictionary<string,string>();
+        private Dictionary<string, string> _containersToCleanUp = new Dictionary<string, string>();
 
         private string GenerateSampleContainerName()
         {
@@ -53,7 +53,8 @@ namespace Basic.Azure.Storage.Tests.Integration
                 var container = client.GetContainerReference(containerPair.Key);
                 if (!string.IsNullOrEmpty(containerPair.Value))
                 {
-                    try {
+                    try
+                    {
                         container.ReleaseLease(new AccessCondition() { LeaseId = containerPair.Value });
                     }
                     catch { }
@@ -138,7 +139,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.IsFalse(string.IsNullOrWhiteSpace(response.ETag), "Response ETag is not set");
 
         }
-        
+
         [Test]
         public async Task CreateContainerAsync_ValidArguments_CreatesContainerWithSpecificName()
         {
@@ -244,7 +245,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 ReleaseContainerLease(containerName, lease);
             }
         }
-        
+
         [Test]
         public void GetContainerProperties_BreakingLeaseContainer_ReturnsLeaseDetails()
         {
@@ -266,7 +267,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 ReleaseContainerLease(containerName, lease);
             }
         }
-        
+
         [Test]
         public async Task GetContainerPropertiesAsync_ValidContainer_ReturnsProperties()
         {
@@ -311,7 +312,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.IsTrue(response.Metadata.Any(kvp => kvp.Key == "a" && kvp.Value == "1"));
             Assert.IsTrue(response.Metadata.Any(kvp => kvp.Key == "b" && kvp.Value == "2"));
         }
-        
+
         [Test]
         public void GetContainerMetadata_ValidContainerWithNoMetadata_ReturnsEmptyMetadata()
         {
@@ -458,7 +459,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
-        
+
         [Test]
         public async Task SetContainerMetadataAsync_ValidContainer_SetsMetadataOnContainer()
         {
@@ -561,7 +562,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
-        
+
         [Test]
         public async Task GetContainerACLAsync_HasAccessPolicies_ReturnsListConstainingThosePolicies()
         {
@@ -579,7 +580,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.AreEqual(expectedStart, result.SignedIdentifiers.First().AccessPolicy.StartTime);
             Assert.AreEqual(expectedStart.AddDays(1), result.SignedIdentifiers.First().AccessPolicy.Expiry);
         }
-        
+
         [Test]
         [ExpectedException(typeof(ContainerNotFoundAzureException))]
         public async Task GetContainerACLAsync_NonexistentQueue_ThrowsQueueNotFoundException()
@@ -648,7 +649,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobStorageClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
-           
+
             client.SetContainerACL(containerName, ContainerAccessType.PublicBlob, new List<BlobSignedIdentifier>() { });
 
             var actual = GetContainerPermissions(containerName);
@@ -695,7 +696,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var actual = GetContainerPermissions(containerName);
             Assert.AreEqual(Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Off, actual.PublicAccess);
         }
-        
+
         [Test]
         [ExpectedException(typeof(LeaseIdMismatchWithContainerOperationAzureException))]
         public void SetContainerACL_WrongLeaseForLeasedContainer_ThrowsLeaseMismatchException()
@@ -760,7 +761,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var actual = GetContainerPermissions(containerName);
             Assert.AreEqual(1, actual.SharedAccessPolicies.Count);
         }
-        
+
         [Test]
         public async Task SetContainerACLAsync_ReadPolicyForValidContainer_SetsPolicyAndPublicAccessOnContainer()
         {
@@ -983,7 +984,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             AssertContainerIsLeased(containerName, response.LeaseId);
             RegisterContainerForCleanup(containerName, response.LeaseId);
         }
-        
+
         [Test]
         [ExpectedException(typeof(LeaseAlreadyPresentAzureException))]
         public async Task LeaseContainerAcquireAsync_AlreadyLeasedContainer_ThrowsAlreadyPresentException()
@@ -1237,7 +1238,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
-        
+
         [Test]
         public async Task LeaseContainerBreakAsync_LeasedContainerWithLongBreakPeriod_SetLeaseToBreakinge()
         {
@@ -1292,7 +1293,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.IsTrue(result.BlobList.Any(b => b.Name == "blob/UnitTest/SampleA"));
             Assert.IsTrue(result.BlobList.Any(b => b.Name == "blob/UnitTest/SampleB"));
         }
-        
+
         [Test]
         public void ListBlobs_PrefixSupplied_ReturnsOnlyBlobsMatchingThatPrefix()
         {
@@ -1338,7 +1339,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             CreateBlob(containerName, "blob1");
             CreateBlob(containerName, "blob2");
             CreateBlob(containerName, "blob3");
-            
+
             var result = client.ListBlobs(containerName, maxResults: 2);
 
             Assert.AreEqual(2, result.BlobList.Count);
@@ -1418,7 +1419,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.IsTrue(result.BlobList.Any(b => b.Snapshot.HasValue));
             Assert.IsTrue(result.BlobList.Any(b => !b.Snapshot.HasValue));
         }
-        
+
         [Test]
         public void ListBlobs_IncludeUncommittedBlobs_ReturnsUncommittedBlobs()
         {
@@ -1431,7 +1432,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             Assert.AreEqual(1, result.BlobList.Count);
         }
-        
+
         [Test]
         public void ListBlobs_BlockAndPageBlobs_ReturnsBothTypes()
         {
@@ -1779,6 +1780,51 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.AreEqual(expectedSize, blob.Properties.Length);
         }
 
+        [Test]
+        public void DeleteBlob_ExistingBlob()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            var client = new BlobServiceClient(_accountSettings);
+
+            // blob exists pre-delete
+            var response = client.GetBlob(containerName, blobName);
+            var data = response.GetDataBytes();
+
+            Assert.AreEqual(expectedContent, UTF8Encoding.UTF8.GetString(data));
+            
+            client.DeleteBlob(containerName, blobName);
+
+            // blob does not exist post-delete
+            var didNotExist = false;
+            try
+            {
+                client.GetBlob(containerName, blobName);
+            }
+            catch (BlobNotFoundAzureException)
+            {
+                didNotExist = true;
+            }
+
+            Assert.AreEqual(didNotExist, true);
+        }
+
+        [Test]
+        [ExpectedException(typeof(BlobNotFoundAzureException))]
+        public void DeleteBlob_NonExistingBlob()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var client = new BlobServiceClient(_accountSettings);
+
+            // delete blog that doesn't exist => should throw an exception
+            client.DeleteBlob(containerName, blobName);
+        }
 
         [Test]
         public void GetBlob_ExistingBlob_DownloadsBlobBytes()
@@ -1824,7 +1870,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = client.GetBlob(containerName, blobName);
             byte[] data;
-            using (var stream = response.GetDataStream()) 
+            using (var stream = response.GetDataStream())
             {
                 var ms = new MemoryStream();
                 stream.CopyTo(ms);
@@ -1969,14 +2015,15 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #region Setup Mechanics
 
-        private void CreateContainer(string containerName, Dictionary<string,string> metadata = null)
+        private void CreateContainer(string containerName, Dictionary<string, string> metadata = null)
         {
             var client = _storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
 
             container.Create();
 
-            if(metadata != null){
+            if (metadata != null)
+            {
                 // why ???
                 foreach (var key in metadata.Keys)
                 {
@@ -2044,7 +2091,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             return container.Properties.LeaseState;
         }
 
-        private void CreateBlob(string containerName, string blobName, Dictionary<string,string> metadata = null, string content = "Generic content")
+        private void CreateBlob(string containerName, string blobName, Dictionary<string, string> metadata = null, string content = "Generic content")
         {
             var client = _storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
