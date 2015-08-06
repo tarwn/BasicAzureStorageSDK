@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
@@ -68,8 +69,8 @@ namespace Basic.Azure.Storage.ClientContracts
         ListBlobsResponse ListBlobs(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null);
         Task<ListBlobsResponse> ListBlobsAsync(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null);
 
-        GetBlobResponse GetBlob(string containerName, string blobName);
-        Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName);
+        GetBlobResponse GetBlob(string containerName, string blobName, DateTime? snapshot = null, int? timeout = null);
+        Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, DateTime? snapshot = null, int? timeout = null);
 
         #endregion
 
