@@ -12,7 +12,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
     /// Get the containers's access policies
     /// http://msdn.microsoft.com/en-us/library/azure/dd179469.aspx
     /// </summary>
-    public class GetContainerACLRequest : RequestBase<GetContainerACLResponse>, ISendAdditionalOptionalHeaders
+    public class GetContainerACLRequest : RequestBase<GetContainerACLResponse>
     {
         private string _containerName;
 
@@ -33,10 +33,6 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
             builder.AddParameter(ProtocolConstants.QueryParameters.ResType, ProtocolConstants.QueryValues.ResType.Container);
             builder.AddParameter(ProtocolConstants.QueryParameters.Comp, ProtocolConstants.QueryValues.ACL);
             return builder;
-        }
-
-        public void ApplyAdditionalOptionalHeaders(System.Net.WebRequest request)
-        {
         }
     }
 }

@@ -314,7 +314,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        public void CreateQueue_AlreadyExistsWithMatchingMetadata_ReportsNoContentPerDocumentation()
+        public void CreateQueue_AlreadyExistsWithNoMetadata_ReportsNoContentPerDocumentation()
         {
             IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
@@ -326,15 +326,33 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public void CreateQueue_AlreadyExistsWithMatchingMetadata_ReportsNoContentPerDocumentation()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName, new Dictionary<string, string> { 
+                { "SampleKey", "SampleValue" }
+            });
+
+            client.CreateQueue(queueName, new Dictionary<string, string> { 
+                { "SampleKey", "SampleValue" }
+            });
+
+            // I don't think I can/should-be-able-to test the return code at this level...
+        }
+
+        [Test]
         [ExpectedException(typeof(QueueAlreadyExistsAzureException))]
         public void CreateQueue_AlreadyExistsWithDifferentMetadata_ReportsConflictProperly()
         {
             IQueueServiceClient client = new QueueServiceClient(_accountSettings);
             var queueName = GenerateSampleQueueName();
-            CreateQueue(queueName);
+            CreateQueue(queueName, new Dictionary<string, string> { 
+                { "SampleKey", "SampleValue" }
+            });
 
             client.CreateQueue(queueName, new Dictionary<string, string> { 
-                { "SampleKey", "SampleValue" }
+                { "SampleKey", "SampleValue2" }
             });
 
             // expects exception

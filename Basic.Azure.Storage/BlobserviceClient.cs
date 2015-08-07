@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage
 {
-    public class BlobServiceClient : IBlobStorageClient
+    public class BlobServiceClient : IBlobServiceClient
     {
         private StorageAccountSettings _account;
 
@@ -227,22 +227,21 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
-        public GetBlobResponse GetBlob(string containerName, string blobName)
+        public GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null)
         {
-            var request = new GetBlobRequest(_account, containerName, blobName);
+            var request = new GetBlobRequest(_account, containerName, blobName, range);
             var response = request.Execute();
             return response.Payload;
         }
 
-        public async Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName)
+        public async Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, BlobRange range = null)
         {
-            var request = new GetBlobRequest(_account, containerName, blobName);
+            var request = new GetBlobRequest(_account, containerName, blobName, range);
             var response = await request.ExecuteAsync();
             return response.Payload;
         }
 
         #endregion
-
 
     }
 }

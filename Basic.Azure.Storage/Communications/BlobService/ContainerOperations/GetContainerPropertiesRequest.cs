@@ -12,7 +12,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
     /// Get the conatiner's properties, including lease status and metadata
     /// http://msdn.microsoft.com/en-us/library/azure/dd179370.aspx
     /// </summary>
-    public class GetContainerPropertiesRequest : RequestBase<GetContainerPropertiesResponse>, ISendAdditionalOptionalHeaders
+    public class GetContainerPropertiesRequest : RequestBase<GetContainerPropertiesResponse>
     {
         private string _containerName;
 
@@ -34,8 +34,5 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
             return builder;
         }
 
-        public void ApplyAdditionalOptionalHeaders(System.Net.WebRequest request)
-        {
-        }
     }
 }

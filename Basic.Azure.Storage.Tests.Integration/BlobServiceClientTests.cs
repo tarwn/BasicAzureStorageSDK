@@ -72,7 +72,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         public void CreateContainer_ValidArguments_CreatesContainerWithSpecificName()
         {
             var containerName = GenerateSampleContainerName();
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             client.CreateContainer(containerName, ContainerAccessType.None);
 
@@ -83,7 +83,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         public void CreateContainer_ValidArgumentsWithPublicContainerAccess_CreatesContainerWithContainerAccess()
         {
             var containerName = GenerateSampleContainerName();
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             client.CreateContainer(containerName, ContainerAccessType.PublicContainer);
 
@@ -94,7 +94,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         public void CreateContainer_ValidArgumentsWithPublicBlobAccess_CreatesContainerWithBlobAccess()
         {
             var containerName = GenerateSampleContainerName();
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             client.CreateContainer(containerName, ContainerAccessType.PublicBlob);
 
@@ -105,7 +105,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         public void CreateContainer_ValidArgumentsWithNoPublicAccess_CreatesContainerWithNoPublicAccess()
         {
             var containerName = GenerateSampleContainerName();
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             client.CreateContainer(containerName, ContainerAccessType.None);
 
@@ -118,7 +118,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         {
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             client.CreateContainer(containerName, ContainerAccessType.None);
 
@@ -129,7 +129,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         public void CreateContainer_ValidArguments_ReturnsContainerCreationResponse()
         {
             var containerName = GenerateSampleContainerName();
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             var response = client.CreateContainer(containerName, ContainerAccessType.None);
 
@@ -143,7 +143,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         public async Task CreateContainerAsync_ValidArguments_CreatesContainerWithSpecificName()
         {
             var containerName = GenerateSampleContainerName();
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             await client.CreateContainerAsync(containerName, ContainerAccessType.None);
 
@@ -156,7 +156,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         {
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             await client.CreateContainerAsync(containerName, ContainerAccessType.None);
 
@@ -166,7 +166,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetContainerProperties_ValidContainer_ReturnsProperties()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -182,7 +182,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(ContainerNotFoundAzureException))]
         public void GetContainerProperties_NonexistentContainer_ThrowsContainerNotFoundException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
 
             var response = client.GetContainerProperties(containerName);
@@ -193,7 +193,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetContainerProperties_ContainerWithMetadata_ReturnsMetadata()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName, new Dictionary<string, string>() { 
                 { "a", "1" },
@@ -211,7 +211,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetContainerProperties_FixedLeaseContainer_ReturnsLeaseDetails()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             string lease = LeaseContainer(containerName, TimeSpan.FromSeconds(30), null);
@@ -226,7 +226,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetContainerProperties_InfiniteLeaseContainer_ReturnsLeaseDetails()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             string lease = LeaseContainer(containerName, null, null);
@@ -248,7 +248,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetContainerProperties_BreakingLeaseContainer_ReturnsLeaseDetails()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             string lease = LeaseContainer(containerName, TimeSpan.FromSeconds(30), null);
@@ -270,7 +270,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task GetContainerPropertiesAsync_ValidContainer_ReturnsProperties()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -286,7 +286,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(ContainerNotFoundAzureException))]
         public async Task GetContainerPropertiesAsync_NonexistentContainer_ThrowsContainerNotFoundException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
 
             var response = await client.GetContainerPropertiesAsync(containerName);
@@ -297,7 +297,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetContainerMetadata_ValidContainer_ReturnsMetadata()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName, new Dictionary<string, string>() { 
                 { "a", "1" },
@@ -315,7 +315,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetContainerMetadata_ValidContainerWithNoMetadata_ReturnsEmptyMetadata()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName, new Dictionary<string, string>() { });
 
@@ -329,7 +329,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(ContainerNotFoundAzureException))]
         public void GetContainerMetadata_NonexistentContainer_ThrowsContainerNotFoundException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
 
             client.GetContainerMetadata(containerName);
@@ -340,7 +340,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task GetContainerMetadataAsync_ValidContainer_ReturnsMetadata()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName, new Dictionary<string, string>() { 
                 { "a", "1" },
@@ -359,7 +359,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(ContainerNotFoundAzureException))]
         public async Task GetContainerMetadataAsync_NonexistentContainer_ThrowsContainerNotFoundException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
 
             await client.GetContainerMetadataAsync(containerName);
@@ -370,7 +370,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void SetContainerMetadata_ValidContainer_SetsMetadataOnContainer()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -389,7 +389,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void SetContainerMetadata_LeasedContainerWithoutLease_SetsMetadataOnContainer()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             LeaseContainer(containerName, null, null);
@@ -409,7 +409,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void SetContainerMetadata_LeasedContainerWithLease_SetsMetadataOnContainer()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var lease = LeaseContainer(containerName, null, null);
@@ -430,7 +430,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseNotPresentWithContainerOperationAzureException))]
         public void SetContainerMetadata_NonLeasedContainerWithLease_ThrowsLeaseNotPresentException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -446,7 +446,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseIdMismatchWithContainerOperationAzureException))]
         public void SetContainerMetadata_WrongLeasForLeasedContainer_ThrowsLeaseMismatchException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             LeaseContainer(containerName, null, null);
@@ -462,7 +462,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task SetContainerMetadataAsync_ValidContainer_SetsMetadataOnContainer()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -482,7 +482,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseNotPresentWithContainerOperationAzureException))]
         public async Task SetContainerMetadataAsync_NonLeasedContainerWithLease_ThrowsPreconditionFailureException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -497,7 +497,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetContainerACL_NoAccessPolicies_ReturnsEmptyList()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -509,7 +509,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetContainerACL_HasAccessPolicies_ReturnsListConstainingThosePolicies()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             string expectedId = "abc-123";
@@ -527,7 +527,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetContainerACL_ContainerAccess_ReturnsPublicAccessSet()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             AddContainerAccessPolicy(containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Container);
@@ -540,7 +540,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetContainerACL_NoPublicAccess_ReturnsPublicAccessAsNone()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             AddContainerAccessPolicy(containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Off);
@@ -554,7 +554,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(ContainerNotFoundAzureException))]
         public void GetContainerACL_NonexistentQueue_ThrowsQueueNotFoundException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
 
             var result = client.GetContainerACL(containerName);
@@ -565,7 +565,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task GetContainerACLAsync_HasAccessPolicies_ReturnsListConstainingThosePolicies()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             string expectedId = "abc-123";
@@ -584,7 +584,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(ContainerNotFoundAzureException))]
         public async Task GetContainerACLAsync_NonexistentQueue_ThrowsQueueNotFoundException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
 
             var result = await client.GetContainerACLAsync(containerName);
@@ -595,7 +595,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void SetContainerACL_ReadPolicyForValidContainer_SetsPolicyAndPublicAccessOnContainer()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var expectedStartTime = GetTruncatedUtcNow();
@@ -620,7 +620,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void SetContainerACL_AllPolicyForValidContainer_SetsPolicyAndPublicAccessOnContainer()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var expectedStartTime = GetTruncatedUtcNow();
@@ -645,7 +645,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void SetContainerACL_PublicAccessAndNoPolicyForValidContainer_SetsPublicAccessOnContainer()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
            
@@ -659,7 +659,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void SetContainerACL_NoPublicAccessAndPolicyForValidContainer_ClearsPublicAccessOnContainer()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             AddContainerAccessPolicy(containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Container);
@@ -674,7 +674,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(ContainerNotFoundAzureException))]
         public void SetContainerACL_InvalidContainer_ThrowsContainerNotFoundException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
 
             client.SetContainerACL(containerName, ContainerAccessType.None, new List<BlobSignedIdentifier>() { });
@@ -686,7 +686,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseNotPresentWithContainerOperationAzureException))]
         public void SetContainerACL_LeaseForNonLeasedContainer_ThrowsLeaseNotPresentException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -700,7 +700,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseIdMismatchWithContainerOperationAzureException))]
         public void SetContainerACL_WrongLeaseForLeasedContainer_ThrowsLeaseMismatchException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var leaseId = LeaseContainer(containerName, null, null);
@@ -714,7 +714,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void SetContainerACL_LeaseForLeasedContainer_SetsPolicySuccesfully()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             string leaseId = LeaseContainer(containerName, null, null);
@@ -739,7 +739,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void SetContainerACL_NoLeaseForLeasedContainer_SetsPolicySuccesfully()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             string leaseId = LeaseContainer(containerName, null, null);
@@ -764,7 +764,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task SetContainerACLAsync_ReadPolicyForValidContainer_SetsPolicyAndPublicAccessOnContainer()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var expectedStartTime = GetTruncatedUtcNow();
@@ -790,7 +790,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseNotPresentWithContainerOperationAzureException))]
         public async Task SetContainerACLAsync_LeaseForNonLeasedContainer_ThrowsLeaseNotPresentException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -803,7 +803,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void DeleteContainer_ValidContainer_DeletesTheContainer()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -816,7 +816,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseIdMissingAzureException))]
         public void DeleteContainer_NoLeaseForLeasedContainer_ThrowsLeaseIdMissingException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var leaseId = LeaseContainer(containerName, null, null);
@@ -829,7 +829,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void DeleteContainer_LeaseForLeasedContainer_DeletesContainer()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var leaseId = LeaseContainer(containerName, null, null);
@@ -843,7 +843,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(ContainerNotFoundAzureException))]
         public void DeleteContainer_NonExistentContainer_ThrowsContainerNotFoundException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
 
             client.DeleteContainer(containerName);
@@ -855,7 +855,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseNotPresentWithContainerOperationAzureException))]
         public void DeleteContainer_LeaseForNonLeasedContainer_ThrowsLeaseNotPresentException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -868,7 +868,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseIdMismatchWithContainerOperationAzureException))]
         public void DeleteContainer_WrongLeaseForLeasedContainer_ThrowsLeaseIdMismatchException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var leaseId = LeaseContainer(containerName, null, null);
@@ -881,7 +881,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task DeleteContainerAsync_ValidContainer_DeletesTheContainer()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -894,7 +894,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseIdMismatchWithContainerOperationAzureException))]
         public async Task DeleteContainerAsync_WrongLeaseForLeasedContainer_ThrowsLeaseIdMismatchException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             LeaseContainer(containerName, null, null);
@@ -907,7 +907,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void LeaseContainerAcquire_AcquireLeaseForValidContainer_AcquiresLease()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -920,7 +920,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void LeaseContainerAcquire_AcquireInfiniteLeaseForValidContainer_AcquiresLease()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -933,7 +933,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void LeaseContainerAcquire_AcquireSpecificLeaseIdForValidContainer_AcquiresLease()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             string expectedId = Guid.NewGuid().ToString();
@@ -949,7 +949,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(ContainerNotFoundAzureException))]
         public void LeaseContainerAcquire_InvalidContainer_ThrowsContainerNotFoundException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
 
             client.LeaseContainerAcquire(containerName, 30);
@@ -961,7 +961,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseAlreadyPresentAzureException))]
         public void LeaseContainerAcquire_AlreadyLeasedContainer_ThrowsAlreadyPresentException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             LeaseContainer(containerName, null, null);
@@ -974,7 +974,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task LeaseContainerAcquireAsync_AcquireLeaseForValidContainer_AcquiresLease()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -988,7 +988,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseAlreadyPresentAzureException))]
         public async Task LeaseContainerAcquireAsync_AlreadyLeasedContainer_ThrowsAlreadyPresentException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             LeaseContainer(containerName, null, null);
@@ -1001,7 +1001,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void LeaseContainerRenew_LeasedContainer_RenewsActiveLease()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var leaseId = LeaseContainer(containerName, TimeSpan.FromSeconds(30), null);
@@ -1017,7 +1017,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Ignore("This test is long by design because we have to wait for the lease to release before we attempt to renew")]
         public void LeaseContainerRenew_RecentlyLeasedContainer_RenewsLease()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var leaseId = LeaseContainer(containerName, TimeSpan.FromSeconds(15), null);
@@ -1034,7 +1034,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseIdMismatchWithLeaseOperationAzureException))]
         public void LeaseContainerRenew_NonLeasedContainer_ThrowsLeaseIdMismatchException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -1046,7 +1046,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task LeaseContainerRenewAsync_LeasedContainer_RenewsActiveLease()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var leaseId = LeaseContainer(containerName, TimeSpan.FromSeconds(30), null);
@@ -1062,7 +1062,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseIdMismatchWithLeaseOperationAzureException))]
         public async Task LeaseContainerRenewAsync_NonLeasedContainer_ThrowsLeaseIdMismatchException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -1074,7 +1074,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void LeaseContainerChange_LeasedContainerToNewLeaseId_ChangesToMatchNewLeaseId()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             string leaseId = LeaseContainer(containerName, null, null);
@@ -1091,7 +1091,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseNotPresentWithLeaseOperationAzureException))]
         public void LeaseContainerChange_NonLeasedContainer_ThrowsLeaseNotPresentException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             string expectedLeaseId = Guid.NewGuid().ToString();
@@ -1105,7 +1105,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(ContainerNotFoundAzureException))]
         public void LeaseContainerChange_NonexistentContainer_ThrowsContainerNotFoundException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             string expectedLeaseId = Guid.NewGuid().ToString();
 
@@ -1117,7 +1117,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task LeaseContainerChangeAsync_LeasedContainerToNewLeaseId_ChangesToMatchNewLeaseId()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             string leaseId = LeaseContainer(containerName, null, null);
@@ -1134,7 +1134,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseNotPresentWithLeaseOperationAzureException))]
         public async Task LeaseContainerChangeAsync_NonLeasedContainer_ThrowsLeaseNotPresentException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             string expectedLeaseId = Guid.NewGuid().ToString();
@@ -1147,7 +1147,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void LeaseContainerRelease_LeasedContainer_ReleasesLease()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var leaseId = LeaseContainer(containerName, null, null);
@@ -1161,7 +1161,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseIdMismatchWithLeaseOperationAzureException))]
         public void LeaseContainerRelease_NonLeasedContainer_ThrowsLeaseIdMismatchException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -1174,7 +1174,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task LeaseContainerReleaseAsync_LeasedContainer_ReleasesLease()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var leaseId = LeaseContainer(containerName, null, null);
@@ -1188,7 +1188,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseIdMismatchWithLeaseOperationAzureException))]
         public async Task LeaseContainerReleaseAsync_NonLeasedContainer_ThrowsLeaseIdMismatchException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -1200,7 +1200,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void LeaseContainerBreak_LeasedContainer_BreaksLease()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var leaseId = LeaseContainer(containerName, null, null);
@@ -1214,7 +1214,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void LeaseContainerBreak_LeasedContainerWithLongBreakPeriod_SetLeaseToBreakinge()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var leaseId = LeaseContainer(containerName, null, null);
@@ -1229,7 +1229,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseNotPresentWithLeaseOperationAzureException))]
         public void LeaseContainerBreak_NonLeasedContainer_ThrowsLeaseNotPresentException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -1241,7 +1241,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task LeaseContainerBreakAsync_LeasedContainerWithLongBreakPeriod_SetLeaseToBreakinge()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             var leaseId = LeaseContainer(containerName, null, null);
@@ -1256,7 +1256,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseNotPresentWithLeaseOperationAzureException))]
         public async Task LeaseContainerBreakAsync_NonLeasedContainer_ThrowsLeaseNotPresentException()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -1268,7 +1268,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void ListBlobs_EmptyContainer_ReturnsEmptyList()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
@@ -1280,7 +1280,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void ListBlobs_PopulatedContainer_ReturnsExpectedBlobsInList()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             CreateBlob(containerName, "blob/UnitTest/SampleA");
@@ -1296,7 +1296,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void ListBlobs_PrefixSupplied_ReturnsOnlyBlobsMatchingThatPrefix()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             CreateBlob(containerName, "blob/UnitTest/SampleA");
@@ -1313,7 +1313,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void ListBlobs_PrefixAndDelimiterSupplied_ReturnsOnlyBlobsMatchingThatPrefixWithNamesTruncatedAtDelimiter()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             CreateBlob(containerName, "blob/UnitTest/SampleA");
@@ -1332,7 +1332,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void ListBlobs_SmallerMaxResultsThanBlobCount_ReturnsResultsAndContinuationMarker()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             CreateBlob(containerName, "blob1");
@@ -1349,7 +1349,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void ListBlobs_MarkerSuppliedForLongerList_ReturnsNextSetofResults()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             CreateBlob(containerName, "blob1");
@@ -1367,7 +1367,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void ListBlobs_IncludeMetadata_ReturnsMetadataInResults()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             CreateBlob(containerName, "blob1", new Dictionary<string, string>() { 
@@ -1387,7 +1387,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void ListBlobs_IncludeCopy_ReturnsCopyStatus()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             CreateBlob(containerName, "blob1");
@@ -1406,7 +1406,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void ListBlobs_IncludeSnapshots_ReturnsSnapshotDetails()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             CreateBlob(containerName, "blob1");
@@ -1422,7 +1422,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void ListBlobs_IncludeUncommittedBlobs_ReturnsUncommittedBlobs()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             CreateBlobUncommitted(containerName, "blob1");
@@ -1435,7 +1435,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void ListBlobs_BlockAndPageBlobs_ReturnsBothTypes()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             CreateBlob(containerName, "blob1");
@@ -1451,7 +1451,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task ListBlobsAsync_PopulatedContainer_ReturnsExpectedBlobsInList()
         {
-            IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
             CreateBlob(containerName, "blob/UnitTest/SampleA");
@@ -1474,7 +1474,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
 
             client.PutBlockBlob(containerName, blobName, data);
@@ -1489,7 +1489,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             CreateBlob(containerName, blobName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
 
             client.PutBlockBlob(containerName, blobName, data);
@@ -1503,7 +1503,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
             string expectedContentType = "text/plain";
 
@@ -1519,7 +1519,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
             string expectedContentEncoding = "UTF8";
 
@@ -1535,7 +1535,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
             string expectedContentLanguage = "gibberish";
 
@@ -1551,7 +1551,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
             var expectedContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(data));
 
@@ -1569,7 +1569,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
             var someOtherData = UTF8Encoding.UTF8.GetBytes("different content");
             var incorrectContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(someOtherData));
@@ -1585,7 +1585,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
             string expectedCacheControl = "123-ABC";
 
@@ -1601,7 +1601,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
             var expectedMetadata = new Dictionary<string, string>(){
                 { "firstValue", "1" },
@@ -1622,7 +1622,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
 
             await client.PutBlockBlobAsync(containerName, blobName, data);
@@ -1637,7 +1637,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
             var someOtherData = UTF8Encoding.UTF8.GetBytes("different content");
             var incorrectContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(someOtherData));
@@ -1653,7 +1653,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             int expectedSize = 512;
 
             client.PutPageBlob(containerName, blobName, expectedSize);
@@ -1668,7 +1668,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             string expectedContentType = "text/plain";
             int expectedSize = 512;
 
@@ -1684,7 +1684,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             string expectedContentEncoding = "UTF8";
             int expectedSize = 512;
 
@@ -1700,7 +1700,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             string expectedContentLanguage = "gibberish";
             int expectedSize = 512;
 
@@ -1716,7 +1716,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             string expectedCacheControl = "123-ABC";
             int expectedSize = 512;
 
@@ -1732,7 +1732,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
             var expectedMetadata = new Dictionary<string, string>(){
                 { "firstValue", "1" },
@@ -1753,7 +1753,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
             int expectedSize = 512;
             long expectedSequenceNumber = 123;
@@ -1770,7 +1770,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             int expectedSize = 512;
 
             await client.PutPageBlobAsync(containerName, blobName, expectedSize);
@@ -1788,7 +1788,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             CreateBlob(containerName, blobName, content: expectedContent);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             var response = client.GetBlob(containerName, blobName);
             var data = response.GetDataBytes();
@@ -1804,7 +1804,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             CreateBlob(containerName, blobName, content: expectedContent);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             var response = await client.GetBlobAsync(containerName, blobName);
             var data = response.GetDataBytes();
@@ -1820,7 +1820,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             CreateBlob(containerName, blobName, content: expectedContent);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             var response = client.GetBlob(containerName, blobName);
             byte[] data;
@@ -1842,7 +1842,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             CreateBlob(containerName, blobName, content: expectedContent);
-            var client = new BlobServiceClient(_accountSettings);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             var response = await client.GetBlobAsync(containerName, blobName);
             byte[] data;
@@ -1856,10 +1856,102 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.AreEqual(expectedContent, UTF8Encoding.UTF8.GetString(data));
         }
 
+        [Test]
+        [ExpectedException(typeof(BlobNotFoundAzureException))]
+        public void GetBlob_NonExistentBlob_ThrowsBlobDoesNotExistException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            var response = client.GetBlob(containerName, blobName);
+
+            // expects exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(BlobNotFoundAzureException))]
+        public async Task GetBlobAsync_NonExistentBlob_ThrowsBlobDoesNotExistException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            var response = await client.GetBlobAsync(containerName, blobName);
+
+            // expects exception
+        }
+        
+        [Test]
+        public void GetBlob_ExistingBlobByValidStartRange_DownloadBlobRangeOnly()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            var response = client.GetBlob(containerName, blobName, range: new BlobRange(2));
+            var data = response.GetDataBytes();
+
+            Assert.AreEqual(expectedContent.Substring(2), UTF8Encoding.UTF8.GetString(data));
+        }
+
+        [Test]
+        public async void GetBlobAsync_ExistingBlobByValidStartRange_DownloadBlobRangeOnly()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            var response = await client.GetBlobAsync(containerName, blobName, range: new BlobRange(2));
+            var data = response.GetDataBytes();
+
+            Assert.AreEqual(expectedContent.Substring(2), UTF8Encoding.UTF8.GetString(data));
+        }
+
+        [Test]
+        public void GetBlob_ExistingBlobByValidStartAndEndRange_DownloadBlobRangeOnly()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            var response = client.GetBlob(containerName, blobName, range: new BlobRange(2,6));
+            var data = response.GetDataBytes();
+
+            Assert.AreEqual(expectedContent.Substring(2, 5), UTF8Encoding.UTF8.GetString(data));
+        }
+
+        [Test]
+        public async void GetBlobAsync_ExistingBlobByValidStartAndEndRange_DownloadBlobRangeOnly()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlob(containerName, blobName, content: expectedContent);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            var response = await client.GetBlobAsync(containerName, blobName, range: new BlobRange(2,6));
+            var data = response.GetDataBytes();
+
+            Assert.AreEqual(expectedContent.Substring(2, 5), UTF8Encoding.UTF8.GetString(data));
+        }
+
         //[Test]
         //public void GetBlobProperties_ValidBlob_ReturnsProperties()
         //{
-        //    IBlobStorageClient client = new BlobServiceClient(_accountSettings);
+        //    IBlobServiceClient client = new BlobServiceClient(_accountSettings);
         //    var containerName = GenerateSampleContainerName();
         //    CreateContainer(containerName);
         //    CreateBlob(containerName, "blob1");
