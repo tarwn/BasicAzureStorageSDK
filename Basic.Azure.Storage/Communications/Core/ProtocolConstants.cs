@@ -25,6 +25,8 @@ namespace Basic.Azure.Storage.Communications.Core
 
             public const string BlobPublicAccess = "x-ms-blob-public-access";
 
+            public const string BlobRange = "x-ms-range";
+
             public const string BlobSequenceNumber = "x-ms-blob-sequence-number";
 
             public const string BlobType = "x-ms-blob-type";
@@ -72,7 +74,6 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string UserAgent = "User-Agent";
 
             public const string Version = "x-ms-version";
-
         }
 
         public static class HeaderValues

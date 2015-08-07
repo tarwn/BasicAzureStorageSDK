@@ -53,6 +53,7 @@ namespace Basic.Azure.Storage
 
     public class LocalEmulatorAccountSettings : StorageAccountSettings
     {
+        //protected const string DEV_DEFAULT_URL = "ipv4.fiddler";
         protected const string DEV_DEFAULT_URL = "127.0.0.1";
         protected const string DEV_ACCOUNT_NAME = "devstoreaccount1";
         protected const string DEV_ACCOUNT_KEY = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";

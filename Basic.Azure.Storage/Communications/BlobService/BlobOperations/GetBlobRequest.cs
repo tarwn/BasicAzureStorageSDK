@@ -7,23 +7,18 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
     /// Get the blob
     /// https://msdn.microsoft.com/en-us/library/azure/dd179440.aspx
     /// </summary>
-    public class GetBlobRequest : RequestBase<GetBlobResponse>
+    public class GetBlobRequest : RequestBase<GetBlobResponse>, ISendAdditionalOptionalHeaders
     {
         private string _containerName;
         private string _blobName;
-        private DateTime? _snapshot;
-        private int? _timeout;
+        private BlobRange _range;
 
-
-        public GetBlobRequest(StorageAccountSettings settings, string containerName,
-            string blobName, DateTime? snapshot = null, int? timeout = null)
+        public GetBlobRequest(StorageAccountSettings settings, string containerName, string blobName, BlobRange range)
             : base(settings)
         {
             _containerName = containerName;
             _blobName = blobName;
-
-            _snapshot = snapshot;
-            _timeout = timeout;
+            _range = range;
         }
 
         protected override string HttpMethod { get { return "GET"; } }
@@ -47,6 +42,11 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             return builder;
         }
 
+        public void ApplyAdditionalOptionalHeaders(System.Net.WebRequest request)
+        {
+            if (_range != null)
+                request.Headers.Add(ProtocolConstants.Headers.BlobRange, _range.GetStringValue());
 
+        }
     }
 }

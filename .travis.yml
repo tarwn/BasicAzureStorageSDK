@@ -1,0 +1,9 @@
+language: csharp
+solution: Basic.Azure.Storage.sln
+install:
+  - nuget restore Basic.Azure.Storage.sln
+  - nuget install NUnit -Pre -OutputDirectory testrunner
+  - nuget install NUnit.Console -Pre -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release Basic.Azure.Storage.sln
+  - mono ./testrunner/NUnit.Console.3.0.0-beta-3/tools/nunit-console.exe ./Basic.Azure.Storage.Tests/bin/Release/Basic.Azure.Storage.Tests.dll --framework=mono-4.5

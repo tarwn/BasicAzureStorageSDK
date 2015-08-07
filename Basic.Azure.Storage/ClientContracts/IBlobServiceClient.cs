@@ -8,7 +8,7 @@ using Basic.Azure.Storage.Communications.Common;
 
 namespace Basic.Azure.Storage.ClientContracts
 {
-    public interface IBlobStorageClient
+    public interface IBlobServiceClient
     {
         #region Account Operations
 
@@ -34,24 +34,6 @@ namespace Basic.Azure.Storage.ClientContracts
         void SetContainerACL(string containerName, ContainerAccessType containerAccess, List<BlobSignedIdentifier> signedIdentifiers, string leaseId = null);
         Task SetContainerACLAsync(string containerName, ContainerAccessType containerAccess, List<BlobSignedIdentifier> signedIdentifiers, string leaseId = null);
 
-        #endregion
-
-        #region Blob Operations
-
-        PutBlobResponse PutBlockBlob(string containerName, string blobName, byte[] data,
-           string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-           string cacheControl = null, Dictionary<string, string> metadata = null);
-        Task<PutBlobResponse> PutBlockBlobAsync(string containerName, string blobName, byte[] data,
-           string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-           string cacheControl = null, Dictionary<string, string> metadata = null);
-
-        PutBlobResponse PutPageBlob(string containerName, string blobName, int contentLength,
-            string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0);
-        Task<PutBlobResponse> PutPageBlobAsync(string containerName, string blobName, int contentLength,
-                    string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-                    string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0);
-
         void DeleteContainer(string containerName, string leaseId = null);
         Task DeleteContainerAsync(string containerName, string leaseId = null);
 
@@ -69,8 +51,26 @@ namespace Basic.Azure.Storage.ClientContracts
         ListBlobsResponse ListBlobs(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null);
         Task<ListBlobsResponse> ListBlobsAsync(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null);
 
-        GetBlobResponse GetBlob(string containerName, string blobName, DateTime? snapshot = null, int? timeout = null);
-        Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, DateTime? snapshot = null, int? timeout = null);
+        #endregion
+
+        #region Blob Operations
+
+        PutBlobResponse PutBlockBlob(string containerName, string blobName, byte[] data,
+            string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
+            string cacheControl = null, Dictionary<string, string> metadata = null);
+        Task<PutBlobResponse> PutBlockBlobAsync(string containerName, string blobName, byte[] data,
+            string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
+            string cacheControl = null, Dictionary<string, string> metadata = null);
+
+        PutBlobResponse PutPageBlob(string containerName, string blobName, int contentLength,
+            string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
+            string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0);
+        Task<PutBlobResponse> PutPageBlobAsync(string containerName, string blobName, int contentLength,
+            string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
+            string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0);
+
+        GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null);
+        Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, BlobRange range = null);
 
         #endregion
 

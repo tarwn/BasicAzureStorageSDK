@@ -11,6 +11,7 @@
     <AssemblyName>Basic.Azure.Storage.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Practices.TransientFaultHandling.Core">
@@ -47,11 +50,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobRequestTests.cs" />
+    <Compile Include="Communications\BlobService\BlobRangeTests.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerAcquireTests.cs" />
     <Compile Include="Communications\Common\SharedAccessPermissionParseTests.cs" />
     <Compile Include="Communications\Core\ExceptionRetryStrategyTests.cs" />
     <Compile Include="Communications\Core\RequestBaseTests.AzureExceptions.cs" />
     <Compile Include="Communications\Core\RequestBaseTests.cs" />
+    <Compile Include="Communications\Utility\GuardTests.cs" />
     <Compile Include="Fakes\RequestWithErrorPayload.cs" />
     <Compile Include="Fakes\RequestWithEmptyPayload.cs" />
     <Compile Include="Fakes\SettingsFake.cs" />
