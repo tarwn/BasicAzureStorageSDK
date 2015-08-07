@@ -5,6 +5,6 @@ install:
   - nuget install NUnit -Pre -OutputDirectory testrunner
   - nuget install NUnit.Console -Pre -OutputDirectory testrunner
 script:
-#  - xbuild /p:Configuration=Release Basic.Azure.Storage.sln
+  - xbuild /p:Configuration=Release Basic.Azure.Storage.sln
   - ls ./testrunner
-#  - mono ./testrunner/NUnit.Console/tools/nunit-console.exe ./Basic.Azure.Storage.Tests/bin/Release/Basic.Azure.Storage.Tests.dll
+  - mono ./testrunner/NUnit.Console.3.0.0-beta-3/tools/nunit-console.exe ./Basic.Azure.Storage.Tests/bin/Release/Basic.Azure.Storage.Tests.dll
