@@ -48,11 +48,13 @@
   <ItemGroup>
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobRequestTests.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobRequestTests.cs" />
+    <Compile Include="Communications\BlobService\BlobRangeTests.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerAcquireTests.cs" />
     <Compile Include="Communications\Common\SharedAccessPermissionParseTests.cs" />
     <Compile Include="Communications\Core\ExceptionRetryStrategyTests.cs" />
     <Compile Include="Communications\Core\RequestBaseTests.AzureExceptions.cs" />
     <Compile Include="Communications\Core\RequestBaseTests.cs" />
+    <Compile Include="Communications\Utility\GuardTests.cs" />
     <Compile Include="Fakes\RequestWithErrorPayload.cs" />
     <Compile Include="Fakes\RequestWithEmptyPayload.cs" />
     <Compile Include="Fakes\SettingsFake.cs" />

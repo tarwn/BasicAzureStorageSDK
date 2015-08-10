@@ -12,7 +12,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
     /// Get the conatiner's metadata
     /// http://msdn.microsoft.com/en-us/library/azure/ee691976.aspx
     /// </summary>
-    public class GetContainerMetadataRequest : RequestBase<GetContainerMetadataResponse>, ISendAdditionalOptionalHeaders
+    public class GetContainerMetadataRequest : RequestBase<GetContainerMetadataResponse>
     {
         private string _containerName;
 
@@ -34,8 +34,5 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
             return builder;
         }
 
-        public void ApplyAdditionalOptionalHeaders(System.Net.WebRequest request)
-        {
-        }
     }
 }
