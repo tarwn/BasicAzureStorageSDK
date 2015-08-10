@@ -55,8 +55,8 @@ namespace Basic.Azure.Storage.ClientContracts
         GetMessagesResponse GetMessages(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null);
         Task<GetMessagesResponse> GetMessagesAsync(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null);
 
-        PeekMessagesResponse PeekMessages(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null);
-        Task<PeekMessagesResponse> PeekMessagesAsync(string queueName, int numofMessages = 1, int visibilityTimeout = 30, int? messageTtl = null);
+        PeekMessagesResponse PeekMessages(string queueName, int numofMessages = 1, int? messageTtl = null);
+        Task<PeekMessagesResponse> PeekMessagesAsync(string queueName, int numofMessages = 1, int? messageTtl = null);
 
         void DeleteMessage(string queueName, string messageId, string popReceipt);
         Task DeleteMessageAsync(string queueName, string messageId, string popReceipt);
