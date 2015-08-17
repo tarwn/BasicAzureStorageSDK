@@ -22,21 +22,9 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             _range = range;
         }
 
-        protected override string HttpMethod
-        {
-            get { return "GET"; }
-        }
+        protected override string HttpMethod { get { return "GET"; } }
 
-        protected override StorageServiceType ServiceType
-        {
-            get { return StorageServiceType.BlobService; }
-        }
-
-        public void ApplyAdditionalOptionalHeaders(WebRequest request)
-        {
-            if (_range != null)
-                request.Headers.Add(ProtocolConstants.Headers.BlobRange, _range.GetStringValue());
-        }
+        protected override StorageServiceType ServiceType { get { return StorageServiceType.BlobService; } }
 
         protected override RequestUriBuilder GetUriBase()
         {
@@ -45,6 +33,12 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             builder.AddSegment(_blobName);
 
             return builder;
+        }
+
+        public void ApplyAdditionalOptionalHeaders(WebRequest request)
+        {
+            if (_range != null)
+                request.Headers.Add(ProtocolConstants.Headers.BlobRange, _range.GetStringValue());
         }
     }
 }
