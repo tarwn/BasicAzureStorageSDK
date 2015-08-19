@@ -24,10 +24,10 @@ namespace Basic.Azure.Storage.Tests.Integration
     public class BlobServiceClientTests
     {
 
-        private StorageAccountSettings _accountSettings = new LocalEmulatorAccountSettings();
-        private CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
+        private readonly StorageAccountSettings _accountSettings = new LocalEmulatorAccountSettings();
+        private readonly CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
 
-        private Dictionary<string, string> _containersToCleanUp = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _containersToCleanUp = new Dictionary<string, string>();
 
         private string GenerateSampleContainerName()
         {
