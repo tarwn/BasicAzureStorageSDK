@@ -8,8 +8,8 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
     /// </summary>
     public class DeleteBlobRequest : RequestBase<DeleteBlobResponse>
     {
-        private string _containerName;
-        private string _blobName;
+        private readonly string _containerName;
+        private readonly string _blobName;
 
         public DeleteBlobRequest(StorageAccountSettings settings, string containerName, string blobName)
             : base(settings)
