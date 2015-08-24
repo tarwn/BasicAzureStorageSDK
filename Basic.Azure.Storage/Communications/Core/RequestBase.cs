@@ -60,7 +60,7 @@ namespace Basic.Azure.Storage.Communications.Core
         {
             try
             {
-                return ExecuteAsync().Result;
+                return Task.Run(() => ExecuteAsync()).Result;
             }
             catch (AggregateException ae)
             {
