@@ -10,7 +10,7 @@ Because "use a real storage account" is not good advice and "400 Bad Request" is
 Current Supported API Version: 2012-02-12 - This will be caught up after I have finished the current round of
 additions.
 
-Status: 
+Status:
 
 - Queue Service - 15/15
 - Table Service - 1/14
@@ -29,14 +29,14 @@ Motivation
 
 <blockquote>Ask me about the Azure Storage SDK...</blockquote>
 
-As I watched (and lived through, and tried to figure out) the evolution of the official 
+As I watched (and lived through, and tried to figure out) the evolution of the official
 Azure Storage SDK for .Net, I've continued to be annoyed by several things:
 
 1) Pseudo-State: The attempted object-ification of a REST service (adding state where there is none)
 
 2) Dueling Documentation: The mismatch in terminology and operations between the API and SDK
 
-3) Emulator Support: The inclusion of features that cannot be used for local development due to 
+3) Emulator Support: The inclusion of features that cannot be used for local development due to
    lack of support in the emulator
 
 4) Information: The generic way exceptions are handled and thrown compared to the detail available from the API
@@ -61,16 +61,16 @@ I've written an implementation of the Azure API before, but I wanted to start wr
    places where the local library diverges from the API, how to setup things like the storage settings and error
    handling, and how exceptions map to the API.
 
-2) Treats the service as a service. If you want to consume the service and add some pseudo form of state, do so. 
+2) Treats the service as a service. If you want to consume the service and add some pseudo form of state, do so.
    The SDK should not force that on you.
-   
+
 3) Provides every scrap of error information possible to help the developer or maintainer do their job.
 
 4) Provides underlying information about retry rates and retries that were later succesful
 
-5) Matches the API internally as well. Finding the implementation details of an API operation should not require 
+5) Matches the API internally as well. Finding the implementation details of an API operation should not require
    opening 15 files.
-   
+
 6) Has a clear set of tests that serves almost as a bullet point list of how the API works for each operation
 
 7) Is easily mockable for unit testing code that interacts with the library.
@@ -83,14 +83,14 @@ I've written an implementation of the Azure API before, but I wanted to start wr
    enumerated values that are not enums, no properties that actually call the API behind the scenes,  and when a
    parameter has character or length restrictions, the library should be smart enough to tell you about them.
 
-Currently retries are only communicated upward at the end of a failed operation rather than providing hooks to 
-gather information on each individual failed retry. Restrictions on length and character usage have also not been 
+Currently retries are only communicated upward at the end of a failed operation rather than providing hooks to
+gather information on each individual failed retry. Restrictions on length and character usage have also not been
 added yet.
 
 Geography
 ====================
 
-The library tries to stick as close to the API structure and naming as possible. 
+The library tries to stick as close to the API structure and naming as possible.
 
 Using the Library
 --------------------
@@ -103,7 +103,7 @@ These are the objects you would access while using the library.
 - QueueServiceClient - operations for Queue Service - http://msdn.microsoft.com/en-us/library/azure/dd179363.aspx
 - TableServiceClient - operations for Table Service - http://msdn.microsoft.com/en-us/library/azure/dd179423.aspx
 
-Operations on each of these clients are named the same as they are in the corresponding API documentation. 
+Operations on each of these clients are named the same as they are in the corresponding API documentation.
 Parameters that are required in the documentation are required by operations in the client, parameters that
 are optional in the documentation are optional in the client. If there is only a limited set of input options
 allowed, an enum will exist that has those options.
@@ -115,23 +115,23 @@ are actually multiple actions in a single call, and for those I have decided to 
 end consumer only has to deal with what is required/allowed for a specific action of the call rather than
 all possible inputs for all possible actions on one request.
 
-**PutBlob** has been split into a PutBlockBlob and PutPageBlob. In the API, some of the parameters are truly 
+**PutBlob** has been split into a PutBlockBlob and PutPageBlob. In the API, some of the parameters are truly
 optional and some are only optional depending on which flavor you are uploading, so I chose to split it into
 two methods so that only the truly optional parameters would be optional and the ones that are type dependeant
 are not available for the opposite call.
 
 **LeaseContainer** Has 5 actions with different allowed and required inputs and different expected responses.
-I have split this into 5 calls because I would prefer to make it clear and simple which arguments are 
+I have split this into 5 calls because I would prefer to make it clear and simple which arguments are
 necessary for each call, even if it does somewhat break the model of 1 API call = 1 Request object.
 
-Note: This is an area that I find questionable in the API. I'm not sure why they chose to embed multiple 
-actions into common requests like this, I think they generally did a good idea of making the API clear and 
+Note: This is an area that I find questionable in the API. I'm not sure why they chose to embed multiple
+actions into common requests like this, I think they generally did a good idea of making the API clear and
 these points stand out in contradiction to the rest.
 
 ### Responses
 
 Storage API calls that returns responses will have a matching response object defined in the library that
-is named after the operation. Executing a CreateContainer operation, for instance, will return a 
+is named after the operation. Executing a CreateContainer operation, for instance, will return a
 CreateContainerResponse.
 
 ### Exceptions
@@ -170,22 +170,22 @@ The layout of the code internally follows some patterns as well.
 
 ### Service Folder Structures
 
-The services folder structure follows the documentation folder structure, with a single high level folder for the 
-service, sub-folders for the categories of operations, and then Request and Response objects named the same as the 
+The services folder structure follows the documentation folder structure, with a single high level folder for the
+service, sub-folders for the categories of operations, and then Request and Response objects named the same as the
 API operations.
 
 Example: Create Container - http://msdn.microsoft.com/en-us/library/windowsazure/dd179468.aspx
 Library Location: /Communications/BlobService/ContainerOperations/CreateContainerRequest
 Documentation: Blob Service / Operations on Containers / Create Contaner
 
-_Note: I'm not sure if MSDN renamed the "Operations" level or if I was inconsistent about it, the documentation has 
+_Note: I'm not sure if MSDN renamed the "Operations" level or if I was inconsistent about it, the documentation has
 moved since I initially started this._
 
 ### Service Exceptions
 
-Service Exceptions are generated from the documentated tables of errors in the API, using regular expressions to 
+Service Exceptions are generated from the documentated tables of errors in the API, using regular expressions to
 tweak the output and then T4 to generate the actual classes. They have a common base class, giving you the freedom
-to catch exceptions as specifically or generally as you want. 
+to catch exceptions as specifically or generally as you want.
 
 These exceptions also include all of the details available. The API often provides more details for errors than are
 surfaced in the standard Azure Storage SDK; these exceptions surface all of that additional information.
@@ -199,14 +199,14 @@ least one outstanding issue around popreceipts that requires you to know about t
 
 ### Core Logic
 
-The core logic includes the RequestBase, the Response wrapper that wraps around the specific resposne payload 
+The core logic includes the RequestBase, the Response wrapper that wraps around the specific resposne payload
 expected for an operation, the RetriedException that is returned when we give up after exhausting the retry policy,
 and various constants for header values and such, the logic to create signed authorization headers, etc.
 
 Implemented Methods
 ====================
 
-This section will list all of the available methods from the documentation, as of 2014-10-13, and whether they have 
+This section will list all of the available methods from the documentation, as of 2014-10-13, and whether they have
 been implemented yet.
 
 - Queue is done for 2012-02-12
@@ -306,7 +306,7 @@ Blob Operations
 - Snapshot Blob - No
 - Copy Blob - No
 - Abort Copy Blob - No
-- Delete Blob - No
+- Delete Blob - Yes
 
 Block Blob Operations
 
@@ -368,4 +368,3 @@ And then less necessary features that seem like a good idea:
 - Expose method to collect/log all requests and responses (all, any operation with 1 or more retries, only failed operations)
 - Expose ability to set timeout and client id values for outgoing requests
 - Evaluate performance of current XML LINQ parsing for responses vs alteratives and switch
-
