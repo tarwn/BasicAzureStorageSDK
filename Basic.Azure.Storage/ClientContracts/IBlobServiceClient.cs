@@ -1,12 +1,10 @@
-﻿using Basic.Azure.Storage.Communications.BlobService;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Basic.Azure.Storage.Communications.BlobService.ContainerOperations;
 using Basic.Azure.Storage.Communications.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage.ClientContracts
 {
@@ -56,7 +54,7 @@ namespace Basic.Azure.Storage.ClientContracts
         #endregion
 
         #region Blob Operations
-        
+
         PutBlobResponse PutBlockBlob(string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null);
