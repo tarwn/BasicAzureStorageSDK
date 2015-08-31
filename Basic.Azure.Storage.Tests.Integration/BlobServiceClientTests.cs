@@ -1623,7 +1623,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
 
         [Test]
-        public async Task PutBlockBloAsync_RequiredArgsOnly_UploadsBlobSuccessfully()
+        public async Task PutBlockBlobAsync_RequiredArgsOnly_UploadsBlobSuccessfully()
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
@@ -1651,6 +1651,122 @@ namespace Basic.Azure.Storage.Tests.Integration
             await client.PutBlockBlobAsync(containerName, blobName, data, contentMD5: incorrectContentMD5);
 
             // expects exception
+        }
+
+        [Test]
+        public void PutBlock_RequiredArgsOnly_UploadsBlockSuccessfully()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            var blockId = "test-block-id";
+            CreateContainer(containerName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlock(containerName, blobName, blockId, data);
+
+            AssertBlockExists(containerName, blobName, blockId);
+        }
+
+        [Test]
+        public void PutBlock_WithContentMD5_UploadsWithSpecifiedContentMD5()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            var blockId = "test-block-id";
+            var expectedContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(data));
+            CreateContainer(containerName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            var block = client.PutBlock(containerName, blobName, blockId, data, contentMD5: expectedContentMD5);
+
+            AssertBlockExists(containerName, blobName, blockId);
+            Assert.AreEqual(expectedContentMD5, block.Properties.ContentMD5);
+        }
+
+        [Test]
+        [ExpectedException(typeof(Md5MismatchAzureException))]
+        public void PutBlock_WithIncorrectContentMD5_ThrowsMD5MismatchAzureException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            var blockId = "test-block-id";
+            var someOtherData = UTF8Encoding.UTF8.GetBytes("different content");
+            var incorrectContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(someOtherData));
+            CreateContainer(containerName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlock(containerName, blobName, blockId, data, contentMD5: incorrectContentMD5);
+
+            // expects exception
+        }
+
+        [Test]
+        public void PutBlock_RequiredArgsOnly_ReturnsCorrectMD5Hash()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var blockId = "test-block-id";
+            CreateContainer(containerName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+            var expectedContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(data));
+
+            var response = client.PutBlock(containerName, blobName, blockId, data);
+
+            Assert.AreEqual(expectedContentMD5, response["Content-MD5"]);
+        }
+
+        [Test]
+        [ExpectedException(typeof(EntityTooLargeAzureException))]
+        public void PutBlock_TooLargePayload_ThrowsEntityTooLargeAzureException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var blockId = "test-block-id";
+            CreateContainer(containerName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            byte[] fiveMegabytes = new byte[5242880];
+
+            client.PutBlock(containerName, blobName, blockId, fiveMegabytes);
+
+            // throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidBlockIdAzureException))]
+        public void PutBlock_DifferentLengthBlockIds_ThrowsInvalidBlockIdAzureException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var blockId = "test-block-id";
+            var differentLengthBlockId = "test-block-id-wrong-length";
+            CreateContainer(containerName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+
+            client.PutBlock(containerName, blobName, blockId, data);
+            client.PutBlock(containerName, blobName, differentLengthBlockId, data);
+
+            // throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidBlockIdAzureException))]
+        public void PutBlock_BlockIdTooLarge_ThrowsInvalidBlockIdAzureException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var blockId = "test-block-id-very-long-too-long-horribly-wrong-cannot-computer-danger-will-robinson";
+            CreateContainer(containerName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var data = UTF8Encoding.UTF8.GetBytes("unit test content");
+
+            client.PutBlock(containerName, blobName, blockId, data);
+
+            // throws exception
         }
 
         [Test]
@@ -2101,6 +2217,23 @@ namespace Basic.Azure.Storage.Tests.Integration
                 Assert.Fail("AssertBlobExists: The blob '{0}' does not exist", blobName);
 
             return blob;
+        }
+
+        private Microsoft.WindowsAzure.Storage.Blob.ListBlockItem AssertBlockExists(string containerName, string blobName, string blockId, BlockListingFilter blockType = BlockListingFilter.All)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            if (!container.Exists())
+                Assert.Fail("AssertBlockExists: The container '{0}' does not exist", containerName);
+
+            var blob = container.GetBlockBlobReference(blobName);
+            var blockList = blob.DownloadBlockList(blockType);
+            var block = blockList.FirstOrDefault(item => item.Name == blockId);
+
+            if (block == null)
+                Assert.Fail("AssertBlockExists: The block of id '{0}' does not exist", blockId);
+
+            return block;
         }
 
         private Microsoft.WindowsAzure.Storage.Blob.ICloudBlob AssertBlobDoesNotExist(string containerName, string blobName, BlobType blobType)
