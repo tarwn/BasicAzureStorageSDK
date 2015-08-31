@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Basic.Azure.Storage.Communications.Utility;
 using Microsoft.WindowsAzure.Storage.Blob;
 using BlobType = Microsoft.WindowsAzure.Storage.Blob.BlobType;
 using LeaseDuration = Basic.Azure.Storage.Communications.Common.LeaseDuration;
@@ -1659,7 +1660,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
-            var blockId = "test-block-id";
+            var blockId = Base64Converter.ConvertToBase64("test-block-id");
             CreateContainer(containerName);
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
@@ -1674,7 +1675,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
-            var blockId = "test-block-id";
+            var blockId = Base64Converter.ConvertToBase64("test-block-id");
             var expectedContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(data));
             CreateContainer(containerName);
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
@@ -1682,7 +1683,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var block = client.PutBlock(containerName, blobName, blockId, data, contentMD5: expectedContentMD5);
 
             AssertBlockExists(containerName, blobName, blockId);
-            Assert.AreEqual(expectedContentMD5, block.Properties.ContentMD5);
+            Assert.AreEqual(expectedContentMD5, block.ContentMD5);
         }
 
         [Test]
@@ -1692,7 +1693,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
-            var blockId = "test-block-id";
+            var blockId = Base64Converter.ConvertToBase64("test-block-id");
             var someOtherData = UTF8Encoding.UTF8.GetBytes("different content");
             var incorrectContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(someOtherData));
             CreateContainer(containerName);
@@ -1708,7 +1709,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
-            var blockId = "test-block-id";
+            var blockId = Base64Converter.ConvertToBase64("test-block-id");
             CreateContainer(containerName);
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
@@ -1716,19 +1717,19 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = client.PutBlock(containerName, blobName, blockId, data);
 
-            Assert.AreEqual(expectedContentMD5, response["Content-MD5"]);
+            Assert.AreEqual(expectedContentMD5, response.ContentMD5);
         }
 
         [Test]
-        [ExpectedException(typeof(EntityTooLargeAzureException))]
-        public void PutBlock_TooLargePayload_ThrowsEntityTooLargeAzureException()
+        [ExpectedException(typeof(RequestBodyTooLargeAzureException))]
+        public void PutBlock_TooLargePayload_ThrowsRequestBodyTooLargeAzureException()
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
-            var blockId = "test-block-id";
+            var blockId = Base64Converter.ConvertToBase64("test-block-id");
+            var fiveMegabytes = new byte[5242880];
             CreateContainer(containerName);
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-            byte[] fiveMegabytes = new byte[5242880];
 
             client.PutBlock(containerName, blobName, blockId, fiveMegabytes);
 
@@ -1736,12 +1737,12 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidBlockIdAzureException))]
-        public void PutBlock_DifferentLengthBlockIds_ThrowsInvalidBlockIdAzureException()
+        [ExpectedException(typeof(ArgumentException))]
+        public void PutBlock_DifferentLengthBlockIds_ThrowsArgumentException()
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
-            var blockId = "test-block-id";
+            var blockId = Base64Converter.ConvertToBase64("test-block-id");
             var differentLengthBlockId = "test-block-id-wrong-length";
             CreateContainer(containerName);
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
@@ -1754,12 +1755,12 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidBlockIdAzureException))]
-        public void PutBlock_BlockIdTooLarge_ThrowsInvalidBlockIdAzureException()
+        [ExpectedException(typeof(ArgumentException))]
+        public void PutBlock_BlockIdTooLarge_ThrowsArgumentException()
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
-            var blockId = "test-block-id-very-long-too-long-horribly-wrong-cannot-computer-danger-will-robinson";
+            var blockId = Base64Converter.ConvertToBase64("test-block-id-very-long-too-long-horribly-wrong-does-not-compute-danger-will-robinson");
             CreateContainer(containerName);
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = UTF8Encoding.UTF8.GetBytes("unit test content");
@@ -2430,6 +2431,5 @@ namespace Basic.Azure.Storage.Tests.Integration
         {
             return new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, DateTime.UtcNow.Hour, DateTime.UtcNow.Minute, DateTime.UtcNow.Second, DateTimeKind.Utc);
         }
-
     }
 }

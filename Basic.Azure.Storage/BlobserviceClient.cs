@@ -208,6 +208,26 @@ namespace Basic.Azure.Storage
         }
 
         /// <summary>
+        /// Creates a new BlockBlob (Alias for the PutBlob call with a Blob Type of BlockBlob)
+        /// </summary>
+        public PutBlockResponse PutBlock(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null)
+        {
+            var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5);
+            var response = request.Execute();
+            return response.Payload;
+        }
+
+        /// <summary>
+        /// Creates a new BlockBlob (Alias for the PutBlob call with a Blob Type of BlockBlob)
+        /// </summary>
+        public async Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null)
+        {
+            var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5);
+            var response = request.ExecuteAsync();
+            return (await response).Payload;
+        }
+
+        /// <summary>
         /// Creates a new PageBlob (Alias for the PutBlob call with a Blob Type of PageBlob)
         /// </summary>
         public PutBlobResponse PutPageBlob(string containerName, string blobName, int contentLength,
@@ -238,7 +258,7 @@ namespace Basic.Azure.Storage
             var request = new DeleteBlobRequest(_account, containerName, blobName);
             await request.ExecuteAsync();
         }
-        
+
         public GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null)
         {
             var request = new GetBlobRequest(_account, containerName, blobName, range);

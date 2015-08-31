@@ -102,6 +102,7 @@ namespace Basic.Azure.Storage.Communications.Core
 
         public static class QueryParameters
         {
+            public const string BlockId = "blockid";
             public const string Comp = "comp";
             public const string Delimiter = "delimiter";
             public const string Include = "include";

@@ -49,6 +49,8 @@
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobResponse.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\PutBlockResponse.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\PutBlockRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobRange.cs" />
