@@ -1721,8 +1721,8 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        [ExpectedException(typeof(RequestBodyTooLargeAzureException))]
-        public void PutBlock_TooLargePayload_ThrowsRequestBodyTooLargeAzureException()
+        [ExpectedException(typeof(ArgumentException))]
+        public void PutBlock_TooLargePayload_ThrowsArgumentException()
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();

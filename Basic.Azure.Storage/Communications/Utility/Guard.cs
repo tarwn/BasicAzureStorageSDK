@@ -68,7 +68,15 @@ namespace Basic.Azure.Storage.Communications.Utility
         {
             if (parameterValue.Length > size)
             {
-                throw new ArgumentException(String.Format("The provided string {0} is longer than the maximum size.", parameterValue), parameterName);
+                throw new ArgumentException(String.Format("The provided string {0} is longer than maximum size {1}.", parameterValue, size), parameterName);
+            }
+        }
+
+        internal static void ArgumentArrayLengthIsEqualOrSmallerThanSize(string parameterName, Array parameterValue, int size)
+        {
+            if (parameterValue.Length > size)
+            {
+                throw new ArgumentException(String.Format("The provided array is longer than maximum size {0}.", size), parameterName);
             }
         }
 
