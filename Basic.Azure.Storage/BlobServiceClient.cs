@@ -208,7 +208,7 @@ namespace Basic.Azure.Storage
         }
 
         /// <summary>
-        /// Creates a new BlockBlob (Alias for the PutBlob call with a Blob Type of BlockBlob)
+        /// Creates a new Block for a BlockBlob
         /// </summary>
         public PutBlockResponse PutBlock(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null)
         {
@@ -218,7 +218,7 @@ namespace Basic.Azure.Storage
         }
 
         /// <summary>
-        /// Creates a new BlockBlob (Alias for the PutBlob call with a Blob Type of BlockBlob)
+        /// Creates a new Block for a BlockBlob
         /// </summary>
         public async Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null)
         {

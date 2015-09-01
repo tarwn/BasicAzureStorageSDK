@@ -165,6 +165,7 @@
     <Compile Include="Communications\TableService\CreateTableRequest.cs" />
     <Compile Include="Communications\TableService\CreateTableResponse.cs" />
     <Compile Include="Communications\TableService\MetadataPreference.cs" />
+    <Compile Include="Communications\Utility\Base64Converter.cs" />
     <Compile Include="Communications\Utility\BlobListIncludeParse.cs" />
     <Compile Include="Communications\Utility\DateParse.cs" />
     <Compile Include="Communications\Utility\Guard.cs" />
