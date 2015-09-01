@@ -1501,6 +1501,31 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public async void PutBlockListAsync_RequiredArgsOnly_CreatesBlockBlobFromLatestBlocks()
+        {
+            var dataPerBlock = "foo";
+            var expectedData = "foofoofoo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockIds = new List<string>
+            {
+                Base64Converter.ConvertToBase64("id1"), 
+                Base64Converter.ConvertToBase64("id2"), 
+                Base64Converter.ConvertToBase64("id3")
+            };
+            var blockListBlockIds = new BlockListBlockIdList(blockIds
+                .Select(id => new BlockListBlockId() { Id = id, ListType = BlockListListType.Latest }));
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds);
+
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            AssertBlobContainsData(containerName, blobName, BlobType.BlockBlob, Encoding.Unicode.GetBytes(expectedData));
+        }
+
+        [Test]
         public void PutBlockList_WithMetadata_UploadsMetadata()
         {
             var dataPerBlock = "foo";
