@@ -24,7 +24,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             : base(settings)
         {
             Guard.ArgumentIsBase64Encoded("blockId", blockId);
-            Guard.ArgumentStringIsEqualOrSmallerThanSize("blockId", blockId, 64);
+            Guard.ArgumentArrayLengthIsEqualOrSmallerThanSize("blockId", blockId.ToCharArray(), 64);
 
             Guard.ArgumentArrayLengthIsEqualOrSmallerThanSize("data", data, FourMegabytes);
 
