@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -27,7 +26,7 @@ namespace Basic.Azure.Storage.Communications.BlobService
 
         public XMLBytesWithMD5Hash AsXmlByteArrayWithMd5Hash()
         {
-            var xmlBytes = this.AsXMLByteArray();
+            var xmlBytes = AsXMLByteArray();
             var hash = Convert.ToBase64String(MD5.Create().ComputeHash(xmlBytes));
 
             return new XMLBytesWithMD5Hash()
@@ -73,7 +72,7 @@ namespace Basic.Azure.Storage.Communications.BlobService
                     element = "Uncommitted";
                     break;
                 default:
-                    throw new InvalidEnumArgumentException("blockId", (int)blockId.ListType, typeof(BlockListListType));
+                    throw new ArgumentException("Given block list block id does not have a valid list type.", "blockId");
             }
 
             return element;
