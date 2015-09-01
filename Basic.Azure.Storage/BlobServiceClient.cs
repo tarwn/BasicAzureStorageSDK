@@ -207,9 +207,6 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
-        /// <summary>
-        /// Creates a new Block for a BlockBlob
-        /// </summary>
         public PutBlockResponse PutBlock(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null)
         {
             var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5);
@@ -217,9 +214,6 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
-        /// <summary>
-        /// Creates a new Block for a BlockBlob
-        /// </summary>
         public async Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null)
         {
             var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5);
