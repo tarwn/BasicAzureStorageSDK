@@ -1501,6 +1501,37 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        [ExpectedException(typeof(InvalidBlockListAzureException))]
+        public void PutBlockList_InvalidBlockId_ThrowsInvalidBlockListAzureException()
+        {
+            var dataPerBlock = "foo";
+            var expectedData = "foofoofoo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockIds = new List<string>
+            {
+                Base64Converter.ConvertToBase64("id1"), 
+                Base64Converter.ConvertToBase64("id2"), 
+                Base64Converter.ConvertToBase64("id3")
+            };
+            var blockListBlockIds = new BlockListBlockIdList()
+            {
+                new BlockListBlockId() {Id = Base64Converter.ConvertToBase64("id1"), ListType = BlockListListType.Latest},
+                new BlockListBlockId() {Id = Base64Converter.ConvertToBase64("id2"), ListType = BlockListListType.Latest},
+                new BlockListBlockId() {Id = Base64Converter.ConvertToBase64("id3"), ListType = BlockListListType.Latest},
+                new BlockListBlockId() {Id = Base64Converter.ConvertToBase64("id4"), ListType = BlockListListType.Latest}
+            };
+
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlockList(containerName, blobName, blockListBlockIds);
+
+            // Throws exception
+        }
+
+        [Test]
         public async void PutBlockListAsync_RequiredArgsOnly_CreatesBlockBlobFromLatestBlocks()
         {
             var dataPerBlock = "foo";

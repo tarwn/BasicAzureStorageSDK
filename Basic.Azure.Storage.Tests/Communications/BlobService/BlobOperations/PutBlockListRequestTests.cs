@@ -70,12 +70,14 @@ namespace Basic.Azure.Storage.Tests.Communications.BlobService.BlobOperations
             TestableWebRequestCreateFactory.GetFactory().AddRequest(expectedRawRequest);
             var id1 = Base64Converter.ConvertToBase64("id1");
             var id2 = Base64Converter.ConvertToBase64("id2");
+            var id3 = Base64Converter.ConvertToBase64("id3");
             var expectedData =
-@"<?xml version=""1.0"" encoding=""utf-8""?><BlockList><Committed>" + id1 + @"</Committed><Uncommitted>" + id2 + @"</Uncommitted></BlockList>";
+@"<?xml version=""1.0"" encoding=""utf-8""?><BlockList><Committed>" + id1 + @"</Committed><Uncommitted>" + id2 + @"</Uncommitted><Latest>" + id3 + @"</Latest></BlockList>";
             var givenData = new BlockListBlockIdList
             {
                 new BlockListBlockId { Id = id1, ListType = BlockListListType.Committed},
-                new BlockListBlockId { Id = id2, ListType = BlockListListType.Uncommitted}
+                new BlockListBlockId { Id = id2, ListType = BlockListListType.Uncommitted},
+                new BlockListBlockId { Id = id3, ListType = BlockListListType.Latest}
             };
 
             var request = new PutBlockListRequest(_settings, expectedContainer, expectedBlob, givenData);
