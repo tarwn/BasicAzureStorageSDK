@@ -71,8 +71,9 @@ namespace Basic.Azure.Storage.Tests.Communications.BlobService.BlobOperations
             var id1 = Base64Converter.ConvertToBase64("id1");
             var id2 = Base64Converter.ConvertToBase64("id2");
             var id3 = Base64Converter.ConvertToBase64("id3");
-            var expectedData =
-@"<?xml version=""1.0"" encoding=""utf-8""?><BlockList><Committed>" + id1 + @"</Committed><Uncommitted>" + id2 + @"</Uncommitted><Latest>" + id3 + @"</Latest></BlockList>";
+            var expectedData = string.Format(
+@"<?xml version=""1.0"" encoding=""utf-8""?><BlockList><Committed>{0}</Committed><Uncommitted>{1}</Uncommitted><Latest>{2}</Latest></BlockList>",
+id1, id2, id3);
             var givenData = new BlockListBlockIdList
             {
                 new BlockListBlockId { Id = id1, ListType = BlockListListType.Committed},
