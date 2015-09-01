@@ -223,8 +223,8 @@ namespace Basic.Azure.Storage
         public async Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null)
         {
             var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5);
-            var response = request.ExecuteAsync();
-            return (await response).Payload;
+            var response = await request.ExecuteAsync();
+            return response.Payload;
         }
 
         /// <summary>
