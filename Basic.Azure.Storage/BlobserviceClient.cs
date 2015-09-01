@@ -207,6 +207,26 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
+        public PutBlockListResponse PutBlockList(string containerName, string blobName, BlockListBlockIdList data,
+            string requestContentMD5 = null, string cacheControl = null, string contentType = null,
+            string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
+            Dictionary<string, string> metadata = null)
+        {
+            var request = new PutBlockListRequest(_account, containerName, blobName, data, requestContentMD5, cacheControl, contentType, contentEncoding, contentLanguage, blobContentMD5, metadata);
+            var response = request.Execute();
+            return response.Payload;
+        }
+
+        public async Task<PutBlockListResponse> PutBlockListAsync(string containerName, string blobName, BlockListBlockIdList data,
+            string requestContentMD5 = null, string cacheControl = null, string contentType = null,
+            string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
+            Dictionary<string, string> metadata = null)
+        {
+            var request = new PutBlockListRequest(_account, containerName, blobName, data, requestContentMD5, cacheControl, contentType, contentEncoding, contentLanguage, blobContentMD5, metadata);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         /// <summary>
         /// Creates a new PageBlob (Alias for the PutBlob call with a Blob Type of PageBlob)
         /// </summary>
@@ -238,7 +258,7 @@ namespace Basic.Azure.Storage
             var request = new DeleteBlobRequest(_account, containerName, blobName);
             await request.ExecuteAsync();
         }
-        
+
         public GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null)
         {
             var request = new GetBlobRequest(_account, containerName, blobName, range);

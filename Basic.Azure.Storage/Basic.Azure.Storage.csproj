@@ -49,10 +49,15 @@
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobResponse.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\PutBlockListResponse.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\PutBlockListRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobRange.cs" />
     <Compile Include="Communications\BlobService\BlobType.cs" />
+    <Compile Include="Communications\BlobService\BlockListBlockId.cs" />
+    <Compile Include="Communications\BlobService\BlockListBlockIdList.cs" />
+    <Compile Include="Communications\BlobService\BlockListListType.cs" />
     <Compile Include="Communications\BlobService\ContainerAccessType.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\ListBlobsResponse.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\ListBlobsRequest.cs" />
@@ -163,6 +168,7 @@
     <Compile Include="Communications\TableService\CreateTableRequest.cs" />
     <Compile Include="Communications\TableService\CreateTableResponse.cs" />
     <Compile Include="Communications\TableService\MetadataPreference.cs" />
+    <Compile Include="Communications\Utility\Base64Converter.cs" />
     <Compile Include="Communications\Utility\BlobListIncludeParse.cs" />
     <Compile Include="Communications\Utility\DateParse.cs" />
     <Compile Include="Communications\Utility\Guard.cs" />

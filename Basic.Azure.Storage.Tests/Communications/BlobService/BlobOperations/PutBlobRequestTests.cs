@@ -31,7 +31,7 @@ namespace Basic.Azure.Storage.Tests.Communications.BlobService.BlobOperations
             var expectedBlob = "test-blob";
             var expectedUri = String.Format("{0}/{1}/{2}", _settings.BlobEndpoint, expectedContainer, expectedBlob);
             var expectedRawRequest = new TestableWebRequest(new Uri(expectedUri))
-                                            .EnqueueResponse(new HttpResponseSettings((HttpStatusCode)201, "Success", "", false, new Dictionary<string,string>(){
+                                            .EnqueueResponse(new HttpResponseSettings((HttpStatusCode)201, "Created", "", false, new Dictionary<string,string>(){
                                                 {"ETag", "\"123\""},
                                                 {"Date", DateTime.UtcNow.ToString() },
                                                 {"Last-Modified", DateTime.UtcNow.ToString() },
@@ -60,7 +60,7 @@ namespace Basic.Azure.Storage.Tests.Communications.BlobService.BlobOperations
             var expectedBlob = "test-blob";
             var expectedUri = String.Format("{0}/{1}/{2}", _settings.BlobEndpoint, expectedContainer, expectedBlob);
             var expectedRawRequest = new TestableWebRequest(new Uri(expectedUri))
-                                            .EnqueueResponse(new HttpResponseSettings((HttpStatusCode)201, "Success", "", false, new Dictionary<string, string>(){
+                                            .EnqueueResponse(new HttpResponseSettings((HttpStatusCode)201, "Created", "", false, new Dictionary<string, string>(){
                                                 {"ETag", "\"123\""},
                                                 {"Date", DateTime.UtcNow.ToString() },
                                                 {"Last-Modified", DateTime.UtcNow.ToString() },
