@@ -1478,8 +1478,8 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void PutBlockList_RequiredArgsOnly_CreatesBlockBlobFromLatestBlocks()
         {
-            var dataPerBlock = "foo";
-            var expectedData = "foofoofoo";
+            const string dataPerBlock = "foo";
+            const string expectedData = "foofoofoo";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -1497,8 +1497,8 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async void PutBlockListAsync_RequiredArgsOnly_CreatesBlockBlobFromLatestBlocks()
         {
-            var dataPerBlock = "foo";
-            var expectedData = "foofoofoo";
+            const string dataPerBlock = "foo";
+            const string expectedData = "foofoofoo";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -1517,8 +1517,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(InvalidBlockListAzureException))]
         public void PutBlockList_InvalidBlockId_ThrowsInvalidBlockListAzureException()
         {
-            var dataPerBlock = "foo";
-            var expectedData = "foofoofoo";
+            const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -1529,7 +1528,6 @@ namespace Basic.Azure.Storage.Tests.Integration
                 Id = Base64Converter.ConvertToBase64("id4"),
                 ListType = BlockListListType.Latest
             });
-
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
@@ -1542,8 +1540,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(InvalidBlockListAzureException))]
         public async void PutBlockListAsync_InvalidBlockId_ThrowsInvalidBlockListAzureException()
         {
-            var dataPerBlock = "foo";
-            var expectedData = "foofoofoo";
+            const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -1554,7 +1551,6 @@ namespace Basic.Azure.Storage.Tests.Integration
                 Id = Base64Converter.ConvertToBase64("id4"),
                 ListType = BlockListListType.Latest
             });
-
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
@@ -1566,17 +1562,17 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void PutBlockList_WithMetadata_UploadsMetadata()
         {
-            var dataPerBlock = "foo";
+            const string dataPerBlock = "foo";
+            var expectedMetadata = new Dictionary<string, string>(){
+                { "firstValue", "1" },
+                { "secondValue", "2"}
+            };
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
-            var expectedMetadata = new Dictionary<string, string>(){
-                { "firstValue", "1" },
-                { "secondValue", "2"}
-            };
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             client.PutBlockList(containerName, blobName, blockListBlockIds, metadata: expectedMetadata);
@@ -1589,17 +1585,17 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async void PutBlockListAsync_WithMetadata_UploadsMetadata()
         {
-            var dataPerBlock = "foo";
+            const string dataPerBlock = "foo";
+            var expectedMetadata = new Dictionary<string, string>(){
+                { "firstValue", "1" },
+                { "secondValue", "2"}
+            };
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
-            var expectedMetadata = new Dictionary<string, string>(){
-                { "firstValue", "1" },
-                { "secondValue", "2"}
-            };
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, metadata: expectedMetadata);
@@ -1612,8 +1608,8 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void PutBlockList_WithContentType_UploadsWithSpecifiedContentType()
         {
-            var dataPerBlock = "foo";
-            var expectedContentType = "text/plain";
+            const string dataPerBlock = "foo";
+            const string expectedContentType = "text/plain";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -1631,8 +1627,8 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async void PutBlockListAsync_WithContentType_UploadsWithSpecifiedContentType()
         {
-            var dataPerBlock = "foo";
-            var expectedContentType = "text/plain";
+            const string dataPerBlock = "foo";
+            const string expectedContentType = "text/plain";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -1650,8 +1646,8 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void PutBlockList_WithBlobContentMD5_UploadsWithSpecifiedBlobContentMD5()
         {
-            var dataPerBlock = "foo";
-            var expectedData = "foofoofoo";
+            const string dataPerBlock = "foo";
+            const string expectedData = "foofoofoo";
             var expectedContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(Encoding.Unicode.GetBytes(expectedData)));
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
@@ -1670,8 +1666,8 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async void PutBlockListAsync_WithBlobContentMD5_UploadsWithSpecifiedBlobContentMD5()
         {
-            var dataPerBlock = "foo";
-            var expectedData = "foofoofoo";
+            const string dataPerBlock = "foo";
+            const string expectedData = "foofoofoo";
             var expectedContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(Encoding.Unicode.GetBytes(expectedData)));
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
@@ -1690,14 +1686,14 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void PutBlockList_WithBlobContentEncoding_UploadsWithSpecifiedBlobContentEncoding()
         {
-            var dataPerBlock = "foo";
+            const string dataPerBlock = "foo";
+            const string expectedContentEncoding = "UTF32";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock, Encoding.UTF32);
-            var expectedContentEncoding = "UTF32";
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             client.PutBlockList(containerName, blobName, blockListBlockIds, contentEncoding: expectedContentEncoding);
@@ -1707,19 +1703,57 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public async void PutBlockListAsync_WithBlobContentEncoding_UploadsWithSpecifiedBlobContentEncoding()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedContentEncoding = "UTF32";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock, Encoding.UTF32);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, contentEncoding: expectedContentEncoding);
+
+            var blob = AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            Assert.AreEqual(expectedContentEncoding, blob.Properties.ContentEncoding);
+        }
+
+        [Test]
         public void PutBlockList_WithBlobContentLanguage_UploadsWithSpecifiedBlobContentLanguage()
         {
-            var dataPerBlock = "foo";
+            const string dataPerBlock = "foo";
+            const string expectedContentLanguage = "gibberish";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
-            var expectedContentLanguage = "gibberish";
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             client.PutBlockList(containerName, blobName, blockListBlockIds, contentLanguage: expectedContentLanguage);
+
+            var blob = AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            Assert.AreEqual(expectedContentLanguage, blob.Properties.ContentLanguage);
+        }
+
+        [Test]
+        public async void PutBlockListAsync_WithBlobContentLanguage_UploadsWithSpecifiedBlobContentLanguage()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedContentLanguage = "gibberish";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, contentLanguage: expectedContentLanguage);
 
             var blob = AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(expectedContentLanguage, blob.Properties.ContentLanguage);
