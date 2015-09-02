@@ -51,6 +51,8 @@
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlockListResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlockListRequest.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\PutBlockResponse.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\PutBlockRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobRange.cs" />
@@ -205,7 +207,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

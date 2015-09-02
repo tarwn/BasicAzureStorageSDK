@@ -16,4 +16,3 @@ namespace Basic.Azure.Storage.Communications.Utility
         }
     }
 }
-
