@@ -130,7 +130,7 @@ namespace Basic.Azure.Storage.Extensions.Tests.Integration
             CreateContainer(containerName);
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
-            await client.PutBlockBlobAsListAsync(4 * 1024 * 1024, containerName, blobName, expectedData);
+            await client.PutBlockBlobAsListAsync(4 * megabyte, containerName, blobName, expectedData);
 
             AssertBlockBlobExists(containerName, blobName);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
@@ -147,6 +147,36 @@ namespace Basic.Azure.Storage.Extensions.Tests.Integration
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
             client.PutBlockBlobAsList(4 * 1024 * 1024, containerName, blobName, expectedData);
+
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+        }
+
+        [Test]
+        public async void PutBlockBlobAsListAsync_BlockSizeLargerThanBlob_CreatesBlobWithoutError()
+        {
+            var expectedData = new byte[10];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockBlobAsListAsync(expectedData.Length * 2, containerName, blobName, expectedData);
+
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+        }
+
+        [Test]
+        public void PutBlockBlobAsList_BlockSizeLargerThanBlob_CreatesBlobWithoutError()
+        {
+            var expectedData = new byte[10];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlockBlobAsList(expectedData.Length * 2, containerName, blobName, expectedData);
 
             AssertBlockBlobExists(containerName, blobName);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
