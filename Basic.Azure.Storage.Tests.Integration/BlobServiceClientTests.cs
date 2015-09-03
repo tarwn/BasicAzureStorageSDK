@@ -2673,7 +2673,14 @@ namespace Basic.Azure.Storage.Tests.Integration
             {
                 blob.DownloadToStream(stream);
 
-                Assert.AreEqual(expectedData, stream.ToArray());
+                var gottenData = stream.ToArray();
+
+                // Comparing strings -> MUCH faster than comparing the raw arrays
+                var gottenDataString = Convert.ToBase64String(gottenData);
+                var expectedDataString = Convert.ToBase64String(expectedData);
+
+                Assert.AreEqual(expectedData.Length, gottenData.Length);
+                Assert.AreEqual(gottenDataString, expectedDataString);
             }
 
             return blob;

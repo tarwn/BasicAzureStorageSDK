@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic.Azure.Storage", "Basic.Azure.Storage\Basic.Azure.Storage.csproj", "{0CC0F30A-AEB3-48E8-BDE9-2DDA8DB13522}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic.Azure.Storage.Tests.Integration", "Basic.Azure.Storage.Tests.Integration\Basic.Azure.Storage.Tests.Integration.csproj", "{696FFAC8-65ED-4661-8066-58F78EEF7CA2}"
@@ -8,6 +10,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic.Azure.Storage.Tests", "Basic.Azure.Storage.Tests\Basic.Azure.Storage.Tests.csproj", "{0E16327D-3996-40E2-A11C-D078B8D8EF73}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestableHttpWebResponse", "TestableHttpWebResponse\TestableHttpWebResponse.csproj", "{9D7BADF2-B79D-4227-A22C-83FCE210D0CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic.Azure.Storage.Extensions", "Basic.Azure.Storage.Extensions\Basic.Azure.Storage.Extensions.csproj", "{F29F52A8-5467-4931-BA16-9D891A73E628}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic.Azure.Storage.Extensions.Tests.Integration", "Basic.Azure.Storage.Extensions.Tests.Integration\Basic.Azure.Storage.Extensions.Tests.Integration.csproj", "{F3963AB1-309E-4282-8C0A-AD3D9B104C11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +37,14 @@ Global
 		{9D7BADF2-B79D-4227-A22C-83FCE210D0CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D7BADF2-B79D-4227-A22C-83FCE210D0CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D7BADF2-B79D-4227-A22C-83FCE210D0CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F29F52A8-5467-4931-BA16-9D891A73E628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F29F52A8-5467-4931-BA16-9D891A73E628}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F29F52A8-5467-4931-BA16-9D891A73E628}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F29F52A8-5467-4931-BA16-9D891A73E628}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3963AB1-309E-4282-8C0A-AD3D9B104C11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3963AB1-309E-4282-8C0A-AD3D9B104C11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3963AB1-309E-4282-8C0A-AD3D9B104C11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3963AB1-309E-4282-8C0A-AD3D9B104C11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
