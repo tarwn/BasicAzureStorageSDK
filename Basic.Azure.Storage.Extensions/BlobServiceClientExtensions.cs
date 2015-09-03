@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Basic.Azure.Storage.ClientContracts;
@@ -14,13 +13,38 @@ namespace Basic.Azure.Storage.Extensions
     {
         private static readonly MD5 _md5 = MD5.Create();
 
+        public static BlobOrBlockListResponseWrapper PutBlockBlobIntelligently(this IBlobServiceClient blobServiceClient, int blockSize,
+            string containerName, string blobName, byte[] data,
+            string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
+            string cacheControl = null, Dictionary<string, string> metadata = null)
+        {
+            return Task.Run(() => blobServiceClient.PutBlockBlobIntelligentlyAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata)).Result;
+        }
+
+        public async static Task<BlobOrBlockListResponseWrapper> PutBlockBlobIntelligentlyAsync(this IBlobServiceClient blobServiceClient, int blockSize,
+            string containerName, string blobName, byte[] data,
+            string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
+            string cacheControl = null, Dictionary<string, string> metadata = null)
+        {
+
+
+            if (data.Length <= BlobServiceConstants.MaxSingleBlobUploadSize)
+            {
+                return new BlobOrBlockListResponseWrapper(
+                    await blobServiceClient.PutBlockBlobAsync(containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata));
+            }
+
+            return new BlobOrBlockListResponseWrapper(
+                await blobServiceClient.PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata));
+        }
+
         public static PutBlockListResponse PutBlockBlobAsList(this IBlobServiceClient blobServiceClient, int blockSize,
             string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null)
         {
-            return Task.Run(() => 
-                    PutBlockBlobAsListAsync(blobServiceClient, blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
+            return Task.Run(() =>
+                    blobServiceClient.PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
                     .Result;
         }
 

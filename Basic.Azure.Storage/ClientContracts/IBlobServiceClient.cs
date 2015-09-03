@@ -54,7 +54,7 @@ namespace Basic.Azure.Storage.ClientContracts
         #endregion
 
         #region Blob Operations
-
+        
         PutBlobResponse PutBlockBlob(string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null);

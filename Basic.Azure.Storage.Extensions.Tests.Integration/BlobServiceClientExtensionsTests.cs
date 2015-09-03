@@ -14,6 +14,7 @@ namespace Basic.Azure.Storage.Extensions.Tests.Integration
     [TestFixture]
     public class BlobServiceClientExtensionsTests
     {
+        #region setup
         private readonly StorageAccountSettings _accountSettings = new LocalEmulatorAccountSettings();
         private readonly CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
 
@@ -55,6 +56,624 @@ namespace Basic.Azure.Storage.Extensions.Tests.Integration
                 }
             }
         }
+
+        #endregion
+
+        #region PutBlockBlobIntelligently
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_DefaultArgsOnly_CreatesBlockBlob()
+        {
+            var expectedData = Encoding.UTF8.GetBytes("test data");
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            // Tempt it to do it in two uploads by specifying half megabyte
+            await client.PutBlockBlobIntelligentlyAsync(expectedData.Length - 5, containerName, blobName, expectedData);
+
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_DefaultArgsOnly_CreatesBlockBlob()
+        {
+            var expectedData = Encoding.UTF8.GetBytes("test data");
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            // Tempt it to do it in two uploads by specifying half megabyte
+            client.PutBlockBlobIntelligently(expectedData.Length - 5, containerName, blobName, expectedData);
+
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_DataSmallerThanMaxSingleUploadSize_CreatesBlockBlobWithOneUpload()
+        {
+            var expectedData = Encoding.UTF8.GetBytes("test data");
+            var expectedDataLength = expectedData.Length;
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            // Tempt it to do it in two uploads by specifying a blocksize smaller than the data length
+            var response = await client.PutBlockBlobIntelligentlyAsync(expectedDataLength - 5, containerName, blobName, expectedData);
+
+            Assert.LessOrEqual(expectedDataLength, BlobServiceConstants.MaxSingleBlobUploadSize);
+            Assert.IsTrue(response.IsPutBlobResponse);
+            Assert.IsNotNull(response.PutBlobResponse);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_DataSmallerThanMaxSingleUploadSize_CreatesBlockBlobWithOneUpload()
+        {
+            var expectedData = Encoding.UTF8.GetBytes("test data");
+            var expectedDataLength = expectedData.Length;
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            // Tempt it to do it in two uploads by specifying a blocksize smaller than the data length
+            var response = client.PutBlockBlobIntelligently(expectedDataLength - 5, containerName, blobName, expectedData);
+
+            Assert.LessOrEqual(expectedDataLength, BlobServiceConstants.MaxSingleBlobUploadSize);
+            Assert.IsTrue(response.IsPutBlobResponse);
+            Assert.IsNotNull(response.PutBlobResponse);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_DataLargerThanMaxSingleUploadSize_CreatesBlockBlobWithMultipleUploads()
+        {
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            var expectedDataLength = expectedData.Length;
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            var response = await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData);
+
+            Assert.Greater(expectedDataLength, BlobServiceConstants.MaxSingleBlobUploadSize);
+            Assert.IsTrue(response.IsPutBlockListResponse);
+            Assert.IsNotNull(response.PutBlockListResponse);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_DataLargerThanMaxSingleUploadSize_CreatesBlockBlobWithMultipleUploads()
+        {
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            var expectedDataLength = expectedData.Length;
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            var response = client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData);
+
+            Assert.Greater(expectedDataLength, BlobServiceConstants.MaxSingleBlobUploadSize);
+            Assert.IsTrue(response.IsPutBlockListResponse);
+            Assert.IsNotNull(response.PutBlockListResponse);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_MultipleUploadsWithContentType_CorrectContentTypeSet()
+        {
+            const string expectedContentType = "foo/bar";
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentType: expectedContentType);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentType, properties.ContentType);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_MultipleUploadsWithContentType_CorrectContentTypeSet()
+        {
+            const string expectedContentType = "foo/bar";
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentType: expectedContentType);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentType, properties.ContentType);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_SingleUploadWithContentType_CorrectContentTypeSet()
+        {
+            const string expectedContentType = "foo/bar";
+            var expectedData = new byte[1024];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentType: expectedContentType);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentType, properties.ContentType);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_SingleUploadWithContentType_CorrectContentTypeSet()
+        {
+            const string expectedContentType = "foo/bar";
+            var expectedData = new byte[1024];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentType: expectedContentType);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentType, properties.ContentType);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_MultipleUploadsWithContentLanguage_CorrectContentLanguage()
+        {
+            const string expectedContentLanguage = "ancient/yiddish";
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentLanguage: expectedContentLanguage);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentLanguage, properties.ContentLanguage);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_MultipleUploadsWithContentLanguage_CorrectContentLanguage()
+        {
+            const string expectedContentLanguage = "ancient/yiddish";
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentLanguage: expectedContentLanguage);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentLanguage, properties.ContentLanguage);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_SingleUploadWithContentLanguage_CorrectContentLanguage()
+        {
+            const string expectedContentLanguage = "ancient/yiddish";
+            var expectedData = new byte[1024];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentLanguage: expectedContentLanguage);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentLanguage, properties.ContentLanguage);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_SingleUploadWithContentLanguage_CorrectContentLanguage()
+        {
+            const string expectedContentLanguage = "ancient/yiddish";
+            var expectedData = new byte[1024];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentLanguage: expectedContentLanguage);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentLanguage, properties.ContentLanguage);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_MultipleUploadsWithContentEncoding_CorrectContentEncoding()
+        {
+            const string expectedContentEncoding = "UTF8";
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentEncoding: expectedContentEncoding);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentEncoding, properties.ContentEncoding);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_MultipleUploadsWithContentEncoding_CorrectContentEncoding()
+        {
+            const string expectedContentEncoding = "UTF8";
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentEncoding: expectedContentEncoding);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentEncoding, properties.ContentEncoding);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_SingleUploadWithContentEncoding_CorrectContentEncoding()
+        {
+            const string expectedContentEncoding = "UTF8";
+            var expectedData = new byte[1024];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentEncoding: expectedContentEncoding);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentEncoding, properties.ContentEncoding);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_SingleUploadWithContentEncoding_CorrectContentEncoding()
+        {
+            const string expectedContentEncoding = "UTF8";
+            var expectedData = new byte[1024];
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentEncoding: expectedContentEncoding);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentEncoding, properties.ContentEncoding);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_MultipleUploadsWithContentMD5_CorrectContentMD5()
+        {
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            var expectedContentMD5 = Convert.ToBase64String(MD5.Create().ComputeHash(expectedData));
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentMD5: expectedContentMD5);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentMD5, properties.ContentMD5);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_MultipleUploadsWithContentMD5_CorrectContentMD5()
+        {
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            var expectedContentMD5 = Convert.ToBase64String(MD5.Create().ComputeHash(expectedData));
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentMD5: expectedContentMD5);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentMD5, properties.ContentMD5);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_SingleUploadWithContentMD5_CorrectContentMD5()
+        {
+            var expectedData = new byte[1024];
+            var expectedContentMD5 = Convert.ToBase64String(MD5.Create().ComputeHash(expectedData));
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentMD5: expectedContentMD5);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentMD5, properties.ContentMD5);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_SingleUploadWithContentMD5_CorrectContentMD5()
+        {
+            var expectedData = new byte[1024];
+            var expectedContentMD5 = Convert.ToBase64String(MD5.Create().ComputeHash(expectedData));
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                contentMD5: expectedContentMD5);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedContentMD5, properties.ContentMD5);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_MultipleUploadsWithCacheControl_CorrectContentCacheControl()
+        {
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            const string expectedCacheControl = "ponyfoo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                cacheControl: expectedCacheControl);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedCacheControl, properties.CacheControl);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_MultipleUploadsWithCacheControl_CorrectContentCacheControl()
+        {
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            const string expectedCacheControl = "ponyfoo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                cacheControl: expectedCacheControl);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedCacheControl, properties.CacheControl);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_SingleUploadWithCacheControl_CorrectContentCacheControl()
+        {
+            var expectedData = new byte[1024];
+            const string expectedCacheControl = "ponyfoo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                cacheControl: expectedCacheControl);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedCacheControl, properties.CacheControl);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_SingleUploadWithCacheControl_CorrectContentCacheControl()
+        {
+            var expectedData = new byte[1024];
+            const string expectedCacheControl = "ponyfoo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                cacheControl: expectedCacheControl);
+            var properties = GetBlobProperties(containerName, blobName);
+
+            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedCacheControl, properties.CacheControl);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_MultipleUploadsWithMetadata_CorrectMetadata()
+        {
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            var expectedMetadata = new Dictionary<string, string>
+            {
+                {"haikuLine1", "I dreamed I was in"},
+                {"haikuLine2", "A long-running endless loop"},
+                {"haikuLine3", "And then the next day"}
+            };
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                metadata: expectedMetadata);
+            var metadata = GetBlobMetadata(containerName, blobName);
+
+            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedMetadata, metadata);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_MultipleUploadsWithMetadata_CorrectMetadata()
+        {
+            var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
+            var expectedMetadata = new Dictionary<string, string>
+            {
+                {"haikuLine1", "I dreamed I was in"},
+                {"haikuLine2", "A long-running endless loop"},
+                {"haikuLine3", "And then the next day"}
+            };
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                metadata: expectedMetadata);
+            var metadata = GetBlobMetadata(containerName, blobName);
+
+            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedMetadata, metadata);
+        }
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_SingleUploadWithMetadata_CorrectMetadata()
+        {
+            var expectedData = new byte[1024];
+            var expectedMetadata = new Dictionary<string, string>
+            {
+                {"haikuLine1", "I dreamed I was in"},
+                {"haikuLine2", "A long-running endless loop"},
+                {"haikuLine3", "And then the next day"}
+            };
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                metadata: expectedMetadata);
+            var metadata = GetBlobMetadata(containerName, blobName);
+
+            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedMetadata, metadata);
+        }
+
+        [Test]
+        public void PutBlockBlobIntelligently_SingleUploadWithMetadata_CorrectMetadata()
+        {
+            var expectedData = new byte[1024];
+            var expectedMetadata = new Dictionary<string, string>
+            {
+                {"haikuLine1", "I dreamed I was in"},
+                {"haikuLine2", "A long-running endless loop"},
+                {"haikuLine3", "And then the next day"}
+            };
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            CreateContainer(containerName);
+
+            client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
+                metadata: expectedMetadata);
+            var metadata = GetBlobMetadata(containerName, blobName);
+
+            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            Assert.AreEqual(expectedMetadata, metadata);
+        }
+
+        #endregion
+
+        #region PutBlockBlobAsList
 
         [Test]
         public async void PutBlockBlobAsListAsync_RequiredArgsOnly_CreatesBlockBlobFromLatestBlocks()
@@ -431,6 +1050,8 @@ namespace Basic.Azure.Storage.Extensions.Tests.Integration
             AssertBlockBlobExists(containerName, blobName);
             Assert.AreEqual(specifiedMismatchedContentMD5, properties.ContentMD5);
         }
+
+        #endregion
 
         #region Assertions
 

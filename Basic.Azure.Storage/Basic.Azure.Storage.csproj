@@ -56,6 +56,7 @@
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobRange.cs" />
+    <Compile Include="Communications\BlobService\BlobServiceConstants.cs" />
     <Compile Include="Communications\BlobService\BlobType.cs" />
     <Compile Include="Communications\BlobService\BlockListBlockId.cs" />
     <Compile Include="Communications\BlobService\BlockListBlockIdList.cs" />

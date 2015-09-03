@@ -12,8 +12,6 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
                                   ISendAdditionalOptionalHeaders,
                                   ISendDataWithRequest
     {
-        private const int FourMegabytes = 4*1024*1024;
-
         private readonly string _containerName;
         private readonly string _blobName;
         private readonly string _blockId;
@@ -26,7 +24,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             Guard.ArgumentIsBase64Encoded("blockId", blockId);
             Guard.ArgumentArrayLengthIsEqualOrSmallerThanSize("blockId", blockId.ToCharArray(), 64);
 
-            Guard.ArgumentArrayLengthIsEqualOrSmallerThanSize("data", data, FourMegabytes);
+            Guard.ArgumentArrayLengthIsEqualOrSmallerThanSize("data", data, BlobServiceConstants.MaxSingleBlockUploadSize);
 
             _containerName = containerName;
             _blobName = blobName;
