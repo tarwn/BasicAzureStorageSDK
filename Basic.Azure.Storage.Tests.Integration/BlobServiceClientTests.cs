@@ -2404,9 +2404,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             byte[] data;
             using (var stream = response.GetDataStream())
             {
-                var ms = new MemoryStream();
-                stream.CopyTo(ms);
-                data = ms.ToArray();
+                data = stream.ToArray();
             }
 
             Assert.AreEqual(expectedContent, UTF8Encoding.UTF8.GetString(data));
@@ -2426,9 +2424,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             byte[] data;
             using (var stream = response.GetDataStream())
             {
-                var ms = new MemoryStream();
-                stream.CopyTo(ms);
-                data = ms.ToArray();
+                data = stream.ToArray();
             }
 
             Assert.AreEqual(expectedContent, UTF8Encoding.UTF8.GetString(data));

@@ -10,14 +10,14 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
     public class GetBlobResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse, IReceiveDataWithResponse
     {
-        private Stream _stream;
+        private MemoryStream _inMemoryStream;
 
         public DateTime Date { get; protected set; }
 
         public string ETag { get; protected set; }
 
         public DateTime LastModified { get; protected set; }
-        
+
         public ReadOnlyDictionary<string, string> Metadata { get; protected set; }
 
         public void ParseHeaders(System.Net.HttpWebResponse response)
@@ -45,27 +45,24 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             DateTime.TryParse(headerValue, out dateValue);
             return dateValue;
         }
-        
-        public async Task ParseResponseBodyAsync(System.IO.Stream responseStream)
-        {
-            _stream = responseStream;
-        }
 
-        public byte[] GetDataBytes()
+        public virtual async Task ParseResponseBodyAsync(System.IO.Stream responseStream)
         {
-            using (_stream)
+            using (responseStream)
             {
-                using (var localStream = new MemoryStream())
-                {
-                    _stream.CopyTo(localStream);
-                    return localStream.ToArray();
-                }
+                _inMemoryStream = new MemoryStream();
+                await responseStream.CopyToAsync(_inMemoryStream);
             }
         }
 
-        public Stream GetDataStream()
+        public virtual byte[] GetDataBytes()
         {
-            return _stream;
+            return _inMemoryStream.ToArray();
+        }
+
+        public virtual MemoryStream GetDataStream()
+        {
+            return _inMemoryStream;
         }
     }
 }

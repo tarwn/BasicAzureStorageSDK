@@ -1071,13 +1071,23 @@ namespace Basic.Azure.Storage.Extensions.Tests.Integration
 
             var gottenData = blob.GetDataBytes();
 
-            // Comparing strings -> MUCH faster than comparing the raw arrays
-            var gottenDataString = Convert.ToBase64String(gottenData);
-            var expectedDataString = Convert.ToBase64String(expectedData);
-
             Assert.AreEqual(expectedData.Length, gottenData.Length);
-            Assert.AreEqual(gottenDataString, expectedDataString);
 
+            // Comparing strings -> MUCH faster than comparing the raw arrays
+            // However, bugs out sometimes if the data is too large
+            try
+            {
+                var gottenDataString = Encoding.Unicode.GetString(gottenData);
+                var expectedDataString = Encoding.Unicode.GetString(expectedData);
+
+                Assert.AreEqual(gottenDataString, expectedDataString);
+            }
+            catch
+            {
+                // Compare raw arrays as last resort...
+                // This only happens if the test running process doesn't have enough memory to convert
+                Assert.AreEqual(expectedData, gottenData);
+            }
         }
 
         #endregion
