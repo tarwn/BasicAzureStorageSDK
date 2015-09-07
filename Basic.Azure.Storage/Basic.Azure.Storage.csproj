@@ -45,6 +45,7 @@
     <Compile Include="BlobServiceClient.cs" />
     <Compile Include="ClientContracts\IBlobServiceClient.cs" />
     <Compile Include="ClientContracts\ITableServiceClient.cs" />
+    <Compile Include="Communications\Core\Interfaces\IBlobPropertiesResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobResponse.cs" />

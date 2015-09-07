@@ -1,50 +1,37 @@
-﻿using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
+﻿using System;
+using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
+using Basic.Azure.Storage.Communications.Core.Interfaces;
+using Basic.Azure.Storage.Extensions.Contracts;
 
 namespace Basic.Azure.Storage.Extensions
 {
-    public class BlobOrBlockListResponseWrapper
+    public class BlobOrBlockListResponseWrapper : IBlobOrBlockListResponseWrapper
     {
-        private readonly PutBlockListResponse _putBlockListResponse;
-        private readonly PutBlobResponse _putBlobResponse;
+        private readonly IBlobPropertiesResponse _response;
+        
+        public string ETag { get { return Response.ETag; } }
+        public DateTime LastModified { get { return Response.LastModified; } }
+        public DateTime Date { get { return Response.Date; } }
+        public string ContentMD5 { get { return Response.ContentMD5; } }
 
-        public PutBlockListResponse PutBlockListResponse
+        public IBlobPropertiesResponse Response
         {
             get
             {
-                return IsPutBlockListResponse 
-                    ? _putBlockListResponse 
-                    : null;
+                return _response;
             }
         }
 
-        public PutBlobResponse PutBlobResponse
+        public bool IsPutBlobResponse { get; private set; }
+
+        public bool IsPutBlockListResponse { get; private set; }
+
+        public BlobOrBlockListResponseWrapper(IBlobPropertiesResponse response)
         {
-            get
-            {
-                return IsPutBlobResponse
-                    ? _putBlobResponse
-                    : null;
-            }
-        }
-
-        public bool IsPutBlobResponse { get; set; }
-
-        public bool IsPutBlockListResponse { get; set; }
-
-        public BlobOrBlockListResponseWrapper(PutBlockListResponse response)
-        {
-            IsPutBlockListResponse = true;
-            IsPutBlobResponse = false;
-
-            _putBlockListResponse = response;
-        }
-
-        public BlobOrBlockListResponseWrapper(PutBlobResponse response)
-        {
-            IsPutBlockListResponse = false;
-            IsPutBlobResponse = true;
-
-            _putBlobResponse = response;
+            IsPutBlockListResponse = (response is PutBlockListResponse);
+            IsPutBlobResponse = (response is PutBlobResponse);
+            
+            _response = response;
         }
     }
 }

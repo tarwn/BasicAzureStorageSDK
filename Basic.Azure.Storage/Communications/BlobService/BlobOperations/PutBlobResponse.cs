@@ -1,22 +1,18 @@
 ﻿using Basic.Azure.Storage.Communications.Core;
-using Basic.Azure.Storage.Communications.Core.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Basic.Azure.Storage.Communications.Core.Interfaces;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
-    public class PutBlobResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse
+    public class PutBlobResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse, IBlobPropertiesResponse
     {
-        public string ETag { get; protected set; }
+        public string ETag { get; set; }
 
-        public DateTime LastModified { get; protected set; }
+        public DateTime LastModified { get; set; }
 
-        public DateTime Date { get; protected set; }
+        public DateTime Date { get; set; }
 
-        public string ContentMD5 { get; protected set; }
+        public string ContentMD5 { get; set; }
 
 
         public void ParseHeaders(System.Net.HttpWebResponse response)

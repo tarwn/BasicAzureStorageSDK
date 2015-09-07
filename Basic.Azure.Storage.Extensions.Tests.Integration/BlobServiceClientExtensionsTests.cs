@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Basic.Azure.Storage.ClientContracts;
 using Basic.Azure.Storage.Communications.BlobService;
+using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using NUnit.Framework;
@@ -108,7 +109,7 @@ namespace Basic.Azure.Storage.Extensions.Tests.Integration
 
             Assert.LessOrEqual(expectedDataLength, BlobServiceConstants.MaxSingleBlobUploadSize);
             Assert.IsTrue(response.IsPutBlobResponse);
-            Assert.IsNotNull(response.PutBlobResponse);
+            Assert.IsInstanceOf(typeof(PutBlobResponse), response.Response);
             AssertBlockBlobExists(containerName, blobName);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
@@ -128,7 +129,7 @@ namespace Basic.Azure.Storage.Extensions.Tests.Integration
 
             Assert.LessOrEqual(expectedDataLength, BlobServiceConstants.MaxSingleBlobUploadSize);
             Assert.IsTrue(response.IsPutBlobResponse);
-            Assert.IsNotNull(response.PutBlobResponse);
+            Assert.IsInstanceOf(typeof(PutBlobResponse), response.Response);
             AssertBlockBlobExists(containerName, blobName);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
@@ -147,7 +148,7 @@ namespace Basic.Azure.Storage.Extensions.Tests.Integration
 
             Assert.Greater(expectedDataLength, BlobServiceConstants.MaxSingleBlobUploadSize);
             Assert.IsTrue(response.IsPutBlockListResponse);
-            Assert.IsNotNull(response.PutBlockListResponse);
+            Assert.IsInstanceOf(typeof(PutBlockListResponse), response.Response);
             AssertBlockBlobExists(containerName, blobName);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
@@ -166,7 +167,7 @@ namespace Basic.Azure.Storage.Extensions.Tests.Integration
 
             Assert.Greater(expectedDataLength, BlobServiceConstants.MaxSingleBlobUploadSize);
             Assert.IsTrue(response.IsPutBlockListResponse);
-            Assert.IsNotNull(response.PutBlockListResponse);
+            Assert.IsInstanceOf(typeof(PutBlockListResponse), response.Response);
             AssertBlockBlobExists(containerName, blobName);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }

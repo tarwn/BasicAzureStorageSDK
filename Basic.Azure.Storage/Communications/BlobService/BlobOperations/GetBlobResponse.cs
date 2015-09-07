@@ -1,13 +1,10 @@
-﻿using Basic.Azure.Storage.Communications.Common;
-using Basic.Azure.Storage.Communications.Core;
-using Basic.Azure.Storage.Communications.Core.Interfaces;
+﻿using Basic.Azure.Storage.Communications.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Basic.Azure.Storage.Communications.Core.Interfaces;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {

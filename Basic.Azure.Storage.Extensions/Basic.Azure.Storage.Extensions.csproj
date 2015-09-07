@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="BlobServiceClientExtensions.cs" />
     <Compile Include="BlobOrBlockListResponseWrapper.cs" />
+    <Compile Include="Contracts\IBlobOrBlockListResponseWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
