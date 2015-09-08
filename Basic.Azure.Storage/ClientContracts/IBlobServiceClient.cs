@@ -72,6 +72,9 @@ namespace Basic.Azure.Storage.ClientContracts
             string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
             Dictionary<string, string> metadata = null);
 
+        PutBlockResponse PutBlock(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null);
+        Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null);
+
         PutBlobResponse PutPageBlob(string containerName, string blobName, int contentLength,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0);
