@@ -43,12 +43,32 @@ namespace Basic.Azure.Storage.Communications.Utility
                 throw new ArgumentException(String.Format("Cannot convert {0} to a Guid", parameterValue), parameterName);
             }
         }
-        
+
         internal static void ArgumentIsNotNullOrEmpty(string parameterName, string parameterValue)
         {
             if (string.IsNullOrEmpty(parameterValue))
             {
                 throw new ArgumentNullException(parameterName, String.Format("The provided {0} parameter is null or empty", parameterName));
+            }
+        }
+
+        internal static void ArgumentIsBase64Encoded(string parameterName, string parameterValue)
+        {
+            try
+            {
+                Convert.FromBase64String(parameterValue);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException(String.Format("The provided data {0} is not Base64 encoded", parameterValue), parameterName, ex);
+            }
+        }
+
+        internal static void ArgumentArrayLengthIsEqualOrSmallerThanSize(string parameterName, Array parameterValue, int size)
+        {
+            if (parameterValue.Length > size)
+            {
+                throw new ArgumentException(String.Format("The provided array is longer than maximum size {0}.", size), parameterName);
             }
         }
 

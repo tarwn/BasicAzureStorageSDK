@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communications\BlobService\BlobOperations\PutBlockRequestTests.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobRequestTests.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobRequestTests.cs" />
     <Compile Include="Communications\BlobService\BlobRangeTests.cs" />
