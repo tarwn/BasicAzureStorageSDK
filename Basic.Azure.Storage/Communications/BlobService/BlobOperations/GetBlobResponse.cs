@@ -10,7 +10,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
     public class GetBlobResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse, IReceiveDataWithResponse
     {
-        private MemoryStream _inMemoryStream;
+        private Stream _stream;
 
         public DateTime Date { get; protected set; }
 
@@ -48,21 +48,24 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 
         public virtual async Task ParseResponseBodyAsync(System.IO.Stream responseStream)
         {
-            using (responseStream)
-            {
-                _inMemoryStream = new MemoryStream();
-                await responseStream.CopyToAsync(_inMemoryStream);
-            }
+            _stream = responseStream;
         }
 
         public virtual byte[] GetDataBytes()
         {
-            return _inMemoryStream.ToArray();
+            using (_stream)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    _stream.CopyTo(ms);
+                    return ms.ToArray();
+                }
+            }
         }
 
-        public virtual MemoryStream GetDataStream()
+        public virtual Stream GetDataStream()
         {
-            return _inMemoryStream;
+            return _stream;
         }
     }
 }

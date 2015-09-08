@@ -20,21 +20,21 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
             BlobList = new ReadOnlyCollection<ListBlobsItem>(new List<ListBlobsItem>());
         }
 
-        public DateTime Date { get; protected set; }
+        public DateTime Date { get; set; }
 
-        public DateTime LastModified { get; protected set; }
+        public DateTime LastModified { get; set; }
 
-        public ReadOnlyCollection<ListBlobsItem> BlobList { get; protected set; }
+        public ReadOnlyCollection<ListBlobsItem> BlobList { get; set; }
 
-        public string Prefix { get; protected set; }
+        public string Prefix { get; set; }
 
-        public string Marker { get; protected set; }
+        public string Marker { get; set; }
 
-        public int MaxResults { get; protected set; }
+        public int MaxResults { get; set; }
 
-        public string Delimiter { get; protected set; }
+        public string Delimiter { get; set; }
 
-        public string NextMarker { get; protected set; }
+        public string NextMarker { get; set; }
 
         public void ParseHeaders(System.Net.HttpWebResponse response)
         {

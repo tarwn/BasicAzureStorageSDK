@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Basic.Azure.Storage.ClientContracts;
@@ -28,7 +29,7 @@ namespace Basic.Azure.Storage.Extensions
             string cacheControl = null, Dictionary<string, string> metadata = null)
         {
             return (data.Length <= BlobServiceConstants.MaxSingleBlobUploadSize)
-                ? new BlobOrBlockListResponseWrapper(await blobServiceClient.PutBlockBlobAsync(containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata)) 
+                ? new BlobOrBlockListResponseWrapper(await blobServiceClient.PutBlockBlobAsync(containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
                 : new BlobOrBlockListResponseWrapper(await blobServiceClient.PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata));
         }
 
@@ -74,7 +75,7 @@ namespace Basic.Azure.Storage.Extensions
             await Task.WhenAll(putBlockResponses);
 
             return await blobServiceClient.PutBlockListAsync(containerName, blobName, blockListBlockIdList,
-                cacheControl, contentType, contentEncoding, contentLanguage, contentMD5, metadata);
+                    cacheControl, contentType, contentEncoding, contentLanguage, contentMD5, metadata);
         }
 
         private static string GenerateBlockId()
