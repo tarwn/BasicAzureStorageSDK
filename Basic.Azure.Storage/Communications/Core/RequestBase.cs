@@ -148,7 +148,8 @@ namespace Basic.Azure.Storage.Communications.Core
         private async Task<Response<TPayload>> SendRequestWithRetryAsync(WebRequest request)
         {
             int numberOfAttempts = 0;
-            try { 
+            try
+            {
                 return await RetryPolicy.ExecuteAsync<Response<TPayload>>(async () =>
                 {
                     numberOfAttempts++;
@@ -158,12 +159,13 @@ namespace Basic.Azure.Storage.Communications.Core
                         result.NumberOfAttempts = numberOfAttempts;
                         return result;
                     }
-                    catch (Exception exc) {
+                    catch (Exception exc)
+                    {
                         throw GetAzureExceptionForAsync(exc).Result;
                     }
                 });
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 if (numberOfAttempts > 1)
                     throw new RetriedException(exc, numberOfAttempts);

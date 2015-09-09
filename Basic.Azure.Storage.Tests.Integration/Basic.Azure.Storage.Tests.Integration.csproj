@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlobServiceClientTests.cs" />
+    <Compile Include="BlobServiceClientTestsExtensionsTests.cs" />
     <Compile Include="ProxyType.cs" />
     <Compile Include="QueueServiceClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
