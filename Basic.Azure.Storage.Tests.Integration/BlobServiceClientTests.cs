@@ -1476,6 +1476,290 @@ namespace Basic.Azure.Storage.Tests.Integration
         #region Blob Operation Tests
 
         [Test]
+        public void PutBlockList_RequiredArgsOnly_CreatesBlockBlobFromLatestBlocks()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedData = "foofoofoo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlockList(containerName, blobName, blockListBlockIds);
+
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            AssertBlobContainsData(containerName, blobName, BlobType.BlockBlob, Encoding.Unicode.GetBytes(expectedData));
+        }
+
+        [Test]
+        public async void PutBlockListAsync_RequiredArgsOnly_CreatesBlockBlobFromLatestBlocks()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedData = "foofoofoo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds);
+
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            AssertBlobContainsData(containerName, blobName, BlobType.BlockBlob, Encoding.Unicode.GetBytes(expectedData));
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidBlockListAzureException))]
+        public void PutBlockList_InvalidBlockId_ThrowsInvalidBlockListAzureException()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            blockListBlockIds.Add(new BlockListBlockId
+            {
+                Id = Base64Converter.ConvertToBase64("id4"),
+                ListType = BlockListListType.Latest
+            });
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlockList(containerName, blobName, blockListBlockIds);
+
+            // Throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidBlockListAzureException))]
+        public async void PutBlockListAsync_InvalidBlockId_ThrowsInvalidBlockListAzureException()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            blockListBlockIds.Add(new BlockListBlockId
+            {
+                Id = Base64Converter.ConvertToBase64("id4"),
+                ListType = BlockListListType.Latest
+            });
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds);
+
+            // Throws exception
+        }
+
+        [Test]
+        public void PutBlockList_WithMetadata_UploadsMetadata()
+        {
+            const string dataPerBlock = "foo";
+            var expectedMetadata = new Dictionary<string, string>(){
+                { "firstValue", "1" },
+                { "secondValue", "2"}
+            };
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlockList(containerName, blobName, blockListBlockIds, metadata: expectedMetadata);
+
+            var blob = AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            Assert.IsTrue(blob.Metadata.Any(m => m.Key == "firstValue" && m.Value == "1"), "First value is missing or incorrect");
+            Assert.IsTrue(blob.Metadata.Any(m => m.Key == "secondValue" && m.Value == "2"), "Second value is missing or incorrect");
+        }
+
+        [Test]
+        public async void PutBlockListAsync_WithMetadata_UploadsMetadata()
+        {
+            const string dataPerBlock = "foo";
+            var expectedMetadata = new Dictionary<string, string>(){
+                { "firstValue", "1" },
+                { "secondValue", "2"}
+            };
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, metadata: expectedMetadata);
+
+            var blob = AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            Assert.IsTrue(blob.Metadata.Any(m => m.Key == "firstValue" && m.Value == "1"), "First value is missing or incorrect");
+            Assert.IsTrue(blob.Metadata.Any(m => m.Key == "secondValue" && m.Value == "2"), "Second value is missing or incorrect");
+        }
+
+        [Test]
+        public void PutBlockList_WithContentType_UploadsWithSpecifiedContentType()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedContentType = "text/plain";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlockList(containerName, blobName, blockListBlockIds, contentType: expectedContentType);
+
+            var blob = AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            Assert.AreEqual(expectedContentType, blob.Properties.ContentType);
+        }
+
+        [Test]
+        public async void PutBlockListAsync_WithContentType_UploadsWithSpecifiedContentType()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedContentType = "text/plain";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, contentType: expectedContentType);
+
+            var blob = AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            Assert.AreEqual(expectedContentType, blob.Properties.ContentType);
+        }
+
+        [Test]
+        public void PutBlockList_WithBlobContentMD5_UploadsWithSpecifiedBlobContentMD5()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedData = "foofoofoo";
+            var expectedContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(Encoding.Unicode.GetBytes(expectedData)));
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlockList(containerName, blobName, blockListBlockIds, blobContentMD5: expectedContentMD5);
+
+            var blob = AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            Assert.AreEqual(expectedContentMD5, blob.Properties.ContentMD5);
+        }
+
+        [Test]
+        public async void PutBlockListAsync_WithBlobContentMD5_UploadsWithSpecifiedBlobContentMD5()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedData = "foofoofoo";
+            var expectedContentMD5 = Convert.ToBase64String((MD5.Create()).ComputeHash(Encoding.Unicode.GetBytes(expectedData)));
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, blobContentMD5: expectedContentMD5);
+
+            var blob = AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            Assert.AreEqual(expectedContentMD5, blob.Properties.ContentMD5);
+        }
+
+        [Test]
+        public void PutBlockList_WithBlobContentEncoding_UploadsWithSpecifiedBlobContentEncoding()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedContentEncoding = "UTF32";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock, Encoding.UTF32);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlockList(containerName, blobName, blockListBlockIds, contentEncoding: expectedContentEncoding);
+
+            var blob = AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            Assert.AreEqual(expectedContentEncoding, blob.Properties.ContentEncoding);
+        }
+
+        [Test]
+        public async void PutBlockListAsync_WithBlobContentEncoding_UploadsWithSpecifiedBlobContentEncoding()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedContentEncoding = "UTF32";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock, Encoding.UTF32);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, contentEncoding: expectedContentEncoding);
+
+            var blob = AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            Assert.AreEqual(expectedContentEncoding, blob.Properties.ContentEncoding);
+        }
+
+        [Test]
+        public void PutBlockList_WithBlobContentLanguage_UploadsWithSpecifiedBlobContentLanguage()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedContentLanguage = "gibberish";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlockList(containerName, blobName, blockListBlockIds, contentLanguage: expectedContentLanguage);
+
+            var blob = AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            Assert.AreEqual(expectedContentLanguage, blob.Properties.ContentLanguage);
+        }
+
+        [Test]
+        public async void PutBlockListAsync_WithBlobContentLanguage_UploadsWithSpecifiedBlobContentLanguage()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedContentLanguage = "gibberish";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, contentLanguage: expectedContentLanguage);
+
+            var blob = AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            Assert.AreEqual(expectedContentLanguage, blob.Properties.ContentLanguage);
+        }
+
+        [Test]
         public void PutBlockBlob_RequiredArgsOnly_UploadsBlobSuccessfully()
         {
             var containerName = GenerateSampleContainerName();
@@ -2371,6 +2655,30 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         }
 
+        private Microsoft.WindowsAzure.Storage.Blob.ICloudBlob AssertBlobContainsData(string containerName, string blobName, BlobType blobType, byte[] expectedData)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            if (!container.Exists())
+                Assert.Fail("AssertBlobContainsData: The container '{0}' does not exist", containerName);
+
+            var blob = (blobType == BlobType.BlockBlob
+                ? (ICloudBlob)container.GetBlockBlobReference(blobName)
+                : (ICloudBlob)container.GetPageBlobReference(blobName));
+
+            if (!blob.Exists())
+                Assert.Fail("AssertBlobContainsData: The blob '{0}' does not exist", blobName);
+
+            using (var stream = new MemoryStream())
+            {
+                blob.DownloadToStream(stream);
+
+                Assert.AreEqual(expectedData, stream.ToArray());
+            }
+
+            return blob;
+        }
+
         private IDictionary<string, string> GetContainerMetadata(string containerName)
         {
             var client = _storageAccount.CreateCloudBlobClient();
@@ -2467,6 +2775,44 @@ namespace Basic.Azure.Storage.Tests.Integration
             var container = client.GetContainerReference(containerName);
             container.FetchAttributes();
             return container.Properties.LeaseState;
+        }
+
+        private List<Microsoft.WindowsAzure.Storage.Blob.ListBlockItem> CreateBlockList(string containerName, string blobName,
+            IEnumerable<string> blockIdsToCreate, string dataPerBlock, Encoding encoder = null)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            var blob = container.GetBlockBlobReference(blobName);
+
+            byte[] data = (encoder ?? Encoding.Unicode).GetBytes(dataPerBlock);
+            // non-Base64 values fail?
+            foreach (var curBlockId in blockIdsToCreate)
+            {
+                blob.PutBlock(curBlockId, new MemoryStream(data), null);
+            }
+
+            return blob
+                .DownloadBlockList(BlockListingFilter.All)
+                .ToList();
+        }
+
+        private BlockListBlockIdList CreateBlockIdList(int idCount, BlockListListType listType)
+        {
+            var idList = new BlockListBlockIdList();
+            for (var i = 0; i < idCount; i++)
+            {
+                idList.Add(new BlockListBlockId
+                {
+                    Id = Base64Converter.ConvertToBase64("id" + idCount),
+                    ListType = listType
+                });
+            }
+            return idList;
+        }
+
+        private List<string> GetIdsFromBlockIdList(BlockListBlockIdList list)
+        {
+            return list.Select(bid => bid.Id).ToList();
         }
 
         private void CreateBlockBlob(string containerName, string blobName, Dictionary<string, string> metadata = null, string content = "Generic content")

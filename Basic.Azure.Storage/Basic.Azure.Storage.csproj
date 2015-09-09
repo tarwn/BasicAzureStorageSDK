@@ -49,12 +49,17 @@
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobResponse.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\PutBlockListResponse.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\PutBlockListRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlockResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlockRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobRange.cs" />
     <Compile Include="Communications\BlobService\BlobType.cs" />
+    <Compile Include="Communications\BlobService\BlockListBlockId.cs" />
+    <Compile Include="Communications\BlobService\BlockListBlockIdList.cs" />
+    <Compile Include="Communications\BlobService\BlockListListType.cs" />
     <Compile Include="Communications\BlobService\ContainerAccessType.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\ListBlobsResponse.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\ListBlobsRequest.cs" />
@@ -202,7 +207,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

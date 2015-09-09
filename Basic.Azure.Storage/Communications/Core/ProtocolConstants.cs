@@ -8,7 +8,12 @@ namespace Basic.Azure.Storage.Communications.Core
         {
             public const string ApproximateMessagesCount = "x-ms-approximate-messages-count";
             public const string Authorization = "Authorization";
+            public const string BlobCacheControl = "x-ms-blob-cache-control";
+            public const string BlobContentEncoding = "x-ms-blob-content-encoding";
+            public const string BlobContentLanguage = "x-ms-blob-content-language";
             public const string BlobContentLength = "x-ms-blob-content-length";
+            public const string BlobContentType = "x-ms-blob-content-type";
+            public const string BlobContentMD5 = "x-ms-blob-content-md5";
             public const string BlobPublicAccess = "x-ms-blob-public-access";
             public const string BlobRange = "x-ms-range";
             public const string BlobSequenceNumber = "x-ms-blob-sequence-number";
