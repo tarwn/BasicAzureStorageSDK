@@ -5,11 +5,12 @@ using System.Security.Cryptography;
 using System.Text;
 using Basic.Azure.Storage.ClientContracts;
 using Basic.Azure.Storage.Communications.BlobService;
+using Basic.Azure.Storage.Extensions;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using NUnit.Framework;
 
-namespace Basic.Azure.Storage.Extensions.Tests.Integration
+namespace Basic.Azure.Storage.Tests.Integration
 {
     [TestFixture]
     public class BlobServiceClientExtensionsTests
