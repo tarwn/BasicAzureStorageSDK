@@ -213,7 +213,6 @@ namespace Basic.Azure.Storage
             var response = request.Execute();
             return response.Payload;
         }
-
         public async Task<PutBlockListResponse> PutBlockListAsync(string containerName, string blobName, BlockListBlockIdList data,
             string cacheControl = null, string contentType = null,
             string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
@@ -230,7 +229,6 @@ namespace Basic.Azure.Storage
             var response = request.Execute();
             return response.Payload;
         }
-
         public async Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null)
         {
             var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5);

@@ -11,10 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic.Azure.Storage.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestableHttpWebResponse", "TestableHttpWebResponse\TestableHttpWebResponse.csproj", "{9D7BADF2-B79D-4227-A22C-83FCE210D0CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic.Azure.Storage.Extensions", "Basic.Azure.Storage.Extensions\Basic.Azure.Storage.Extensions.csproj", "{F29F52A8-5467-4931-BA16-9D891A73E628}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic.Azure.Storage.Extensions.Tests.Integration", "Basic.Azure.Storage.Extensions.Tests.Integration\Basic.Azure.Storage.Extensions.Tests.Integration.csproj", "{F3963AB1-309E-4282-8C0A-AD3D9B104C11}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,14 +33,6 @@ Global
 		{9D7BADF2-B79D-4227-A22C-83FCE210D0CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D7BADF2-B79D-4227-A22C-83FCE210D0CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D7BADF2-B79D-4227-A22C-83FCE210D0CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F29F52A8-5467-4931-BA16-9D891A73E628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F29F52A8-5467-4931-BA16-9D891A73E628}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F29F52A8-5467-4931-BA16-9D891A73E628}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F29F52A8-5467-4931-BA16-9D891A73E628}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F3963AB1-309E-4282-8C0A-AD3D9B104C11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F3963AB1-309E-4282-8C0A-AD3D9B104C11}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F3963AB1-309E-4282-8C0A-AD3D9B104C11}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F3963AB1-309E-4282-8C0A-AD3D9B104C11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
