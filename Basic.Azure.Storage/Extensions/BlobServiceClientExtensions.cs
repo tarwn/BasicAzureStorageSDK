@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Basic.Azure.Storage.ClientContracts;
 using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Basic.Azure.Storage.Communications.Utility;
@@ -18,7 +16,7 @@ namespace Basic.Azure.Storage.Extensions
         public BlobServiceClientEx(StorageAccountSettings account)
             : base(account)
         {
-            
+
         }
 
         public IBlobOrBlockListResponseWrapper PutBlockBlobIntelligently(int blockSize,
@@ -26,7 +24,7 @@ namespace Basic.Azure.Storage.Extensions
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null)
         {
-            return Task.Run(() => 
+            return Task.Run(() =>
                 PutBlockBlobIntelligentlyAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
                 .Result;
         }
@@ -54,83 +52,68 @@ namespace Basic.Azure.Storage.Extensions
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null)
         {
-            var chunkIndex = 0;
-            var concurrentBlockListBlockIdList = new ConcurrentBag<IndexedBlockId>();
+            var rangesAndBlockIds = GetBlockRangesAndIds(data.Length, blockSize);
 
-            var putBlockRequests = GetArrayRanges(data.Length, blockSize)
-                .Select(async range => 
-                    await GeneratePutBlockRequestAsync(this, containerName, blobName, chunkIndex++, concurrentBlockListBlockIdList, data, range));
+            var putBlockRequests = rangesAndBlockIds
+                .Select(async blockInfo => await GeneratePutBlockRequestAsync(containerName, blobName, data, blockInfo))
+                .ToList();
+
+            var convertedBlockListBlockIds = rangesAndBlockIds
+                .Select(blockInfo => new BlockListBlockId { Id = blockInfo.Id, ListType = BlockListListType.Uncommitted });
+            var actualBlockIdList = new BlockListBlockIdList(convertedBlockListBlockIds);
+
             await Task.WhenAll(putBlockRequests);
-
-            var sortedBlockIds = concurrentBlockListBlockIdList
-                .OrderBy(indexed => indexed.Index)
-                .Select(indexed => indexed.BlockId);
-            var actualBlockListBlockIdList = new BlockListBlockIdList(sortedBlockIds);
-
-            return await PutBlockListAsync(containerName, blobName, actualBlockListBlockIdList,
+            return await PutBlockListAsync(containerName, blobName, actualBlockIdList,
                     cacheControl, contentType, contentEncoding, contentLanguage, contentMD5, metadata);
         }
 
-        private static IEnumerable<ArrayRange> GetArrayRanges(int arrayLength, int rangeSize)
+        private static List<ArrayRangeWithBlockIdString> GetBlockRangesAndIds(int arrayLength, int blockSize)
         {
-            var remainder = arrayLength % rangeSize;
-            var remainderPoint = arrayLength - remainder - 1;
+            var blockRangesAndIds = new List<ArrayRangeWithBlockIdString>();
 
-            for (var currentIndex = 0; currentIndex < arrayLength; currentIndex += rangeSize)
+            var remainder = arrayLength % blockSize;
+            var startOfRemainder = arrayLength - remainder - 1;
+
+            for (var currentIndex = 0; currentIndex < arrayLength; currentIndex += blockSize)
             {
-                yield return new ArrayRange
-                {
-                    Length = (currentIndex <= remainderPoint ? rangeSize : remainder),
-                    Offset = currentIndex
-                };
+                blockRangesAndIds.Add(
+                    new ArrayRangeWithBlockIdString
+                    {
+                        Id = GenerateBlockId(),
+                        Offset = currentIndex,
+                        Length = (currentIndex <= startOfRemainder ? blockSize : remainder)
+                    }
+                );
             }
+
+            return blockRangesAndIds;
         }
 
-        private static async Task<byte[]> GenerateChunkFromRangeAsync(byte[] fullArray, ArrayRange range)
+        private async Task<PutBlockResponse> GeneratePutBlockRequestAsync(string containerName, string blobName, byte[] fullData, ArrayRangeWithBlockIdString range)
         {
-            return await Task.Run(() =>
-            {
-                var chunk = new byte[range.Length];
-                Array.Copy(fullArray, range.Offset, chunk, 0, range.Length);
-                return chunk;
-            });
+            var md5Task = CalculateMD5(fullData, range.Offset, range.Length);
+
+            var chunk = new byte[range.Length];
+            Buffer.BlockCopy(fullData, range.Offset, chunk, 0, range.Length);
+
+            return await PutBlockAsync(containerName, blobName, range.Id, chunk, await md5Task);
         }
 
-        private static async Task<PutBlockResponse> GeneratePutBlockRequestAsync(IBlobServiceClient blobServiceClient, string containerName, string blobName, int chunkIndex, ConcurrentBag<IndexedBlockId> blockIdBag, byte[] fullData, ArrayRange range)
+        private static string GenerateBlockId()
         {
-            var chunkTask = GenerateChunkFromRangeAsync(fullData, range);
-            
-            var currentBlockId = await GenerateBlockIdAsync();
-            blockIdBag.Add(new IndexedBlockId
-                {
-                    BlockId = new BlockListBlockId { Id = currentBlockId, ListType = BlockListListType.Uncommitted },
-                    Index = chunkIndex
-                });
-
-            var chunk = await chunkTask;
-            return await blobServiceClient.PutBlockAsync(containerName, blobName, currentBlockId, chunk, await CalculateMD5Async(chunk));
+            return Base64Converter.ConvertToBase64(Guid.NewGuid().ToString());
         }
 
-        private async static Task<string> GenerateBlockIdAsync()
+        private async static Task<string> CalculateMD5(byte[] fullData, int offset, int length)
         {
-            return await Task.Run(() => Base64Converter.ConvertToBase64(Guid.NewGuid().ToString()));
+            return await Task.Run(() => Convert.ToBase64String(MD5.Create().ComputeHash(fullData, offset, length)));
         }
 
-        private async static Task<string> CalculateMD5Async(byte[] data)
+        private struct ArrayRangeWithBlockIdString
         {
-            return await Task.Run(() => Convert.ToBase64String(MD5.Create().ComputeHash(data)));
-        }
-
-        private struct ArrayRange
-        {
+            public string Id { get; set; }
             public int Offset { get; set; }
             public int Length { get; set; }
-        }
-
-        private struct IndexedBlockId
-        {
-            public BlockListBlockId BlockId { get; set; }
-            public int Index { get; set; }
         }
     }
 }
