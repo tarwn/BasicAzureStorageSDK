@@ -108,11 +108,8 @@ namespace Basic.Azure.Storage.Tests.Integration
             // Tempt it to do it in two uploads by specifying a blocksize smaller than the data length
             var response = await client.PutBlockBlobIntelligentlyAsync(expectedDataLength - 5, containerName, blobName, expectedData);
 
-            Assert.LessOrEqual(expectedDataLength, BlobServiceConstants.MaxSingleBlobUploadSize);
-            Assert.IsTrue(response.IsPutBlobResponse);
-            Assert.IsInstanceOf(typeof(PutBlobResponse), response.Response);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
+            AssertIsPutBlockBlobResponse(response);
         }
 
         [Test]
@@ -128,18 +125,14 @@ namespace Basic.Azure.Storage.Tests.Integration
             // Tempt it to do it in two uploads by specifying a blocksize smaller than the data length
             var response = client.PutBlockBlobIntelligently(expectedDataLength - 5, containerName, blobName, expectedData);
 
-            Assert.LessOrEqual(expectedDataLength, BlobServiceConstants.MaxSingleBlobUploadSize);
-            Assert.IsTrue(response.IsPutBlobResponse);
-            Assert.IsInstanceOf(typeof(PutBlobResponse), response.Response);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
+            AssertIsPutBlockBlobResponse(response);
         }
 
         [Test]
         public async void PutBlockBlobIntelligentlyAsync_DataLargerThanMaxSingleUploadSize_CreatesBlockBlobWithMultipleUploads()
         {
             var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
-            var expectedDataLength = expectedData.Length;
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
@@ -147,18 +140,14 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData);
 
-            Assert.Greater(expectedDataLength, BlobServiceConstants.MaxSingleBlobUploadSize);
-            Assert.IsTrue(response.IsPutBlockListResponse);
-            Assert.IsInstanceOf(typeof(PutBlockListResponse), response.Response);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
+            AssertIsBlockListResponse(response);
         }
 
         [Test]
         public void PutBlockBlobIntelligently_DataLargerThanMaxSingleUploadSize_CreatesBlockBlobWithMultipleUploads()
         {
             var expectedData = new byte[BlobServiceConstants.MaxSingleBlobUploadSize + 5];
-            var expectedDataLength = expectedData.Length;
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
@@ -166,11 +155,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData);
 
-            Assert.Greater(expectedDataLength, BlobServiceConstants.MaxSingleBlobUploadSize);
-            Assert.IsTrue(response.IsPutBlockListResponse);
-            Assert.IsInstanceOf(typeof(PutBlockListResponse), response.Response);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
+            AssertIsBlockListResponse(response);
         }
 
         [Test]
@@ -187,9 +173,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentType: expectedContentType);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentType, properties.ContentType);
         }
 
@@ -207,9 +191,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentType: expectedContentType);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentType, properties.ContentType);
         }
 
@@ -227,9 +209,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentType: expectedContentType);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentType, properties.ContentType);
         }
 
@@ -247,9 +227,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentType: expectedContentType);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentType, properties.ContentType);
         }
 
@@ -267,9 +245,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentLanguage: expectedContentLanguage);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentLanguage, properties.ContentLanguage);
         }
 
@@ -287,9 +263,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentLanguage: expectedContentLanguage);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentLanguage, properties.ContentLanguage);
         }
 
@@ -307,9 +281,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentLanguage: expectedContentLanguage);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentLanguage, properties.ContentLanguage);
         }
 
@@ -327,9 +299,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentLanguage: expectedContentLanguage);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentLanguage, properties.ContentLanguage);
         }
 
@@ -347,9 +317,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentEncoding: expectedContentEncoding);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentEncoding, properties.ContentEncoding);
         }
 
@@ -367,9 +335,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentEncoding: expectedContentEncoding);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentEncoding, properties.ContentEncoding);
         }
 
@@ -387,9 +353,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentEncoding: expectedContentEncoding);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentEncoding, properties.ContentEncoding);
         }
 
@@ -407,9 +371,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentEncoding: expectedContentEncoding);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentEncoding, properties.ContentEncoding);
         }
 
@@ -427,9 +389,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentMD5: expectedContentMD5);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentMD5, properties.ContentMD5);
         }
 
@@ -447,9 +407,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentMD5: expectedContentMD5);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentMD5, properties.ContentMD5);
         }
 
@@ -467,9 +425,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentMD5: expectedContentMD5);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentMD5, properties.ContentMD5);
         }
 
@@ -487,9 +443,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 contentMD5: expectedContentMD5);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentMD5, properties.ContentMD5);
         }
 
@@ -507,9 +461,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 cacheControl: expectedCacheControl);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedCacheControl, properties.CacheControl);
         }
 
@@ -527,9 +479,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 cacheControl: expectedCacheControl);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedCacheControl, properties.CacheControl);
         }
 
@@ -547,9 +497,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 cacheControl: expectedCacheControl);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedCacheControl, properties.CacheControl);
         }
 
@@ -567,9 +515,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 cacheControl: expectedCacheControl);
             var properties = GetBlobProperties(containerName, blobName);
 
-            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedCacheControl, properties.CacheControl);
         }
 
@@ -592,9 +538,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 metadata: expectedMetadata);
             var metadata = GetBlobMetadata(containerName, blobName);
 
-            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedMetadata, metadata);
         }
 
@@ -617,9 +561,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 metadata: expectedMetadata);
             var metadata = GetBlobMetadata(containerName, blobName);
 
-            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedMetadata, metadata);
         }
 
@@ -642,9 +584,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 metadata: expectedMetadata);
             var metadata = GetBlobMetadata(containerName, blobName);
 
-            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedMetadata, metadata);
         }
 
@@ -667,9 +607,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 metadata: expectedMetadata);
             var metadata = GetBlobMetadata(containerName, blobName);
 
-            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
-            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedMetadata, metadata);
         }
 
@@ -1056,6 +994,32 @@ namespace Basic.Azure.Storage.Tests.Integration
         #endregion
 
         #region Assertions
+
+        private static void AssertIsPutBlockBlobResponse(IBlobOrBlockListResponseWrapper response)
+        {
+            Assert.IsTrue(response.IsPutBlobResponse);
+            Assert.IsInstanceOf(typeof(PutBlobResponse), response.Response);
+        }
+
+        private static void AssertIsBlockListResponse(IBlobOrBlockListResponseWrapper response)
+        {
+            Assert.IsTrue(response.IsPutBlockListResponse);
+            Assert.IsInstanceOf(typeof(PutBlockListResponse), response.Response);
+        }
+
+        private void AssertBlobOfSingleUpload(byte[] expectedData, string containerName, string blobName)
+        {
+            Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+        }
+
+        private void AssertBlobOfMultipleUploads(byte[] expectedData, string containerName, string blobName)
+        {
+            Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
+            AssertBlockBlobExists(containerName, blobName);
+            AssertBlockBlobContainsData(containerName, blobName, expectedData);
+        }
 
         private void AssertBlockBlobExists(string containerName, string blobName)
         {
