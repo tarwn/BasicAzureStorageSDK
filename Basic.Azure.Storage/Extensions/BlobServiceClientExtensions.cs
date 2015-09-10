@@ -12,37 +12,44 @@ using Basic.Azure.Storage.Extensions.Contracts;
 
 namespace Basic.Azure.Storage.Extensions
 {
-    public static class BlobServiceClientExtensions
+    public class BlobServiceClientEx : BlobServiceClient, IBlobServiceClientEx
     {
-        public static IBlobOrBlockListResponseWrapper PutBlockBlobIntelligently(this IBlobServiceClient blobServiceClient, int blockSize,
+
+        public BlobServiceClientEx(StorageAccountSettings account)
+            : base(account)
+        {
+            
+        }
+
+        public IBlobOrBlockListResponseWrapper PutBlockBlobIntelligently(int blockSize,
             string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null)
         {
             return Task.Run(() => 
-                blobServiceClient.PutBlockBlobIntelligentlyAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
+                PutBlockBlobIntelligentlyAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
                 .Result;
         }
-        public async static Task<IBlobOrBlockListResponseWrapper> PutBlockBlobIntelligentlyAsync(this IBlobServiceClient blobServiceClient, int blockSize,
+        public async Task<IBlobOrBlockListResponseWrapper> PutBlockBlobIntelligentlyAsync(int blockSize,
             string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null)
         {
             return (data.Length <= BlobServiceConstants.MaxSingleBlobUploadSize)
-                ? new BlobOrBlockListResponseWrapper(await blobServiceClient.PutBlockBlobAsync(containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
-                : new BlobOrBlockListResponseWrapper(await blobServiceClient.PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata));
+                ? new BlobOrBlockListResponseWrapper(await PutBlockBlobAsync(containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
+                : new BlobOrBlockListResponseWrapper(await PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata));
         }
 
-        public static PutBlockListResponse PutBlockBlobAsList(this IBlobServiceClient blobServiceClient, int blockSize,
+        public PutBlockListResponse PutBlockBlobAsList(int blockSize,
             string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null)
         {
             return Task.Run(() =>
-                    blobServiceClient.PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
+                    PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
                     .Result;
         }
-        public async static Task<PutBlockListResponse> PutBlockBlobAsListAsync(this IBlobServiceClient blobServiceClient, int blockSize,
+        public async Task<PutBlockListResponse> PutBlockBlobAsListAsync(int blockSize,
             string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null)
@@ -52,7 +59,7 @@ namespace Basic.Azure.Storage.Extensions
 
             var putBlockRequests = GetArrayRanges(data.Length, blockSize)
                 .Select(async range => 
-                    await GeneratePutBlockRequestAsync(blobServiceClient, containerName, blobName, chunkIndex++, concurrentBlockListBlockIdList, data, range));
+                    await GeneratePutBlockRequestAsync(this, containerName, blobName, chunkIndex++, concurrentBlockListBlockIdList, data, range));
             await Task.WhenAll(putBlockRequests);
 
             var sortedBlockIds = concurrentBlockListBlockIdList
@@ -60,7 +67,7 @@ namespace Basic.Azure.Storage.Extensions
                 .Select(indexed => indexed.BlockId);
             var actualBlockListBlockIdList = new BlockListBlockIdList(sortedBlockIds);
 
-            return await blobServiceClient.PutBlockListAsync(containerName, blobName, actualBlockListBlockIdList,
+            return await PutBlockListAsync(containerName, blobName, actualBlockListBlockIdList,
                     cacheControl, contentType, contentEncoding, contentLanguage, contentMD5, metadata);
         }
 
