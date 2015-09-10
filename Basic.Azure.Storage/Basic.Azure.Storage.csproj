@@ -183,6 +183,7 @@
     <Compile Include="Extensions\BlobOrBlockListResponseWrapper.cs" />
     <Compile Include="Extensions\BlobServiceClientExtensions.cs" />
     <Compile Include="Extensions\Contracts\IBlobOrBlockListResponseWrapper.cs" />
+    <Compile Include="Extensions\Contracts\IBlobServiceClientEx.cs" />
     <Compile Include="QueueServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StorageAccountSettings.cs" />
