@@ -55,7 +55,7 @@ namespace Basic.Azure.Storage.Extensions
             var rangesAndBlockIds = GetBlockRangesAndIds(data.Length, blockSize);
 
             var putBlockRequests = rangesAndBlockIds
-                .Select(async blockInfo => await GeneratePutBlockRequestAsync(containerName, blobName, data, blockInfo))
+                .Select(blockInfo => GeneratePutBlockRequestAsync(containerName, blobName, data, blockInfo))
                 .ToList();
 
             var convertedBlockListBlockIds = rangesAndBlockIds
