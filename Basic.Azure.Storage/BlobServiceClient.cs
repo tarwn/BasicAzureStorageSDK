@@ -268,16 +268,16 @@ namespace Basic.Azure.Storage
             await request.ExecuteAsync();
         }
 
-        public GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null)
+        public GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null, string leaseId = null)
         {
-            var request = new GetBlobRequest(_account, containerName, blobName, range);
+            var request = new GetBlobRequest(_account, containerName, blobName, range, leaseId);
             var response = request.Execute();
             return response.Payload;
         }
 
-        public async Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, BlobRange range = null)
+        public async Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, BlobRange range = null, string leaseId = null)
         {
-            var request = new GetBlobRequest(_account, containerName, blobName, range);
+            var request = new GetBlobRequest(_account, containerName, blobName, range, leaseId);
             var response = await request.ExecuteAsync();
             return response.Payload;
         }

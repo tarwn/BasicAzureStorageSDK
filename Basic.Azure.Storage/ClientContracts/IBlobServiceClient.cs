@@ -80,8 +80,8 @@ namespace Basic.Azure.Storage.ClientContracts
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0);
 
-        GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null);
-        Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, BlobRange range = null);
+        GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null, string leaseId = null);
+        Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, BlobRange range = null, string leaseId = null);
 
         void DeleteBlob(string containerName, string blobName);
         Task DeleteBlobAsync(string containerName, string blobName);

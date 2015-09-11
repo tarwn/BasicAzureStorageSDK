@@ -202,7 +202,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         {
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
-            CreateContainer(containerName, new Dictionary<string, string>() { 
+            CreateContainer(containerName, new Dictionary<string, string>() {
                 { "a", "1" },
                 { "b", "2" }
             });
@@ -306,7 +306,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         {
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
-            CreateContainer(containerName, new Dictionary<string, string>() { 
+            CreateContainer(containerName, new Dictionary<string, string>() {
                 { "a", "1" },
                 { "b", "2" }
             });
@@ -349,7 +349,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         {
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
-            CreateContainer(containerName, new Dictionary<string, string>() { 
+            CreateContainer(containerName, new Dictionary<string, string>() {
                 { "a", "1" },
                 { "b", "2" }
             });
@@ -381,7 +381,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
-            client.SetContainerMetadata(containerName, new Dictionary<string, string>() { 
+            client.SetContainerMetadata(containerName, new Dictionary<string, string>() {
                 { "a", "1"},
                 { "b", "2"}
             });
@@ -401,7 +401,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             CreateContainer(containerName);
             LeaseContainer(containerName, null, null);
 
-            client.SetContainerMetadata(containerName, new Dictionary<string, string>() { 
+            client.SetContainerMetadata(containerName, new Dictionary<string, string>() {
                 { "a", "1"},
                 { "b", "2"}
             });
@@ -421,7 +421,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             CreateContainer(containerName);
             var lease = LeaseContainer(containerName, null, null);
 
-            client.SetContainerMetadata(containerName, new Dictionary<string, string>() { 
+            client.SetContainerMetadata(containerName, new Dictionary<string, string>() {
                 { "a", "1"},
                 { "b", "2"}
             }, lease);
@@ -441,7 +441,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
-            client.SetContainerMetadata(containerName, new Dictionary<string, string>() { 
+            client.SetContainerMetadata(containerName, new Dictionary<string, string>() {
                 { "a", "1"},
                 { "b", "2"}
             }, FakeLeaseId);
@@ -458,7 +458,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             CreateContainer(containerName);
             LeaseContainer(containerName, null, null);
 
-            client.SetContainerMetadata(containerName, new Dictionary<string, string>() { 
+            client.SetContainerMetadata(containerName, new Dictionary<string, string>() {
                 { "a", "1"},
                 { "b", "2"}
             }, FakeLeaseId);
@@ -473,7 +473,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
-            await client.SetContainerMetadataAsync(containerName, new Dictionary<string, string>() { 
+            await client.SetContainerMetadataAsync(containerName, new Dictionary<string, string>() {
                 { "a", "1"},
                 { "b", "2"}
             });
@@ -493,7 +493,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
 
-            await client.SetContainerMetadataAsync(containerName, new Dictionary<string, string>() { 
+            await client.SetContainerMetadataAsync(containerName, new Dictionary<string, string>() {
                 { "a", "1"},
                 { "b", "2"}
             }, FakeLeaseId);
@@ -1377,7 +1377,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var containerName = GenerateSampleContainerName();
             CreateContainer(containerName);
-            CreateBlockBlob(containerName, "blob1", new Dictionary<string, string>() { 
+            CreateBlockBlob(containerName, "blob1", new Dictionary<string, string>() {
                 { "a", "1"},
                 { "b", "2"}
             });
@@ -2391,6 +2391,104 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public void GetBlob_LeasedBlobWithCorrectLeaseSpecified_GetsBlob()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, content: expectedContent);
+            var leaseId = LeaseBlob(containerName, blobName, null, null);
+
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.GetBlob(containerName, blobName, null, leaseId);
+        }
+
+        [Test]
+        public async void GetBlobAsync_LeasedBlobWithCorrectLeaseSpecified_GetsBlob()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, content: expectedContent);
+            var leaseId = LeaseBlob(containerName, blobName, null, null);
+
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.GetBlobAsync(containerName, blobName, null, leaseId);
+        }
+
+        [Test]
+        public void GetBlob_LeasedBlobWithoutLeaseSpecified_GetsBlob()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, content: expectedContent);
+            LeaseBlob(containerName, blobName, null, null);
+
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.GetBlob(containerName, blobName);
+        }
+
+        [Test]
+        public async void GetBlobAsync_LeasedBlobWithoutLeaseSpecified_GetsBlob()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, content: expectedContent);
+            LeaseBlob(containerName, blobName, null, null);
+
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.GetBlobAsync(containerName, blobName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        public void GetBlob_LeasedBlobIncorrectLeaseSpecified_Throws()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var incorrectLease = Guid.NewGuid().ToString();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, content: expectedContent);
+            LeaseBlob(containerName, blobName, null, null);
+
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.GetBlob(containerName, blobName, null, incorrectLease);
+
+            // Throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        public async void GetBlobAsync_LeasedBlobIncorrectLeaseSpecified_Throws()
+        {
+            var expectedContent = "Expected blob content";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var incorrectLease = Guid.NewGuid().ToString();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, content: expectedContent);
+            LeaseBlob(containerName, blobName, null, null);
+
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.GetBlobAsync(containerName, blobName, null, incorrectLease);
+
+            // Throws exception
+        }
+
+        [Test]
         public void GetBlob_ExistingBlob_DownloadsBlobStream()
         {
             var expectedContent = "Expected blob content";
@@ -2729,6 +2827,21 @@ namespace Basic.Azure.Storage.Tests.Integration
                 container.SetMetadata();
             }
 
+        }
+
+        private string LeaseBlob(string containerName, string blobName, TimeSpan? leaseTime, string leaseId)
+        {
+          var client = _storageAccount.CreateCloudBlobClient();
+          var container = client.GetContainerReference(containerName);
+          if (!container.Exists())
+              Assert.Fail("LeaseBlob: The container '{0}' does not exist", containerName);
+
+          var blob = container.GetBlockBlobReference(blobName);
+
+          if (!blob.Exists())
+              Assert.Fail("LeaseBlob: The blob '{0}' does not exist", blobName);
+
+          return blob.AcquireLease(leaseTime, leaseId);
         }
 
         private string LeaseContainer(string containerName, TimeSpan? leaseTime, string leaseId)
