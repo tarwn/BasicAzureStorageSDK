@@ -189,17 +189,17 @@ namespace Basic.Azure.Storage
         /// </summary>
         public PutBlobResponse PutBlockBlob(string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null)
+            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
         {
-            var request = new PutBlobRequest(_account, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata);
+            var request = new PutBlobRequest(_account, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId);
             var response = request.Execute();
             return response.Payload;
         }
         public async Task<PutBlobResponse> PutBlockBlobAsync(string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null)
+            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
         {
-            var request = new PutBlobRequest(_account, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata);
+            var request = new PutBlobRequest(_account, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId);
             var response = await request.ExecuteAsync();
             return response.Payload;
         }
@@ -241,17 +241,17 @@ namespace Basic.Azure.Storage
         /// </summary>
         public PutBlobResponse PutPageBlob(string containerName, string blobName, int contentLength,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0)
+            string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0, string leaseId = null)
         {
-            var request = new PutBlobRequest(_account, containerName, blobName, contentLength, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, sequenceNumber);
+            var request = new PutBlobRequest(_account, containerName, blobName, contentLength, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, sequenceNumber, leaseId);
             var response = request.Execute();
             return response.Payload;
         }
         public async Task<PutBlobResponse> PutPageBlobAsync(string containerName, string blobName, int contentLength,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0)
+            string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0, string leaseId = null)
         {
-            var request = new PutBlobRequest(_account, containerName, blobName, contentLength, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, sequenceNumber);
+            var request = new PutBlobRequest(_account, containerName, blobName, contentLength, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, sequenceNumber, leaseId);
             var response = await request.ExecuteAsync();
             return response.Payload;
         }
