@@ -1,11 +1,15 @@
-﻿using Basic.Azure.Storage.Communications.Core.Interfaces;
+﻿using System;
 
 namespace Basic.Azure.Storage.Extensions.Contracts
 {
-    public interface IBlobOrBlockListResponseWrapper : IBlobPropertiesResponse
+    public interface IBlobOrBlockListResponseWrapper
     {
-        IBlobPropertiesResponse Response { get; }
-        bool IsPutBlobResponse { get; }
-        bool IsPutBlockListResponse { get; }
+        string ETag { get; }
+
+         DateTime LastModified { get; }
+
+        DateTime Date { get; }
+
+        string ContentMD5 { get; }
     }
 }

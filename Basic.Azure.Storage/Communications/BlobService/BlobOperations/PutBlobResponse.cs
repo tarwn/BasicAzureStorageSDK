@@ -6,13 +6,13 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
     public class PutBlobResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse, IBlobPropertiesResponse
     {
-        public string ETag { get; set; }
+        public virtual string ETag { get; protected set; }
 
-        public DateTime LastModified { get; set; }
+        public virtual DateTime LastModified { get; protected set; }
 
-        public DateTime Date { get; set; }
+        public virtual DateTime Date { get; protected set; }
 
-        public string ContentMD5 { get; set; }
+        public virtual string ContentMD5 { get; protected set; }
 
 
         public void ParseHeaders(System.Net.HttpWebResponse response)

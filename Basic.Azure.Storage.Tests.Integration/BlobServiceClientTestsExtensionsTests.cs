@@ -1,66 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Basic.Azure.Storage.Extensions;
 using Basic.Azure.Storage.Extensions.Contracts;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
 using NUnit.Framework;
+using BlobType = Microsoft.WindowsAzure.Storage.Blob.BlobType;
 
 namespace Basic.Azure.Storage.Tests.Integration
 {
     [TestFixture]
-    public class BlobServiceClientExtensionsTests
+    public class BlobServiceClientExtensionsTests : BaseBlobServiceClientTestFixture
     {
-        #region setup
-        private readonly StorageAccountSettings _accountSettings = new LocalEmulatorAccountSettings();
-        private readonly CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
-
-        private readonly Dictionary<string, string> _containersToCleanUp = new Dictionary<string, string>();
-
-        private string GenerateSampleContainerName()
-        {
-            var name = "unit-test-" + Guid.NewGuid().ToString().ToLower();
-            RegisterContainerForCleanup(name, null);
-            return name;
-        }
-
-        private static string GenerateSampleBlobName()
-        {
-            return string.Format("unit-test-{0}", Guid.NewGuid());
-        }
-
-        private void RegisterContainerForCleanup(string containerName, string leaseId)
-        {
-            _containersToCleanUp[containerName] = leaseId;
-        }
-
-        [TestFixtureTearDown]
-        public void TestFixtureTeardown()
-        {
-            //let's clean up!
-            var client = new BlobServiceClientEx(_accountSettings);
-
-            //var client = _storageAccount.CreateCloudBlobClient();
-            foreach (var containerPair in _containersToCleanUp)
-            {
-                try
-                {
-                    client.DeleteContainer(containerPair.Key, containerPair.Value);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-        }
-
-        #endregion
-
+        
         #region PutBlockBlobIntelligently
 
         [Test]
@@ -75,7 +29,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             // Tempt it to do it in two uploads by specifying half megabyte
             await client.PutBlockBlobIntelligentlyAsync(expectedData.Length - 5, containerName, blobName, expectedData);
 
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
 
@@ -91,7 +45,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             // Tempt it to do it in two uploads by specifying half megabyte
             client.PutBlockBlobIntelligently(expectedData.Length - 5, containerName, blobName, expectedData);
 
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
 
@@ -171,8 +125,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentType: expectedContentType);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentType, properties.ContentType);
         }
@@ -189,8 +143,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentType: expectedContentType);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentType, properties.ContentType);
         }
@@ -207,8 +161,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentType: expectedContentType);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentType, properties.ContentType);
         }
@@ -225,8 +179,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentType: expectedContentType);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentType, properties.ContentType);
         }
@@ -243,8 +197,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentLanguage: expectedContentLanguage);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentLanguage, properties.ContentLanguage);
         }
@@ -261,8 +215,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentLanguage: expectedContentLanguage);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentLanguage, properties.ContentLanguage);
         }
@@ -279,8 +233,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentLanguage: expectedContentLanguage);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentLanguage, properties.ContentLanguage);
         }
@@ -297,8 +251,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentLanguage: expectedContentLanguage);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentLanguage, properties.ContentLanguage);
         }
@@ -315,8 +269,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentEncoding: expectedContentEncoding);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentEncoding, properties.ContentEncoding);
         }
@@ -333,8 +287,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentEncoding: expectedContentEncoding);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentEncoding, properties.ContentEncoding);
         }
@@ -351,8 +305,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentEncoding: expectedContentEncoding);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentEncoding, properties.ContentEncoding);
         }
@@ -369,8 +323,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentEncoding: expectedContentEncoding);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentEncoding, properties.ContentEncoding);
         }
@@ -387,8 +341,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentMD5: expectedContentMD5);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentMD5, properties.ContentMD5);
         }
@@ -405,8 +359,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentMD5: expectedContentMD5);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentMD5, properties.ContentMD5);
         }
@@ -423,8 +377,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentMD5: expectedContentMD5);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentMD5, properties.ContentMD5);
         }
@@ -441,8 +395,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 contentMD5: expectedContentMD5);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedContentMD5, properties.ContentMD5);
         }
@@ -459,8 +413,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 cacheControl: expectedCacheControl);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedCacheControl, properties.CacheControl);
         }
@@ -477,8 +431,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 cacheControl: expectedCacheControl);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedCacheControl, properties.CacheControl);
         }
@@ -495,8 +449,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 cacheControl: expectedCacheControl);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedCacheControl, properties.CacheControl);
         }
@@ -513,8 +467,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 cacheControl: expectedCacheControl);
-            var properties = GetBlobProperties(containerName, blobName);
 
+            var properties = GetBlobProperties(containerName, blobName);
             AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedCacheControl, properties.CacheControl);
         }
@@ -536,8 +490,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 metadata: expectedMetadata);
-            var metadata = GetBlobMetadata(containerName, blobName);
 
+            var metadata = GetBlobMetadata(containerName, blobName);
             AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedMetadata, metadata);
         }
@@ -559,8 +513,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 metadata: expectedMetadata);
-            var metadata = GetBlobMetadata(containerName, blobName);
 
+            var metadata = GetBlobMetadata(containerName, blobName);
             AssertBlobOfMultipleUploads(expectedData, containerName, blobName);
             Assert.AreEqual(expectedMetadata, metadata);
         }
@@ -582,8 +536,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobIntelligentlyAsync(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 metadata: expectedMetadata);
-            var metadata = GetBlobMetadata(containerName, blobName);
 
+            var metadata = GetBlobMetadata(containerName, blobName);
             AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedMetadata, metadata);
         }
@@ -605,8 +559,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobIntelligently(BlobServiceConstants.MaxSingleBlockUploadSize, containerName, blobName, expectedData,
                 metadata: expectedMetadata);
-            var metadata = GetBlobMetadata(containerName, blobName);
 
+            var metadata = GetBlobMetadata(containerName, blobName);
             AssertBlobOfSingleUpload(expectedData, containerName, blobName);
             Assert.AreEqual(expectedMetadata, metadata);
         }
@@ -627,7 +581,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobAsListAsync(4, containerName, blobName, expectedData);
 
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
 
@@ -643,7 +597,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobAsList(4, containerName, blobName, expectedData);
 
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
 
@@ -659,7 +613,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobAsListAsync(1, containerName, blobName, expectedData);
 
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
 
@@ -675,7 +629,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobAsList(1, containerName, blobName, expectedData);
 
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
 
@@ -691,7 +645,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobAsListAsync(4 * megabyte, containerName, blobName, expectedData);
 
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
 
@@ -707,7 +661,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobAsList(4 * 1024 * 1024, containerName, blobName, expectedData);
 
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
 
@@ -722,7 +676,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             await client.PutBlockBlobAsListAsync(expectedData.Length * 2, containerName, blobName, expectedData);
 
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
 
@@ -737,7 +691,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             client.PutBlockBlobAsList(expectedData.Length * 2, containerName, blobName, expectedData);
 
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
 
@@ -752,9 +706,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             await client.PutBlockBlobAsListAsync(4, containerName, blobName, data, contentType: specifiedContentType);
-            var properties = GetBlobProperties(containerName, blobName);
 
-            AssertBlockBlobExists(containerName, blobName);
+            var properties = GetBlobProperties(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(specifiedContentType, properties.ContentType);
         }
 
@@ -769,9 +723,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             client.PutBlockBlobAsList(4, containerName, blobName, data, contentType: specifiedContentType);
+            
             var properties = GetBlobProperties(containerName, blobName);
-
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(specifiedContentType, properties.ContentType);
         }
 
@@ -786,9 +740,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             await client.PutBlockBlobAsListAsync(4, containerName, blobName, data, contentEncoding: specifiedContentEncoding);
+            
             var properties = GetBlobProperties(containerName, blobName);
-
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(specifiedContentEncoding, properties.ContentEncoding);
         }
 
@@ -803,9 +757,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             client.PutBlockBlobAsList(4, containerName, blobName, data, contentEncoding: specifiedContentEncoding);
+            
             var properties = GetBlobProperties(containerName, blobName);
-
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(specifiedContentEncoding, properties.ContentEncoding);
         }
 
@@ -820,9 +774,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             await client.PutBlockBlobAsListAsync(4, containerName, blobName, data, contentLanguage: specifiedContentLanguage);
+            
             var properties = GetBlobProperties(containerName, blobName);
-
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(specifiedContentLanguage, properties.ContentLanguage);
         }
 
@@ -837,9 +791,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             client.PutBlockBlobAsList(4, containerName, blobName, data, contentLanguage: specifiedContentLanguage);
+            
             var properties = GetBlobProperties(containerName, blobName);
-
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(specifiedContentLanguage, properties.ContentLanguage);
         }
 
@@ -854,9 +808,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             await client.PutBlockBlobAsListAsync(4, containerName, blobName, data, cacheControl: specifiedCacheControl);
+            
             var properties = GetBlobProperties(containerName, blobName);
-
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(specifiedCacheControl, properties.CacheControl);
         }
 
@@ -871,9 +825,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             client.PutBlockBlobAsList(4, containerName, blobName, data, cacheControl: specifiedCacheControl);
+            
             var properties = GetBlobProperties(containerName, blobName);
-
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(specifiedCacheControl, properties.CacheControl);
         }
 
@@ -893,9 +847,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             await client.PutBlockBlobAsListAsync(4, containerName, blobName, data, metadata: expectedMetadata);
+            
             var gottenMetadata = GetBlobMetadata(containerName, blobName);
-
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(expectedMetadata, gottenMetadata);
         }
 
@@ -915,9 +869,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             client.PutBlockBlobAsList(4, containerName, blobName, data, metadata: expectedMetadata);
+            
             var gottenMetadata = GetBlobMetadata(containerName, blobName);
-
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(expectedMetadata, gottenMetadata);
         }
 
@@ -932,9 +886,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             await client.PutBlockBlobAsListAsync(4, containerName, blobName, data, contentMD5: specifiedContentMD5);
+            
             var properties = GetBlobProperties(containerName, blobName);
-
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(specifiedContentMD5, properties.ContentMD5);
         }
 
@@ -949,9 +903,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             client.PutBlockBlobAsList(4, containerName, blobName, data, contentMD5: specifiedContentMD5);
+            
             var properties = GetBlobProperties(containerName, blobName);
-
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(specifiedContentMD5, properties.ContentMD5);
         }
 
@@ -967,9 +921,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             await client.PutBlockBlobAsListAsync(4, containerName, blobName, data, contentMD5: specifiedMismatchedContentMD5);
+            
             var properties = GetBlobProperties(containerName, blobName);
-
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(specifiedMismatchedContentMD5, properties.ContentMD5);
         }
 
@@ -985,9 +939,9 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClientEx client = new BlobServiceClientEx(_accountSettings);
 
             client.PutBlockBlobAsList(4, containerName, blobName, data, contentMD5: specifiedMismatchedContentMD5);
+            
             var properties = GetBlobProperties(containerName, blobName);
-
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(specifiedMismatchedContentMD5, properties.ContentMD5);
         }
 
@@ -1010,23 +964,15 @@ namespace Basic.Azure.Storage.Tests.Integration
         private void AssertBlobOfSingleUpload(byte[] expectedData, string containerName, string blobName)
         {
             Assert.LessOrEqual(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
         }
 
         private void AssertBlobOfMultipleUploads(byte[] expectedData, string containerName, string blobName)
         {
             Assert.Greater(expectedData.Length, BlobServiceConstants.MaxSingleBlobUploadSize);
-            AssertBlockBlobExists(containerName, blobName);
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             AssertBlockBlobContainsData(containerName, blobName, expectedData);
-        }
-
-        private void AssertBlockBlobExists(string containerName, string blobName)
-        {
-            var client = new BlobServiceClientEx(_accountSettings);
-            var blobList = client.ListBlobs(containerName);
-
-            Assert.IsTrue(blobList.BlobList.Any(blob => blob.Name == blobName));
         }
 
         private void AssertBlockBlobContainsData(string containerName, string blobName, byte[] expectedData)
@@ -1053,52 +999,6 @@ namespace Basic.Azure.Storage.Tests.Integration
                 // This only happens if the test running process doesn't have enough memory to convert
                 Assert.AreEqual(expectedData, gottenData);
             }
-        }
-
-        #endregion
-
-        #region Setup Mechanics
-
-        private void CreateContainer(string containerName, Dictionary<string, string> metadata = null)
-        {
-            var client = new BlobServiceClientEx(_accountSettings);
-
-            client.CreateContainer(containerName, ContainerAccessType.None);
-
-            if (metadata != null)
-            {
-                client.SetContainerMetadata(containerName, metadata);
-            }
-        }
-
-        private BlobProperties GetBlobProperties(string containerName, string blobName)
-        {
-            var client = _storageAccount.CreateCloudBlobClient();
-            var container = client.GetContainerReference(containerName);
-            if (!container.Exists())
-                Assert.Fail("GetBlobProperties: The container '{0}' does not exist", containerName);
-
-            var blob = container.GetBlockBlobReference(blobName);
-
-            if (!blob.Exists())
-                Assert.Fail("GetBlobProperties: The blob '{0}' does not exist", blobName);
-
-            return blob.Properties;
-        }
-
-        private IDictionary<string, string> GetBlobMetadata(string containerName, string blobName)
-        {
-            var client = _storageAccount.CreateCloudBlobClient();
-            var container = client.GetContainerReference(containerName);
-            if (!container.Exists())
-                Assert.Fail("GetBlobProperties: The container '{0}' does not exist", containerName);
-
-            var blob = container.GetBlockBlobReference(blobName);
-
-            if (!blob.Exists())
-                Assert.Fail("GetBlobProperties: The blob '{0}' does not exist", blobName);
-
-            return blob.Metadata;
         }
 
         #endregion

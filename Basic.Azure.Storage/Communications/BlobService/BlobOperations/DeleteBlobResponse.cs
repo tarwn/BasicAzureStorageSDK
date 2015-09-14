@@ -6,7 +6,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
     public class DeleteBlobResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse
     {
-        public DateTime Date { get; protected set; }
+        public virtual DateTime Date { get; protected set; }
 
         public void ParseHeaders(System.Net.HttpWebResponse response)
         {
