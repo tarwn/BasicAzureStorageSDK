@@ -2361,7 +2361,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetBlob_ExistingBlob_DownloadsBlobBytes()
         {
-            var expectedContent = "Expected blob content";
+            const string expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -2377,7 +2377,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task GetBlobAsync_ExistingBlob_DownloadsBlobBytes()
         {
-            var expectedContent = "Expected blob content";
+            const string expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -2393,7 +2393,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetBlob_LeasedBlobWithCorrectLeaseSpecified_GetsBlobWithoutException()
         {
-            var expectedContent = "Expected blob content";
+            const string expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -2408,7 +2408,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async void GetBlobAsync_LeasedBlobWithCorrectLeaseSpecified_GetsBlobWithoutException()
         {
-            var expectedContent = "Expected blob content";
+            const string expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -2423,7 +2423,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetBlob_LeasedBlobWithoutLeaseSpecified_GetsBlobWithoutException()
         {
-            var expectedContent = "Expected blob content";
+            const string expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -2438,7 +2438,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async void GetBlobAsync_LeasedBlobWithoutLeaseSpecified_GetsBlobWithoutException()
         {
-            var expectedContent = "Expected blob content";
+            const string expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -2454,7 +2454,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
         public void GetBlob_LeasedBlobIncorrectLeaseSpecified_Throws()
         {
-            var expectedContent = "Expected blob content";
+            const string expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             var incorrectLease = Guid.NewGuid().ToString();
@@ -2473,7 +2473,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
         public async void GetBlobAsync_LeasedBlobIncorrectLeaseSpecified_Throws()
         {
-            var expectedContent = "Expected blob content";
+            const string expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             var incorrectLease = Guid.NewGuid().ToString();
@@ -2491,7 +2491,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetBlob_ExistingBlob_DownloadsBlobStream()
         {
-            var expectedContent = "Expected blob content";
+            const string expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
@@ -2515,7 +2515,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async Task GetBlobAsync_ExistingBlob_DownloadsBlobStream()
         {
-            var expectedContent = "Expected blob content";
+            const string expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
