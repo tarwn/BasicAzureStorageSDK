@@ -56,10 +56,10 @@ namespace Basic.Azure.Storage.ClientContracts
 
         PutBlobResponse PutBlockBlob(string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null);
+            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null);
         Task<PutBlobResponse> PutBlockBlobAsync(string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null);
+            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null);
 
         PutBlockListResponse PutBlockList(string containerName, string blobName, BlockListBlockIdList data,
             string cacheControl = null, string contentType = null,
@@ -75,10 +75,10 @@ namespace Basic.Azure.Storage.ClientContracts
 
         PutBlobResponse PutPageBlob(string containerName, string blobName, int contentLength,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0);
+            string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0, string leaseId = null);
         Task<PutBlobResponse> PutPageBlobAsync(string containerName, string blobName, int contentLength,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0);
+            string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0, string leaseId = null);
 
         GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null, string leaseId = null);
         Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, BlobRange range = null, string leaseId = null);
