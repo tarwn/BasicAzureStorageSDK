@@ -2391,7 +2391,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        public void GetBlob_LeasedBlobWithCorrectLeaseSpecified_GetsBlob()
+        public void GetBlob_LeasedBlobWithCorrectLeaseSpecified_GetsBlobWithoutException()
         {
             var expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
@@ -2406,7 +2406,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        public async void GetBlobAsync_LeasedBlobWithCorrectLeaseSpecified_GetsBlob()
+        public async void GetBlobAsync_LeasedBlobWithCorrectLeaseSpecified_GetsBlobWithoutException()
         {
             var expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
@@ -2421,7 +2421,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        public void GetBlob_LeasedBlobWithoutLeaseSpecified_GetsBlob()
+        public void GetBlob_LeasedBlobWithoutLeaseSpecified_GetsBlobWithoutException()
         {
             var expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
@@ -2436,7 +2436,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        public async void GetBlobAsync_LeasedBlobWithoutLeaseSpecified_GetsBlob()
+        public async void GetBlobAsync_LeasedBlobWithoutLeaseSpecified_GetsBlobWithoutException()
         {
             var expectedContent = "Expected blob content";
             var containerName = GenerateSampleContainerName();
