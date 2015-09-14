@@ -2,7 +2,6 @@
 using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.Common;
 using Basic.Azure.Storage.Communications.ServiceExceptions;
-using Microsoft.WindowsAzure.Storage;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Basic.Azure.Storage.Communications.Utility;
-using Microsoft.WindowsAzure.Storage.Blob;
 using BlobType = Microsoft.WindowsAzure.Storage.Blob.BlobType;
 using LeaseDuration = Basic.Azure.Storage.Communications.Common.LeaseDuration;
 using LeaseState = Basic.Azure.Storage.Communications.Common.LeaseState;
