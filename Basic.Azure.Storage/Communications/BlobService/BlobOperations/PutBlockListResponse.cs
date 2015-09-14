@@ -1,18 +1,19 @@
 ﻿using Basic.Azure.Storage.Communications.Core;
 using System;
 using Basic.Azure.Storage.Communications.Core.Interfaces;
+using Basic.Azure.Storage.Extensions.Contracts;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
-    public class PutBlockListResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse, IBlobPropertiesResponse
+    public class PutBlockListResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse, IBlobOrBlockListResponseWrapper
     {
-        public string ETag { get; protected set; }
+        public virtual string ETag { get; protected set; }
 
-        public DateTime LastModified { get; protected set; }
+        public virtual DateTime LastModified { get; protected set; }
 
-        public DateTime Date { get; protected set; }
+        public virtual DateTime Date { get; protected set; }
 
-        public string ContentMD5 { get; protected set; }
+        public virtual string ContentMD5 { get; protected set; }
 
 
         public void ParseHeaders(System.Net.HttpWebResponse response)
