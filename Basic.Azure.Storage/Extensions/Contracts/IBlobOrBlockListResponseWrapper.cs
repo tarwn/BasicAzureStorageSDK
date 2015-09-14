@@ -6,7 +6,7 @@ namespace Basic.Azure.Storage.Extensions.Contracts
     {
         string ETag { get; }
 
-         DateTime LastModified { get; }
+        DateTime LastModified { get; }
 
         DateTime Date { get; }
 
