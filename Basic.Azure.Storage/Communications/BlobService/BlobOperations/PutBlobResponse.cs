@@ -1,10 +1,11 @@
 ﻿using Basic.Azure.Storage.Communications.Core;
 using System;
 using Basic.Azure.Storage.Communications.Core.Interfaces;
+using Basic.Azure.Storage.Extensions.Contracts;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
-    public class PutBlobResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse, IBlobPropertiesResponse
+    public class PutBlobResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse, IBlobOrBlockListResponseWrapper
     {
         public virtual string ETag { get; protected set; }
 

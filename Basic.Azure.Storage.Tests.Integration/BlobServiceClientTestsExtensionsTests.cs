@@ -951,14 +951,12 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         private static void AssertIsPutBlockBlobResponse(IBlobOrBlockListResponseWrapper response)
         {
-            Assert.IsTrue(response.IsPutBlobResponse);
-            Assert.IsInstanceOf(typeof(PutBlobResponse), response.Response);
+            Assert.IsInstanceOf(typeof(PutBlobResponse), response);
         }
 
         private static void AssertIsBlockListResponse(IBlobOrBlockListResponseWrapper response)
         {
-            Assert.IsTrue(response.IsPutBlockListResponse);
-            Assert.IsInstanceOf(typeof(PutBlockListResponse), response.Response);
+            Assert.IsInstanceOf(typeof(PutBlockListResponse), response);
         }
 
         private void AssertBlobOfSingleUpload(byte[] expectedData, string containerName, string blobName)

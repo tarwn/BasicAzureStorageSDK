@@ -12,13 +12,13 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
     {
         private Stream _stream;
 
-        public DateTime Date { get; protected set; }
+        public virtual DateTime Date { get; protected set; }
 
-        public string ETag { get; protected set; }
+        public virtual string ETag { get; protected set; }
 
-        public DateTime LastModified { get; protected set; }
+        public virtual DateTime LastModified { get; protected set; }
 
-        public ReadOnlyDictionary<string, string> Metadata { get; protected set; }
+        public virtual ReadOnlyDictionary<string, string> Metadata { get; protected set; }
 
         public void ParseHeaders(System.Net.HttpWebResponse response)
         {

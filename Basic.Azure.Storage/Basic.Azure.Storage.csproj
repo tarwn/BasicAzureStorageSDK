@@ -45,7 +45,6 @@
     <Compile Include="BlobServiceClient.cs" />
     <Compile Include="ClientContracts\IBlobServiceClient.cs" />
     <Compile Include="ClientContracts\ITableServiceClient.cs" />
-    <Compile Include="Communications\Core\Interfaces\IBlobPropertiesResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobResponse.cs" />
@@ -180,7 +179,6 @@
     <Compile Include="Communications\Utility\IdentifierValidation.cs" />
     <Compile Include="ClientContracts\IQueueServiceClient.cs" />
     <Compile Include="Communications\Utility\SharedAccessPermissionParse.cs" />
-    <Compile Include="Extensions\BlobOrBlockListResponseWrapper.cs" />
     <Compile Include="Extensions\BlobServiceClientExtensions.cs" />
     <Compile Include="Extensions\Contracts\IBlobOrBlockListResponseWrapper.cs" />
     <Compile Include="Extensions\Contracts\IBlobServiceClientEx.cs" />

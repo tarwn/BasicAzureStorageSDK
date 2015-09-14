@@ -35,11 +35,11 @@ namespace Basic.Azure.Storage.Extensions
         {
             if (data.Length < BlobServiceConstants.MaxSingleBlobUploadSize)
             {
-                return new BlobOrBlockListResponseWrapper(await PutBlockBlobAsync(containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata));
+                return await PutBlockBlobAsync(containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata);
             }
             else
             {
-                return new BlobOrBlockListResponseWrapper(await PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata));
+                return await PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata);
             }
         }
 
