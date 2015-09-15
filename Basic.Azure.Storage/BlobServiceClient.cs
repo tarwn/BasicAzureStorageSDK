@@ -256,15 +256,15 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
-        public void DeleteBlob(string containerName, string blobName)
+        public void DeleteBlob(string containerName, string blobName, string leaseId = null)
         {
-            var request = new DeleteBlobRequest(_account, containerName, blobName);
+            var request = new DeleteBlobRequest(_account, containerName, blobName, leaseId);
             request.Execute();
         }
 
-        public async Task DeleteBlobAsync(string containerName, string blobName)
+        public async Task DeleteBlobAsync(string containerName, string blobName, string leaseId = null)
         {
-            var request = new DeleteBlobRequest(_account, containerName, blobName);
+            var request = new DeleteBlobRequest(_account, containerName, blobName, leaseId);
             await request.ExecuteAsync();
         }
 

@@ -2567,6 +2567,136 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public void DeleteBlob_LeasedBlobCorrectLeaseSpecified_DeletesBlob()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var lease = LeaseBlob(containerName, blobName);
+            var client = new BlobServiceClient(_accountSettings);
+
+            client.DeleteBlob(containerName, blobName, leaseId: lease);
+
+            AssertBlobDoesNotExist(containerName, blobName, BlobType.BlockBlob);
+        }
+
+        [Test]
+        public async void DeleteBlobAsync_LeasedBlobCorrectLeaseSpecified_DeletesBlob()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var lease = LeaseBlob(containerName, blobName);
+            var client = new BlobServiceClient(_accountSettings);
+
+            await client.DeleteBlobAsync(containerName, blobName, leaseId: lease);
+
+            AssertBlobDoesNotExist(containerName, blobName, BlobType.BlockBlob);
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMissingAzureException))]
+        public void DeleteBlob_LeasedBlobNoLeaseSpecified_ThrowsLeaseIdMissingAzureException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName);
+            var client = new BlobServiceClient(_accountSettings);
+
+            client.DeleteBlob(containerName, blobName);
+
+            // throw exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMissingAzureException))]
+        public async void DeleteBlobAsync_LeasedBlobNoLeaseSpecified_ThrowsLeaseIdMissingAzureException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName);
+            var client = new BlobServiceClient(_accountSettings);
+
+            await client.DeleteBlobAsync(containerName, blobName);
+
+            // throw exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        public void DeleteBlob_LeasedBlobIncorrectLeaseSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName);
+            var lease = Guid.NewGuid().ToString();
+            var client = new BlobServiceClient(_accountSettings);
+
+            client.DeleteBlob(containerName, blobName, leaseId: lease);
+
+            // throw exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        public async void DeleteBlobAsync_LeasedBlobIncorrectLeaseSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName);
+            var lease = Guid.NewGuid().ToString();
+            var client = new BlobServiceClient(_accountSettings);
+
+            await client.DeleteBlobAsync(containerName, blobName, leaseId: lease);
+
+            // throw exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void DeleteBlob_LeasedBlobInvalidLeaseSpecified_ThrowsArgumentException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName);
+            const string lease = "Avogadro was the man";
+            var client = new BlobServiceClient(_accountSettings);
+
+            client.DeleteBlob(containerName, blobName, leaseId: lease);
+
+            // throw exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public async void DeleteBlobAsync_LeasedBlobInvalidLeaseSpecified_ThrowsArgumentException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName);
+            const string lease = "Avogadro was the man";
+            var client = new BlobServiceClient(_accountSettings);
+
+            await client.DeleteBlobAsync(containerName, blobName, leaseId: lease);
+
+            // throw exception
+        }
+
+        [Test]
         [ExpectedException(typeof(BlobNotFoundAzureException))]
         public void DeleteBlob_NonExistingBlob_ThrowsBlobDoesNotExistException()
         {

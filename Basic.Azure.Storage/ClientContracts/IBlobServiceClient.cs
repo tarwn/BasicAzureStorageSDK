@@ -83,9 +83,8 @@ namespace Basic.Azure.Storage.ClientContracts
         GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null, string leaseId = null);
         Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, BlobRange range = null, string leaseId = null);
 
-        void DeleteBlob(string containerName, string blobName);
-        Task DeleteBlobAsync(string containerName, string blobName);
-
+        void DeleteBlob(string containerName, string blobName, string leaseId = null);
+        Task DeleteBlobAsync(string containerName, string blobName, string leaseId = null);
 
         #endregion
 
