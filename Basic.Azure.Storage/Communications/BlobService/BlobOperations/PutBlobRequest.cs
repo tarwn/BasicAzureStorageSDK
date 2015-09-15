@@ -31,10 +31,13 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
         /// </summary>
         public PutBlobRequest(StorageAccountSettings settings, string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string,string> metadata = null, string leaseId = null)
+            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
             : this(settings, containerName, blobName, BlobType.Block, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId)
         {
             Guard.ArgumentArrayLengthIsEqualOrSmallerThanSize("data", data, BlobServiceConstants.MaxSingleBlobUploadSize);
+
+            if (null != leaseId)
+                Guard.ArgumentIsAGuid("leaseId", leaseId);
 
             _data = data;
         }

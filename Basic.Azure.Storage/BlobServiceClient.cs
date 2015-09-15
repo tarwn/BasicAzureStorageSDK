@@ -223,15 +223,15 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
-        public PutBlockResponse PutBlock(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null)
+        public PutBlockResponse PutBlock(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null)
         {
-            var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5);
+            var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5, leaseId);
             var response = request.Execute();
             return response.Payload;
         }
-        public async Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null)
+        public async Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null)
         {
-            var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5);
+            var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5, leaseId);
             var response = await request.ExecuteAsync();
             return response.Payload;
         }
