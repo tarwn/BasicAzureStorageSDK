@@ -1510,8 +1510,10 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        [ExpectedException(typeof(LeaseIdMissingAzureException))]
-        public void PutBlockList_LeasedBlobNoLeaseSpecified_ThrowsLeaseIdMissingAzureException()
+        [TestCase(null, ExpectedException = typeof(LeaseIdMissingAzureException))]
+        [TestCase(RandomGuid, ExpectedException = typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        [TestCase(InvalidLeaseId, ExpectedException = typeof(ArgumentException))]
+        public void PutBlockList_LeasedBlobWithIncorrectLeaseGivenThrowsSpecifiedException(string lease)
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
@@ -1524,14 +1526,16 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
-            client.PutBlockList(containerName, blobName, blockListBlockIds);
+            client.PutBlockList(containerName, blobName, blockListBlockIds, leaseId: lease);
 
             // throws exception
         }
 
         [Test]
-        [ExpectedException(typeof(LeaseIdMissingAzureException))]
-        public async void PutBlockListAsync_LeasedBlobNoLeaseSpecified_ThrowsLeaseIdMissingAzureException()
+        [TestCase(null, ExpectedException = typeof(LeaseIdMissingAzureException))]
+        [TestCase(RandomGuid, ExpectedException = typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        [TestCase(InvalidLeaseId, ExpectedException = typeof(ArgumentException))]
+        public async void PutBlockListAsync_LeasedBlobWithIncorrectLeaseGivenThrowsSpecifiedException(string lease)
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
@@ -1544,91 +1548,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
-            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds);
-
-            // throws exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
-        public void PutBlockList_LeasedBlobIncorrectLeaseSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
-        {
-            const string dataPerBlock = "foo";
-            var incorrectLease = Guid.NewGuid().ToString();
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
-            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
-            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
-            LeaseBlob(containerName, blobName);
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-
-            client.PutBlockList(containerName, blobName, blockListBlockIds, leaseId: incorrectLease);
-
-            // throws exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
-        public async void PutBlockListAsync_LeasedBlobIncorrectLeaseSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
-        {
-            const string dataPerBlock = "foo";
-            var incorrectLease = Guid.NewGuid().ToString();
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
-            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
-            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
-            LeaseBlob(containerName, blobName);
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-
-            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, leaseId: incorrectLease);
-
-            // throws exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void PutBlockList_LeasedBlobIncorrectLeaseSpecified_ThrowsArgumentException()
-        {
-            const string dataPerBlock = "foo";
-            const string invalidLease = "Moore'sLaw";
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
-            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
-            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
-            LeaseBlob(containerName, blobName);
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-
-            client.PutBlockList(containerName, blobName, blockListBlockIds, leaseId: invalidLease);
-
-            // throws exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public async void PutBlockListAsync_LeasedBlobIncorrectLeaseSpecified_ThrowsArgumentException()
-        {
-            const string dataPerBlock = "foo";
-            const string invalidLease = "Moore'sLaw";
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
-            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
-            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
-            LeaseBlob(containerName, blobName);
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-
-            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, leaseId: invalidLease);
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, leaseId: lease);
 
             // throws exception
         }
@@ -1926,8 +1846,10 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        [ExpectedException(typeof(LeaseIdMissingAzureException))]
-        public void PutBlockBlob_LeasedBlobWithNoLeaseIdSpecified_ThrowsLeaseIdMissingAzureException()
+        [TestCase(null, ExpectedException = typeof(LeaseIdMissingAzureException))]
+        [TestCase(RandomGuid, ExpectedException = typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        [TestCase(InvalidLeaseId, ExpectedException = typeof(ArgumentException))]
+        public void PutBlockBlob_LeasedBlobWithIncorrectLeaseGivenThrowsSpecifiedException(string lease)
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
@@ -1937,14 +1859,16 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = Encoding.UTF8.GetBytes("unit test content");
 
-            client.PutBlockBlob(containerName, blobName, data);
+            client.PutBlockBlob(containerName, blobName, data, leaseId: lease);
 
             // throws exception
         }
 
         [Test]
-        [ExpectedException(typeof(LeaseIdMissingAzureException))]
-        public async void PutBlockBlobAsync_LeasedBlobWithNoLeaseIdSpecified_ThrowsLeaseIdMissingAzureException()
+        [TestCase(null, ExpectedException = typeof(LeaseIdMissingAzureException))]
+        [TestCase(RandomGuid, ExpectedException = typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        [TestCase(InvalidLeaseId, ExpectedException = typeof(ArgumentException))]
+        public async void PutBlockBlobAsync_LeasedBlobWithIncorrectLeaseGivenThrowsSpecifiedException(string lease)
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
@@ -1954,75 +1878,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
             var data = Encoding.UTF8.GetBytes("unit test content");
 
-            await client.PutBlockBlobAsync(containerName, blobName, data);
-
-            // throws exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
-        public void PutBlockBlob_LeasedBlobWithIncorrectLeaseIdSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            LeaseBlob(containerName, blobName);
-            var incorrectLease = Guid.NewGuid().ToString();
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-            var data = Encoding.UTF8.GetBytes("unit test content");
-
-            client.PutBlockBlob(containerName, blobName, data, leaseId: incorrectLease);
-
-            // throws exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
-        public async void PutBlockBlobAsync_LeasedBlobWithIncorrectLeaseIdSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            LeaseBlob(containerName, blobName);
-            var incorrectLease = Guid.NewGuid().ToString();
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-            var data = Encoding.UTF8.GetBytes("unit test content");
-
-            await client.PutBlockBlobAsync(containerName, blobName, data, leaseId: incorrectLease);
-
-            // throws exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void PutBlockBlob_IncorrectLeaseFormat_ThrowsArgumentException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            CreateContainer(containerName);
-            const string incorrectlyFormattedLease = "iAmNotAGuid!";
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-            var data = Encoding.UTF8.GetBytes("unit test content");
-
-            client.PutBlockBlob(containerName, blobName, data, leaseId: incorrectlyFormattedLease);
-
-            // throws exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public async void PutBlockBlobAsync_IncorrectLeaseFormat_ThrowsArgumentException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            CreateContainer(containerName);
-            const string incorrectlyFormattedLease = "iAmNotAGuid!";
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-            var data = Encoding.UTF8.GetBytes("unit test content");
-
-            await client.PutBlockBlobAsync(containerName, blobName, data, leaseId: incorrectlyFormattedLease);
+            await client.PutBlockBlobAsync(containerName, blobName, data, leaseId: lease);
 
             // throws exception
         }
@@ -2257,8 +2113,10 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        [ExpectedException(typeof(LeaseIdMissingAzureException))]
-        public void PutBlock_LeasedBlobNoLeaseSpecified_ThrowsLeaseIdMissingAzureException()
+        [TestCase(null, ExpectedException = typeof(LeaseIdMissingAzureException))]
+        [TestCase(RandomGuid, ExpectedException = typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        [TestCase(InvalidLeaseId, ExpectedException = typeof(ArgumentException))]
+        public void PutBlock_LeasedBlobWithIncorrectLeaseGivenThrowsSpecifiedException(string lease)
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
@@ -2269,14 +2127,16 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
-            client.PutBlock(containerName, blobName, blockId, blockData);
+            client.PutBlock(containerName, blobName, blockId, blockData, leaseId: lease);
 
             // throws exception
         }
 
         [Test]
-        [ExpectedException(typeof(LeaseIdMissingAzureException))]
-        public async void PutBlockAsync_LeasedBlobNoLeaseSpecified_ThrowsLeaseIdMissingAzureException()
+        [TestCase(null, ExpectedException = typeof(LeaseIdMissingAzureException))]
+        [TestCase(RandomGuid, ExpectedException = typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        [TestCase(InvalidLeaseId, ExpectedException = typeof(ArgumentException))]
+        public async void PutBlockAsync_LeasedBlobWithIncorrectLeaseGivenThrowsSpecifiedException(string lease)
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
@@ -2287,83 +2147,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
-            await client.PutBlockAsync(containerName, blobName, blockId, blockData);
-
-            // throws exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
-        public void PutBlock_LeasedBlobIncorrectLeaseSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            var blockData = UTF8Encoding.UTF8.GetBytes("unit test content");
-            var blockId = Base64Converter.ConvertToBase64("test-block-id");
-            var incorrectLease = Guid.NewGuid().ToString();
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            LeaseBlob(containerName, blobName);
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-
-            client.PutBlock(containerName, blobName, blockId, blockData, leaseId: incorrectLease);
-
-            // throws exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
-        public async void PutBlockAsync_LeasedBlobIncorrectLeaseSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            var blockData = UTF8Encoding.UTF8.GetBytes("unit test content");
-            var blockId = Base64Converter.ConvertToBase64("test-block-id");
-            var incorrectLease = Guid.NewGuid().ToString();
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            LeaseBlob(containerName, blobName);
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-
-            await client.PutBlockAsync(containerName, blobName, blockId, blockData, leaseId: incorrectLease);
-
-            // throws exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void PutBlock_LeasedBlobInvalidLeaseSpecified_ThrowsArgumentException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            var blockData = UTF8Encoding.UTF8.GetBytes("unit test content");
-            var blockId = Base64Converter.ConvertToBase64("test-block-id");
-            const string invalidLease = "ackermann function";
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            LeaseBlob(containerName, blobName);
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-
-            client.PutBlock(containerName, blobName, blockId, blockData, leaseId: invalidLease);
-
-            // throws exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public async void PutBlockAsync_LeasedBlobInvalidLeaseSpecified_ThrowsArgumentException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            var blockData = UTF8Encoding.UTF8.GetBytes("unit test content");
-            var blockId = Base64Converter.ConvertToBase64("test-block-id");
-            const string invalidLease = "ackermann function";
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            LeaseBlob(containerName, blobName);
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-
-            await client.PutBlockAsync(containerName, blobName, blockId, blockData, leaseId: invalidLease);
+            await client.PutBlockAsync(containerName, blobName, blockId, blockData, leaseId: lease);
 
             // throws exception
         }
@@ -2763,47 +2547,16 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        [ExpectedException(typeof(LeaseIdMissingAzureException))]
-        public void DeleteBlob_LeasedBlobNoLeaseSpecified_ThrowsLeaseIdMissingAzureException()
+        [TestCase(null, ExpectedException = typeof(LeaseIdMissingAzureException))]
+        [TestCase(RandomGuid, ExpectedException = typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        [TestCase(InvalidLeaseId, ExpectedException = typeof(ArgumentException))]
+        public void DeleteBlob_LeasedBlobWithIncorrectLeaseGivenThrowsSpecifiedException(string lease)
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             CreateBlockBlob(containerName, blobName);
             LeaseBlob(containerName, blobName);
-            var client = new BlobServiceClient(_accountSettings);
-
-            client.DeleteBlob(containerName, blobName);
-
-            // throw exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(LeaseIdMissingAzureException))]
-        public async void DeleteBlobAsync_LeasedBlobNoLeaseSpecified_ThrowsLeaseIdMissingAzureException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            LeaseBlob(containerName, blobName);
-            var client = new BlobServiceClient(_accountSettings);
-
-            await client.DeleteBlobAsync(containerName, blobName);
-
-            // throw exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
-        public void DeleteBlob_LeasedBlobIncorrectLeaseSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            LeaseBlob(containerName, blobName);
-            var lease = Guid.NewGuid().ToString();
             var client = new BlobServiceClient(_accountSettings);
 
             client.DeleteBlob(containerName, blobName, leaseId: lease);
@@ -2812,49 +2565,16 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
-        public async void DeleteBlobAsync_LeasedBlobIncorrectLeaseSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
+        [TestCase(null, ExpectedException = typeof(LeaseIdMissingAzureException))]
+        [TestCase(RandomGuid, ExpectedException = typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        [TestCase(InvalidLeaseId, ExpectedException = typeof(ArgumentException))]
+        public async void DeleteBlobAsync_LeasedBlobWithIncorrectLeaseGivenThrowsSpecifiedException(string lease)
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             CreateBlockBlob(containerName, blobName);
             LeaseBlob(containerName, blobName);
-            var lease = Guid.NewGuid().ToString();
-            var client = new BlobServiceClient(_accountSettings);
-
-            await client.DeleteBlobAsync(containerName, blobName, leaseId: lease);
-
-            // throw exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void DeleteBlob_LeasedBlobInvalidLeaseSpecified_ThrowsArgumentException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            LeaseBlob(containerName, blobName);
-            const string lease = "Avogadro was the man";
-            var client = new BlobServiceClient(_accountSettings);
-
-            client.DeleteBlob(containerName, blobName, leaseId: lease);
-
-            // throw exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public async void DeleteBlobAsync_LeasedBlobInvalidLeaseSpecified_ThrowsArgumentException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            LeaseBlob(containerName, blobName);
-            const string lease = "Avogadro was the man";
             var client = new BlobServiceClient(_accountSettings);
 
             await client.DeleteBlobAsync(containerName, blobName, leaseId: lease);
@@ -2977,77 +2697,41 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
-        public void GetBlob_LeasedBlobIncorrectLeaseSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
+        [TestCase(RandomGuid, ExpectedException = typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        [TestCase(InvalidLeaseId, ExpectedException = typeof(ArgumentException))]
+        public void GetBlob_LeasedBlobGivenIncorrectLease_ThrowsSpecifiedException(string lease)
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
-            var incorrectLease = Guid.NewGuid().ToString();
             CreateContainer(containerName);
             CreateBlockBlob(containerName, blobName);
             LeaseBlob(containerName, blobName);
 
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
-            client.GetBlob(containerName, blobName, null, incorrectLease);
+            client.GetBlob(containerName, blobName, null, leaseId: lease);
 
             // Throws exception
         }
 
         [Test]
-        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
-        public async void GetBlobAsync_LeasedBlobIncorrectLeaseSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
+        [TestCase(RandomGuid, ExpectedException = typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        [TestCase(InvalidLeaseId, ExpectedException = typeof(ArgumentException))]
+        public async void GetBlobAsync_LeasedBlobGivenIncorrectLease_ThrowsSpecifiedException(string lease)
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
-            var incorrectLease = Guid.NewGuid().ToString();
             CreateContainer(containerName);
             CreateBlockBlob(containerName, blobName);
             LeaseBlob(containerName, blobName);
 
             IBlobServiceClient client = new BlobServiceClient(_accountSettings);
 
-            await client.GetBlobAsync(containerName, blobName, null, incorrectLease);
+            await client.GetBlobAsync(containerName, blobName, null, leaseId: lease);
 
             // Throws exception
         }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void GetBlob_LeasedBlobIncorrectlyFormedLeaseSpecified_ThrowsArgumentException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            const string incorrectlyFormedLease = "Graham'sNumber";
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            LeaseBlob(containerName, blobName);
-
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-
-            client.GetBlob(containerName, blobName, null, incorrectlyFormedLease);
-
-            // Throws exception
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public async void GetBlobAsync_LeasedBlobIncorrectlyFormedLeaseSpecified_ThrowsArgumentException()
-        {
-            var containerName = GenerateSampleContainerName();
-            var blobName = GenerateSampleBlobName();
-            const string incorrectlyFormedLease = "Graham'sNumber";
-            CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName);
-            LeaseBlob(containerName, blobName);
-
-            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-
-            await client.GetBlobAsync(containerName, blobName, null, incorrectlyFormedLease);
-
-            // Throws exception
-        }
-
+        
         [Test]
         public void GetBlob_ExistingBlob_DownloadsBlobStream()
         {
