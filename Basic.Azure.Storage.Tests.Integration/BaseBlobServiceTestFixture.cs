@@ -23,7 +23,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected readonly Dictionary<string, string> _containersToCleanUp = new Dictionary<string, string>();
 
-        protected const string GUID = "E95DA248-A756-4005-A5E9-6C93591E87FF";
+        protected const string RandomGuid = "E95DA248-A756-4005-A5E9-6C93591E87FF";
         protected const string InvalidLeaseId = "InvalidLeaseId";
 
         protected string GenerateSampleContainerName()
