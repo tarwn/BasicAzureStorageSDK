@@ -64,11 +64,11 @@ namespace Basic.Azure.Storage.ClientContracts
         PutBlockListResponse PutBlockList(string containerName, string blobName, BlockListBlockIdList data,
             string cacheControl = null, string contentType = null,
             string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
-            Dictionary<string, string> metadata = null);
+            Dictionary<string, string> metadata = null, string leaseId = null);
         Task<PutBlockListResponse> PutBlockListAsync(string containerName, string blobName, BlockListBlockIdList data,
             string cacheControl = null, string contentType = null,
             string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
-            Dictionary<string, string> metadata = null);
+            Dictionary<string, string> metadata = null, string leaseId = null);
 
         PutBlockResponse PutBlock(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null);
         Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null);

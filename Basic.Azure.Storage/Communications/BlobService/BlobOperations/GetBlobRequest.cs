@@ -48,7 +48,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             if (_range != null)
                 request.Headers.Add(ProtocolConstants.Headers.BlobRange, _range.GetStringValue());
 
-            if (_leaseId != null)
+            if (!string.IsNullOrEmpty(_leaseId))
                 request.Headers.Add(ProtocolConstants.Headers.LeaseId, _leaseId);
         }
     }

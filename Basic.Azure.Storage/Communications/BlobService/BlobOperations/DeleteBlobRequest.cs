@@ -42,7 +42,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 
         public void ApplyAdditionalOptionalHeaders(WebRequest request)
         {
-            if (null != _leaseId)
+            if (!string.IsNullOrEmpty(_leaseId))
                 request.Headers.Add(ProtocolConstants.Headers.LeaseId, _leaseId);
         }
 

@@ -1468,6 +1468,172 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public void PutBlockList_LeasedBlobCorrectLeaseSpecified_CreatesBlockBlobFromLatestBlocks()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedData = "foofoofoo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            var lease = LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlockList(containerName, blobName, blockListBlockIds, leaseId: lease);
+
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            AssertBlobContainsData(containerName, blobName, BlobType.BlockBlob, Encoding.Unicode.GetBytes(expectedData));
+        }
+
+        [Test]
+        public async void PutBlockListAsync_LeasedBlobCorrectLeaseSpecified_CreatesBlockBlobFromLatestBlocks()
+        {
+            const string dataPerBlock = "foo";
+            const string expectedData = "foofoofoo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            var lease = LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, leaseId: lease);
+
+            AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+            AssertBlobContainsData(containerName, blobName, BlobType.BlockBlob, Encoding.Unicode.GetBytes(expectedData));
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMissingAzureException))]
+        public void PutBlockList_LeasedBlobNoLeaseSpecified_ThrowsLeaseIdMissingAzureException()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlockList(containerName, blobName, blockListBlockIds);
+
+            // throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMissingAzureException))]
+        public async void PutBlockListAsync_LeasedBlobNoLeaseSpecified_ThrowsLeaseIdMissingAzureException()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds);
+
+            // throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        public void PutBlockList_LeasedBlobIncorrectLeaseSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
+        {
+            const string dataPerBlock = "foo";
+            var incorrectLease = Guid.NewGuid().ToString();
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlockList(containerName, blobName, blockListBlockIds, leaseId: incorrectLease);
+
+            // throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        public async void PutBlockListAsync_LeasedBlobIncorrectLeaseSpecified_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
+        {
+            const string dataPerBlock = "foo";
+            var incorrectLease = Guid.NewGuid().ToString();
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, leaseId: incorrectLease);
+
+            // throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void PutBlockList_LeasedBlobIncorrectLeaseSpecified_ThrowsArgumentException()
+        {
+            const string dataPerBlock = "foo";
+            const string invalidLease = "Moore'sLaw";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            client.PutBlockList(containerName, blobName, blockListBlockIds, leaseId: invalidLease);
+
+            // throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public async void PutBlockListAsync_LeasedBlobIncorrectLeaseSpecified_ThrowsArgumentException()
+        {
+            const string dataPerBlock = "foo";
+            const string invalidLease = "Moore'sLaw";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, leaseId: invalidLease);
+
+            // throws exception
+        }
+
+        [Test]
         [ExpectedException(typeof(InvalidBlockListAzureException))]
         public void PutBlockList_InvalidBlockId_ThrowsInvalidBlockListAzureException()
         {
