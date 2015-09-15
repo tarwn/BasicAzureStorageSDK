@@ -6,9 +6,9 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
     public class PutBlockResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse
     {
-        public DateTime Date { get; protected set; }
+        public virtual DateTime Date { get; protected set; }
 
-        public string ContentMD5 { get; protected set; }
+        public virtual string ContentMD5 { get; protected set; }
 
 
         public void ParseHeaders(System.Net.HttpWebResponse response)

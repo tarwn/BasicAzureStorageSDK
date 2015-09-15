@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
@@ -66,7 +65,6 @@ namespace Basic.Azure.Storage.ClientContracts
             string cacheControl = null, string contentType = null,
             string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
             Dictionary<string, string> metadata = null);
-
         Task<PutBlockListResponse> PutBlockListAsync(string containerName, string blobName, BlockListBlockIdList data,
             string cacheControl = null, string contentType = null,
             string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,

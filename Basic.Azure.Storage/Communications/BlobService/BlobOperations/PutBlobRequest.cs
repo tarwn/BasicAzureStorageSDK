@@ -35,6 +35,8 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             string cacheControl = null, Dictionary<string,string> metadata = null)
             : this(settings, containerName, blobName, BlobType.Block, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata)
         {
+            Guard.ArgumentArrayLengthIsEqualOrSmallerThanSize("data", data, BlobServiceConstants.MaxSingleBlobUploadSize);
+
             _data = data;
         }
 

@@ -1,13 +1,10 @@
-﻿using Basic.Azure.Storage.Communications.Common;
-using Basic.Azure.Storage.Communications.Core;
-using Basic.Azure.Storage.Communications.Core.Interfaces;
+﻿using Basic.Azure.Storage.Communications.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Basic.Azure.Storage.Communications.Core.Interfaces;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
@@ -15,13 +12,13 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
     {
         private Stream _stream;
 
-        public DateTime Date { get; protected set; }
+        public virtual DateTime Date { get; protected set; }
 
-        public string ETag { get; protected set; }
+        public virtual string ETag { get; protected set; }
 
-        public DateTime LastModified { get; protected set; }
-        
-        public ReadOnlyDictionary<string, string> Metadata { get; protected set; }
+        public virtual DateTime LastModified { get; protected set; }
+
+        public virtual ReadOnlyDictionary<string, string> Metadata { get; protected set; }
 
         public void ParseHeaders(System.Net.HttpWebResponse response)
         {
@@ -48,25 +45,25 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             DateTime.TryParse(headerValue, out dateValue);
             return dateValue;
         }
-        
-        public async Task ParseResponseBodyAsync(System.IO.Stream responseStream)
+
+        public virtual async Task ParseResponseBodyAsync(System.IO.Stream responseStream)
         {
             _stream = responseStream;
         }
 
-        public byte[] GetDataBytes()
+        public virtual byte[] GetDataBytes()
         {
             using (_stream)
             {
-                using (var localStream = new MemoryStream())
+                using (var ms = new MemoryStream())
                 {
-                    _stream.CopyTo(localStream);
-                    return localStream.ToArray();
+                    _stream.CopyTo(ms);
+                    return ms.ToArray();
                 }
             }
         }
 
-        public Stream GetDataStream()
+        public virtual Stream GetDataStream()
         {
             return _stream;
         }
