@@ -288,7 +288,6 @@ namespace Basic.Azure.Storage
             var response = request.Execute();
             return response.Payload;
         }
-
         public async Task<LeaseBlobAcquireResponse> LeaseBlobAcquireAsync(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
         {
             var request = new LeaseBlobAcquireRequest(_account, containerName, blobName, leaseDurationInSeconds, proposedLeaseId);
@@ -315,7 +314,6 @@ namespace Basic.Azure.Storage
             var response = request.Execute();
             return response.Payload;
         }
-
         public async Task<LeaseBlobChangeResponse> LeaseBlobChangeAsync(string containerName, string blobName, string currentLeaseId, string proposedLeaseId)
         {
             var request = new LeaseBlobChangeRequest(_account, containerName, blobName, currentLeaseId, proposedLeaseId);
@@ -328,7 +326,6 @@ namespace Basic.Azure.Storage
             var request = new LeaseBlobReleaseRequest(_account, containerName, blobName, leaseId);
             request.Execute();
         }
-
         public async Task LeaseBlobReleaseAsync(string containerName, string blobName, string leaseId)
         {
             var request = new LeaseBlobReleaseRequest(_account, containerName, blobName, leaseId);
@@ -340,7 +337,6 @@ namespace Basic.Azure.Storage
             var request = new LeaseBlobBreakRequest(_account, containerName, blobName, leaseId, leaseBreakPeriod);
             request.Execute();
         }
-
         public async Task LeaseBlobBreakAsync(string containerName, string blobName, string leaseId, int leaseBreakPeriod)
         {
             var request = new LeaseBlobBreakRequest(_account, containerName, blobName, leaseId, leaseBreakPeriod);
