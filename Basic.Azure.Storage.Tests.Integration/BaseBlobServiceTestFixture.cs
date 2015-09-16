@@ -397,6 +397,15 @@ namespace Basic.Azure.Storage.Tests.Integration
             return container.Properties.LeaseState;
         }
 
+        protected Microsoft.WindowsAzure.Storage.Blob.LeaseState GetBlobLeaseState(string containerName, string blobName)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            var blob = container.GetBlobReferenceFromServer(blobName);
+            blob.FetchAttributes();
+            return blob.Properties.LeaseState;
+        }
+
         protected List<Microsoft.WindowsAzure.Storage.Blob.ListBlockItem> CreateBlockList(string containerName, string blobName,
             IEnumerable<string> blockIdsToCreate, string dataPerBlock, Encoding encoder = null)
         {

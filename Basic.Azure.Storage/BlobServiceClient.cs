@@ -335,6 +335,18 @@ namespace Basic.Azure.Storage
             await request.ExecuteAsync();
         }
 
+        public void LeaseBlobBreak(string containerName, string blobName, string leaseId, int leaseBreakPeriod)
+        {
+            var request = new LeaseBlobBreakRequest(_account, containerName, blobName, leaseId, leaseBreakPeriod);
+            request.Execute();
+        }
+
+        public async Task LeaseBlobBreakAsync(string containerName, string blobName, string leaseId, int leaseBreakPeriod)
+        {
+            var request = new LeaseBlobBreakRequest(_account, containerName, blobName, leaseId, leaseBreakPeriod);
+            await request.ExecuteAsync();
+        }
+
         #endregion
 
     }

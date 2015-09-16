@@ -96,6 +96,9 @@ namespace Basic.Azure.Storage.ClientContracts
         void LeaseBlobRelease(string containerName, string blobName, string leaseId);
         Task LeaseBlobReleaseAsync(string containerName, string blobName, string leaseId);
 
+        void LeaseBlobBreak(string containerName, string blobName, string leaseId, int leaseBreakPeriod);
+        Task LeaseBlobBreakAsync(string containerName, string blobName, string leaseId, int leaseBreakPeriod);
+
         void DeleteBlob(string containerName, string blobName, string leaseId = null);
         Task DeleteBlobAsync(string containerName, string blobName, string leaseId = null);
 

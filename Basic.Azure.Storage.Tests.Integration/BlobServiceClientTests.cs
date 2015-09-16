@@ -3420,6 +3420,100 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
+
+        [Test]
+        public void LeaseBlobBreak_LeasedBlob_BreaksLease()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var leaseId = LeaseBlob(containerName, blobName);
+
+            client.LeaseBlobBreak(containerName, blobName, leaseId, 0);
+
+            var leaseState = GetBlobLeaseState(containerName, blobName);
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Blob.LeaseState.Broken, leaseState);
+        }
+
+        [Test]
+        public async void LeaseBlobBreakAsync_LeasedBlob_BreaksLease()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var leaseId = LeaseBlob(containerName, blobName);
+
+            await client.LeaseBlobBreakAsync(containerName, blobName, leaseId, 0);
+
+            var leaseState = GetBlobLeaseState(containerName, blobName);
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Blob.LeaseState.Broken, leaseState);
+        }
+
+        [Test]
+        public void LeaseBlobBreak_LeasedBlobWithLongBreakPeriod_SetLeaseToBreaking()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var leaseId = LeaseBlob(containerName, blobName);
+
+            client.LeaseBlobBreak(containerName, blobName, leaseId, 60);
+
+            var leaseState = GetBlobLeaseState(containerName, blobName);
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Blob.LeaseState.Breaking, leaseState);
+        }
+
+        [Test]
+        public async void LeaseBlobBreakAsync_LeasedBlobWithLongBreakPeriod_SetLeaseToBreaking()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var leaseId = LeaseBlob(containerName, blobName);
+
+            await client.LeaseBlobBreakAsync(containerName, blobName, leaseId, 60);
+
+            var leaseState = GetBlobLeaseState(containerName, blobName);
+            Assert.AreEqual(Microsoft.WindowsAzure.Storage.Blob.LeaseState.Breaking, leaseState);
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseNotPresentWithLeaseOperationAzureException))]
+        public void LeaseBlobBreak_NonLeasedBlob_ThrowsLeaseNotPresentException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+
+            client.LeaseBlobBreak(containerName, blobName, FakeLeaseId, 0);
+
+            // expects exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseNotPresentWithLeaseOperationAzureException))]
+        public async void LeaseBlobBreakAsync_NonLeasedBlob_ThrowsLeaseNotPresentException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+
+            await client.LeaseBlobBreakAsync(containerName, blobName, FakeLeaseId, 0);
+
+            // expects exception
+        }
         
         #endregion
 
