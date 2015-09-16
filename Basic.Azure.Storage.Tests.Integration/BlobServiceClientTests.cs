@@ -3390,6 +3390,36 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
+
+        [Test]
+        public void LeaseBlobRelease_LeasedBlob_ReleasesLease()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var leaseId = LeaseBlob(containerName, blobName);
+
+            client.LeaseBlobRelease(containerName, blobName, leaseId);
+
+            AssertBlobIsNotLeased(containerName, blobName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithLeaseOperationAzureException))]
+        public void LeaseBlobRelease_NonLeasedBlob_ThrowsLeaseIdMismatchException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+
+            client.LeaseBlobRelease(containerName, blobName, FakeLeaseId);
+
+            // expects exception
+        }
         
         #endregion
 

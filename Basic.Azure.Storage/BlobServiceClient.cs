@@ -323,6 +323,18 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
+        public void LeaseBlobRelease(string containerName, string blobName, string leaseId)
+        {
+            var request = new LeaseBlobReleaseRequest(_account, containerName, blobName, leaseId);
+            request.Execute();
+        }
+
+        public async Task LeaseBlobReleaseAsync(string containerName, string blobName, string leaseId)
+        {
+            var request = new LeaseBlobReleaseRequest(_account, containerName, blobName, leaseId);
+            await request.ExecuteAsync();
+        }
+
         #endregion
 
     }

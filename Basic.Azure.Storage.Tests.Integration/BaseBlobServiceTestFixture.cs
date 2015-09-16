@@ -167,6 +167,27 @@ namespace Basic.Azure.Storage.Tests.Integration
             }
         }
 
+        protected void AssertBlobIsNotLeased(string containerName, string blobName)
+        {
+            var client = _storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            if (!container.Exists())
+                Assert.Fail("AssertBlobIsNotLeased: The container '{0}' does not exist", containerName);
+
+            var blob = container.GetBlockBlobReference(blobName);
+            if(!blob.Exists())
+                Assert.Fail("AssertBlobIsNotLeased: The blob '{0}' does not exist", blobName);
+
+            try
+            {
+                blob.AcquireLease(null, null);
+            }
+            catch (Exception exc)
+            {
+                Assert.Fail("AssertBlobIsNotLeased: The blob '{0}' gave an {1} exception when attempting to acquire a new lease: {2}", blobName, exc.GetType().Name, exc.Message);
+            }
+        }
+
         protected Microsoft.WindowsAzure.Storage.Blob.ListBlockItem AssertBlockExists(string containerName, string blobName, string blockId, BlockListingFilter blockType = BlockListingFilter.All)
         {
             var client = _storageAccount.CreateCloudBlobClient();
