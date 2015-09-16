@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using Basic.Azure.Storage.Communications.Core;
 using Basic.Azure.Storage.Communications.Core.Interfaces;
+using Basic.Azure.Storage.Communications.Utility;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
@@ -13,13 +14,20 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
         private readonly string _blobName;
         private readonly string _containerName;
         private readonly BlobRange _range;
+        private readonly string _leaseId;
 
-        public GetBlobRequest(StorageAccountSettings settings, string containerName, string blobName, BlobRange range)
+        public GetBlobRequest(StorageAccountSettings settings, string containerName, string blobName, BlobRange range, string leaseId = null)
             : base(settings)
         {
             _containerName = containerName;
             _blobName = blobName;
             _range = range;
+
+            if (null != leaseId) {
+              Guard.ArgumentIsAGuid("leaseId", leaseId);
+            }
+
+            _leaseId = leaseId;
         }
 
         protected override string HttpMethod { get { return "GET"; } }
@@ -39,6 +47,9 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
         {
             if (_range != null)
                 request.Headers.Add(ProtocolConstants.Headers.BlobRange, _range.GetStringValue());
+
+            if (!string.IsNullOrEmpty(_leaseId))
+                request.Headers.Add(ProtocolConstants.Headers.LeaseId, _leaseId);
         }
     }
 }

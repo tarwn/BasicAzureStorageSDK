@@ -4,38 +4,44 @@ using Basic.Azure.Storage.Communications.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
+    /// <summary>
+    ///     Put the blob (block or page)
+    ///     https://msdn.microsoft.com/en-us/library/azure/dd179451.aspx
+    /// </summary>
     public class PutBlobRequest : RequestBase<PutBlobResponse>,
                                   ISendAdditionalRequiredHeaders,
                                   ISendAdditionalOptionalHeaders,
                                   ISendDataWithRequest
     {
-        private string _containerName;
-        private string _blobName;
-        private BlobType _blobType;
-        private byte[] _data;
-        private int _pageContentLength;
-        private string _contentType;
-        private string _contentEncoding;
-        private string _contentLanguage;
-        private string _contentMD5;
-        private string _cacheControl;
-        private Dictionary<string, string> _metadata;
-        private long _sequenceNumber = 0;
+        private readonly string _containerName;
+        private readonly string _blobName;
+        private readonly BlobType _blobType;
+        private readonly byte[] _data;
+        private readonly int _pageContentLength;
+        private readonly string _contentType;
+        private readonly string _contentEncoding;
+        private readonly string _contentLanguage;
+        private readonly string _contentMD5;
+        private readonly string _cacheControl;
+        private readonly Dictionary<string, string> _metadata;
+        private readonly long _sequenceNumber = 0;
+        private readonly string _leaseId;
 
         /// <summary>
         /// BlockBlob Type
         /// </summary>
         public PutBlobRequest(StorageAccountSettings settings, string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string,string> metadata = null)
-            : this(settings, containerName, blobName, BlobType.Block, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata)
+            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
+            : this(settings, containerName, blobName, BlobType.Block, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId)
         {
             Guard.ArgumentArrayLengthIsEqualOrSmallerThanSize("data", data, BlobServiceConstants.MaxSingleBlobUploadSize);
+
+            if (null != leaseId)
+                Guard.ArgumentIsAGuid("leaseId", leaseId);
 
             _data = data;
         }
@@ -45,8 +51,8 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
         /// </summary>
         public PutBlobRequest(StorageAccountSettings settings, string containerName, string blobName, int pageContentLength,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0)
-            : this(settings, containerName, blobName, BlobType.Page, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata)
+            string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0, string leaseId = null)
+            : this(settings, containerName, blobName, BlobType.Page, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId)
         {
             _pageContentLength = pageContentLength;
             _sequenceNumber = sequenceNumber;
@@ -54,7 +60,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 
         private PutBlobRequest(StorageAccountSettings settings, string containerName, string blobName, BlobType blobType,
                     string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-                    string cacheControl = null, Dictionary<string, string> metadata = null)
+                    string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
             : base(settings)
         {
             _containerName = containerName;
@@ -66,6 +72,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             _contentMD5 = contentMD5;
             _cacheControl = cacheControl;
             _metadata = metadata;
+            _leaseId = leaseId;
 
             if (_metadata != null)
                 IdentifierValidation.EnsureNamesAreValidIdentifiers(_metadata.Select(kvp => kvp.Key));
@@ -113,6 +120,9 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 
             if (!string.IsNullOrEmpty(_cacheControl))
                 request.Headers.Add(ProtocolConstants.Headers.CacheControl, _cacheControl);
+
+            if (!string.IsNullOrEmpty(_leaseId))
+                request.Headers.Add(ProtocolConstants.Headers.LeaseId, _leaseId);
 
             if (_metadata != null && _metadata.Count > 0)
             {

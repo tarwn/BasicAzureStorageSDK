@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Basic.Azure.Storage.Communications.ServiceExceptions;
 using Basic.Azure.Storage.Communications.Utility;
 using Microsoft.WindowsAzure.Storage.Blob;
 using BlobType = Microsoft.WindowsAzure.Storage.Blob.BlobType;
@@ -21,6 +22,9 @@ namespace Basic.Azure.Storage.Tests.Integration
         protected readonly CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
 
         protected readonly Dictionary<string, string> _containersToCleanUp = new Dictionary<string, string>();
+
+        protected const string RandomGuid = "E95DA248-A756-4005-A5E9-6C93591E87FF";
+        protected const string InvalidLeaseId = "InvalidLeaseId";
 
         protected string GenerateSampleContainerName()
         {
@@ -277,6 +281,21 @@ namespace Basic.Azure.Storage.Tests.Integration
                 container.SetMetadata();
             }
 
+        }
+
+        protected string LeaseBlob(string containerName, string blobName, TimeSpan? leaseTime = null, string leaseId = null)
+        {
+          var client = _storageAccount.CreateCloudBlobClient();
+          var container = client.GetContainerReference(containerName);
+          if (!container.Exists())
+              Assert.Fail("LeaseBlob: The container '{0}' does not exist", containerName);
+
+          var blob = container.GetBlockBlobReference(blobName);
+
+          if (!blob.Exists())
+              Assert.Fail("LeaseBlob: The blob '{0}' does not exist", blobName);
+
+          return blob.AcquireLease(leaseTime, leaseId);
         }
 
         protected string LeaseContainer(string containerName, TimeSpan? leaseTime, string leaseId)

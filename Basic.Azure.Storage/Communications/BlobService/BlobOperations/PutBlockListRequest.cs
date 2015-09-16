@@ -7,6 +7,10 @@ using System.Linq;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
+    /// <summary>
+    ///     Put the block list
+    ///     https://msdn.microsoft.com/en-us/library/azure/dd179467.aspx
+    /// </summary>
     public class PutBlockListRequest : RequestBase<PutBlockListResponse>,
                                   ISendAdditionalOptionalHeaders,
                                   ISendDataWithRequest
@@ -21,6 +25,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
         private readonly string _contentLanguage;
         private readonly string _blobContentMD5;
         private readonly Dictionary<string, string> _metadata;
+        private readonly string _leaseId;
 
 
         /// <summary>
@@ -29,9 +34,12 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
         public PutBlockListRequest(StorageAccountSettings settings, string containerName, string blobName, BlockListBlockIdList data,
             string cacheControl = null, string contentType = null,
             string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
-            Dictionary<string, string> metadata = null)
+            Dictionary<string, string> metadata = null, string leaseId = null)
             : base(settings)
         {
+            if (null != leaseId)
+                Guard.ArgumentIsAGuid("leaseId", leaseId);
+
             var dataAndHash = data.AsXmlByteArrayWithMd5Hash();
             _data = dataAndHash.XmlBytes;
             _requestContentMD5 = dataAndHash.MD5Hash;
@@ -44,6 +52,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             _blobContentMD5 = blobContentMD5;
             _cacheControl = cacheControl;
             _metadata = metadata;
+            _leaseId = leaseId;
 
             if (_metadata != null)
                 IdentifierValidation.EnsureNamesAreValidIdentifiers(_metadata.Select(kvp => kvp.Key));
@@ -83,6 +92,9 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 
             if (!string.IsNullOrEmpty(_cacheControl))
                 request.Headers.Add(ProtocolConstants.Headers.BlobCacheControl, _cacheControl);
+
+            if(!string.IsNullOrEmpty(_leaseId))
+                request.Headers.Add(ProtocolConstants.Headers.LeaseId, _leaseId);
 
             if (_metadata != null && _metadata.Count > 0)
             {

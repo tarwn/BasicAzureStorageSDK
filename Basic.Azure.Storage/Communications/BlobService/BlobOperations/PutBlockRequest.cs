@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using Basic.Azure.Storage.Communications.Core;
+﻿using Basic.Azure.Storage.Communications.Core;
 using Basic.Azure.Storage.Communications.Core.Interfaces;
-using Basic.Azure.Storage.Communications.ServiceExceptions;
 using Basic.Azure.Storage.Communications.Utility;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
+    /// <summary>
+    ///     Put the block
+    ///     https://msdn.microsoft.com/en-us/library/azure/dd135726.aspx
+    /// </summary>
     public class PutBlockRequest : RequestBase<PutBlockResponse>,
                                   ISendAdditionalOptionalHeaders,
                                   ISendDataWithRequest
@@ -17,8 +17,9 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
         private readonly string _blockId;
         private readonly byte[] _data;
         private readonly string _contentMD5;
+        private readonly string _leaseId;
 
-        public PutBlockRequest(StorageAccountSettings settings, string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null)
+        public PutBlockRequest(StorageAccountSettings settings, string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null)
             : base(settings)
         {
             Guard.ArgumentIsBase64Encoded("blockId", blockId);
@@ -26,11 +27,15 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 
             Guard.ArgumentArrayLengthIsEqualOrSmallerThanSize("data", data, BlobServiceConstants.MaxSingleBlockUploadSize);
 
+            if (null != leaseId)
+                Guard.ArgumentIsAGuid("leaseId", leaseId);
+
             _containerName = containerName;
             _blobName = blobName;
             _blockId = blockId;
             _data = data;
             _contentMD5 = contentMD5;
+            _leaseId = leaseId;
         }
 
         protected override string HttpMethod { get { return "PUT"; } }
@@ -53,6 +58,9 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
         {
             if (!string.IsNullOrEmpty(_contentMD5))
                 request.Headers.Add(ProtocolConstants.Headers.ContentMD5, _contentMD5);
+
+            if (!string.IsNullOrEmpty(_leaseId))
+                request.Headers.Add(ProtocolConstants.Headers.LeaseId, _leaseId);
         }
 
         public byte[] GetContentToSend()
