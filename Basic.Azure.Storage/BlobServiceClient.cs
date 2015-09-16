@@ -296,6 +296,19 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
+        public LeaseBlobRenewResponse LeaseBlobRenew(string containerName, string blobName, string leaseId)
+        {
+            var request = new LeaseBlobRenewRequest(_account, containerName, blobName, leaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<LeaseBlobRenewResponse> LeaseBlobRenewAsync(string containerName, string blobName, string leaseId)
+        {
+            var request = new LeaseBlobRenewRequest(_account, containerName, blobName, leaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         #endregion
 
     }

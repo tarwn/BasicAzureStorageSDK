@@ -86,6 +86,9 @@ namespace Basic.Azure.Storage.ClientContracts
         LeaseBlobAcquireResponse LeaseBlobAcquire(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null);
         Task<LeaseBlobAcquireResponse> LeaseBlobAcquireAsync(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null);
 
+        LeaseBlobRenewResponse LeaseBlobRenew(string containerName, string blobName, string leaseId);
+        Task<LeaseBlobRenewResponse> LeaseBlobRenewAsync(string containerName, string blobName, string leaseId);
+
         void DeleteBlob(string containerName, string blobName, string leaseId = null);
         Task DeleteBlobAsync(string containerName, string blobName, string leaseId = null);
 

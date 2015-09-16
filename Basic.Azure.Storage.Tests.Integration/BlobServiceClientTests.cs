@@ -2974,6 +2974,59 @@ namespace Basic.Azure.Storage.Tests.Integration
             // expects exception
         }
 
+        [Test]
+        public void LeaseBlobRenew_LeasedBlob_RenewsActiveLease()
+        {
+            var minimumWaitTime = TimeSpan.FromSeconds(15);
+            var halfOfMinimum = minimumWaitTime.Subtract(TimeSpan.FromSeconds(minimumWaitTime.TotalSeconds*0.5));
+            var threeQuartersOfMinimum = minimumWaitTime.Subtract(TimeSpan.FromSeconds(minimumWaitTime.TotalSeconds*0.75));
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var leaseId = LeaseBlob(containerName, blobName, TimeSpan.FromSeconds(15));
+            Thread.Sleep(halfOfMinimum);
+
+            client.LeaseBlobRenew(containerName, blobName, leaseId);
+
+            Thread.Sleep(threeQuartersOfMinimum); // wait again... if it didn't renew, by now it would be expired
+            AssertBlobIsLeased(containerName, blobName, leaseId);
+        }
+
+        [Test]
+        public void LeaseBlobRenew_RecentlyLeasedBlob_RenewsLease()
+        {
+            var minimumWaitTime = TimeSpan.FromSeconds(15);
+            var moreThanMinimumWaitTime = minimumWaitTime.Add(TimeSpan.FromSeconds(1));
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var leaseId = LeaseBlob(containerName, blobName, TimeSpan.FromSeconds(15));
+            Thread.Sleep(moreThanMinimumWaitTime);
+
+            client.LeaseBlobRenew(containerName, blobName, leaseId);
+            
+            AssertBlobIsLeased(containerName, blobName, leaseId);
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithLeaseOperationAzureException))]
+        public void LeaseBlobRenew_NonLeasedBlob_ThrowsLeaseIdMismatchException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+
+            client.LeaseBlobRenew(containerName, blobName, FakeLeaseId);
+
+            // expects exception
+        }
+
         #endregion
 
         //[Test]
