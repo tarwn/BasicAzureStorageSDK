@@ -120,6 +120,10 @@ optional and some are only optional depending on which flavor you are uploading,
 two methods so that only the truly optional parameters would be optional and the ones that are type dependeant
 are not available for the opposite call.
 
+**LeaseBlob** Has 5 actions with different allowed and required inputs and different expected responses.
+I have split this into 5 calls because I would prefer to make it clear and simple which arguments are
+necessary for each call, even if it does somewhat break the model of 1 API call = 1 Request object.
+
 **LeaseContainer** Has 5 actions with different allowed and required inputs and different expected responses.
 I have split this into 5 calls because I would prefer to make it clear and simple which arguments are
 necessary for each call, even if it does somewhat break the model of 1 API call = 1 Request object.
