@@ -3182,6 +3182,21 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public async void LeaseBlobAcquireAsync_AcquireLeaseForValidBlob_AcquiresLease()
+        {
+            const int leaseDuration = 30;
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+
+            var response = await client.LeaseBlobAcquireAsync(containerName, blobName, leaseDuration);
+
+            AssertBlobIsLeased(containerName, blobName, response.LeaseId);
+        }
+
+        [Test]
         public void LeaseBlobAcquire_AcquireInfiniteLeaseForValidBlob_AcquiresLease()
         {
             const int infiniteLease = -1;
@@ -3192,6 +3207,21 @@ namespace Basic.Azure.Storage.Tests.Integration
             CreateBlockBlob(containerName, blobName);
 
             var response = client.LeaseBlobAcquire(containerName, blobName, infiniteLease);
+
+            AssertBlobIsLeased(containerName, blobName, response.LeaseId);
+        }
+
+        [Test]
+        public async void LeaseBlobAcquireAsync_AcquireInfiniteLeaseForValidBlob_AcquiresLease()
+        {
+            const int infiniteLease = -1;
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+
+            var response = await client.LeaseBlobAcquireAsync(containerName, blobName, infiniteLease);
 
             AssertBlobIsLeased(containerName, blobName, response.LeaseId);
         }
@@ -3213,6 +3243,22 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public async void LeaseBlobAcquireAsync_AcquireSpecificLeaseIdForValidBlob_AcquiresLease()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var expectedLeaseId = Guid.NewGuid().ToString();
+
+            var response = await client.LeaseBlobAcquireAsync(containerName, blobName, 30, expectedLeaseId);
+
+            Assert.AreEqual(expectedLeaseId, response.LeaseId);
+            AssertBlobIsLeased(containerName, blobName, response.LeaseId);
+        }
+
+        [Test]
         [ExpectedException(typeof(BlobNotFoundAzureException))]
         public void LeaseBlobAcquire_InvalidBlob_ThrowsBlobNotFoundException()
         {
@@ -3222,6 +3268,20 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blobName = GenerateSampleBlobName();
 
             client.LeaseBlobAcquire(containerName, blobName);
+
+            // expects exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(BlobNotFoundAzureException))]
+        public async void LeaseBlobAcquireAsync_InvalidBlob_ThrowsBlobNotFoundException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            var blobName = GenerateSampleBlobName();
+
+            await client.LeaseBlobAcquireAsync(containerName, blobName);
 
             // expects exception
         }
@@ -3238,6 +3298,22 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
 
             client.LeaseBlobAcquire(containerName, blobName);
+
+            // expects exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseAlreadyPresentAzureException))]
+        public async void LeaseBlobAcquireAsync_AlreadyLeasedBlob_ThrowsAlreadyPresentException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName);
+
+            await client.LeaseBlobAcquireAsync(containerName, blobName);
 
             // expects exception
         }
@@ -3263,6 +3339,26 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public async void LeaseBlobRenewAsync_LeasedBlob_RenewsActiveLease()
+        {
+            var minimumWaitTime = TimeSpan.FromSeconds(15);
+            var halfOfMinimum = minimumWaitTime.Subtract(TimeSpan.FromSeconds(minimumWaitTime.TotalSeconds * 0.5));
+            var threeQuartersOfMinimum = minimumWaitTime.Subtract(TimeSpan.FromSeconds(minimumWaitTime.TotalSeconds * 0.75));
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var leaseId = LeaseBlob(containerName, blobName, TimeSpan.FromSeconds(15));
+            Thread.Sleep(halfOfMinimum);
+
+            await client.LeaseBlobRenewAsync(containerName, blobName, leaseId);
+
+            Thread.Sleep(threeQuartersOfMinimum); // wait again... if it didn't renew, by now it would be expired
+            AssertBlobIsLeased(containerName, blobName, leaseId);
+        }
+
+        [Test]
         public void LeaseBlobRenew_RecentlyLeasedBlob_RenewsLease()
         {
             var minimumWaitTime = TimeSpan.FromSeconds(15);
@@ -3281,6 +3377,24 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public async void LeaseBlobRenewAsync_RecentlyLeasedBlob_RenewsLease()
+        {
+            var minimumWaitTime = TimeSpan.FromSeconds(15);
+            var moreThanMinimumWaitTime = minimumWaitTime.Add(TimeSpan.FromSeconds(1));
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var leaseId = LeaseBlob(containerName, blobName, TimeSpan.FromSeconds(15));
+            Thread.Sleep(moreThanMinimumWaitTime);
+
+            await client.LeaseBlobRenewAsync(containerName, blobName, leaseId);
+
+            AssertBlobIsLeased(containerName, blobName, leaseId);
+        }
+
+        [Test]
         [ExpectedException(typeof(LeaseIdMismatchWithLeaseOperationAzureException))]
         public void LeaseBlobRenew_NonLeasedBlob_ThrowsLeaseIdMismatchException()
         {
@@ -3291,6 +3405,21 @@ namespace Basic.Azure.Storage.Tests.Integration
             CreateBlockBlob(containerName, blobName);
 
             client.LeaseBlobRenew(containerName, blobName, FakeLeaseId);
+
+            // expects exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithLeaseOperationAzureException))]
+        public async void LeaseBlobRenewAsync_NonLeasedBlob_ThrowsLeaseIdMismatchException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+
+            await client.LeaseBlobRenewAsync(containerName, blobName, FakeLeaseId);
 
             // expects exception
         }
@@ -3407,6 +3536,21 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public async void LeaseBlobReleaseAsync_LeasedBlob_ReleasesLease()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var leaseId = LeaseBlob(containerName, blobName);
+
+            await client.LeaseBlobReleaseAsync(containerName, blobName, leaseId);
+
+            AssertBlobIsNotLeased(containerName, blobName);
+        }
+
+        [Test]
         [ExpectedException(typeof(LeaseIdMismatchWithLeaseOperationAzureException))]
         public void LeaseBlobRelease_NonLeasedBlob_ThrowsLeaseIdMismatchException()
         {
@@ -3417,6 +3561,21 @@ namespace Basic.Azure.Storage.Tests.Integration
             CreateBlockBlob(containerName, blobName);
 
             client.LeaseBlobRelease(containerName, blobName, FakeLeaseId);
+
+            // expects exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithLeaseOperationAzureException))]
+        public async void LeaseBlobReleaseAsync_NonLeasedBlob_ThrowsLeaseIdMismatchException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+
+            await client.LeaseBlobReleaseAsync(containerName, blobName, FakeLeaseId);
 
             // expects exception
         }

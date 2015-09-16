@@ -53,6 +53,10 @@
     <Compile Include="Communications\BlobService\BlobOperations\LeaseBlobAcquireResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\LeaseBlobRenewRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\LeaseBlobRenewResponse.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\LeaseBlobChangeRequest.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\LeaseBlobChangeResponse.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\LeaseBlobReleaseRequest.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\LeaseBlobBreakRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlockListResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlockListRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlockResponse.cs" />
