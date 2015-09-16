@@ -3295,6 +3295,102 @@ namespace Basic.Azure.Storage.Tests.Integration
             // expects exception
         }
 
+        [Test]
+        public void LeaseBlobChange_LeasedBlobToNewLeaseId_ChangesToMatchNewLeaseId()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var leaseId = LeaseBlob(containerName, blobName);
+            var expectedLeaseId = Guid.NewGuid().ToString();
+
+            var response = client.LeaseBlobChange(containerName, blobName, leaseId, expectedLeaseId);
+
+            Assert.AreEqual(expectedLeaseId, response.LeaseId);
+            AssertBlobIsLeased(containerName, blobName, expectedLeaseId);
+        }
+
+        [Test]
+        public async void LeaseBlobChangeAsync_LeasedBlobToNewLeaseId_ChangesToMatchNewLeaseId()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var leaseId = LeaseBlob(containerName, blobName);
+            var expectedLeaseId = Guid.NewGuid().ToString();
+
+            var response = await client.LeaseBlobChangeAsync(containerName, blobName, leaseId, expectedLeaseId);
+
+            Assert.AreEqual(expectedLeaseId, response.LeaseId);
+            AssertBlobIsLeased(containerName, blobName, expectedLeaseId);
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseNotPresentWithLeaseOperationAzureException))]
+        public void LeaseBlobChange_NonLeasedBlob_ThrowsLeaseNotPresentException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var expectedLeaseId = Guid.NewGuid().ToString();
+
+            client.LeaseBlobChange(containerName, blobName, FakeLeaseId, expectedLeaseId);
+
+            // expects exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseNotPresentWithLeaseOperationAzureException))]
+        public async void LeaseBlobChangeAsync_NonLeasedBlob_ThrowsLeaseNotPresentException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var expectedLeaseId = Guid.NewGuid().ToString();
+
+            await client.LeaseBlobChangeAsync(containerName, blobName, FakeLeaseId, expectedLeaseId);
+
+            // expects exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(BlobNotFoundAzureException))]
+        public void LeaseBlobChange_NonexistentBlob_ThrowsBlobNotFoundException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var expectedLeaseId = Guid.NewGuid().ToString();
+
+            client.LeaseBlobChange(containerName, blobName, FakeLeaseId, expectedLeaseId);
+
+            // expects exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(BlobNotFoundAzureException))]
+        public async void LeaseBlobChangeAsync_NonexistentBlob_ThrowsBlobNotFoundException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var expectedLeaseId = Guid.NewGuid().ToString();
+
+            await client.LeaseBlobChangeAsync(containerName, blobName, FakeLeaseId, expectedLeaseId);
+
+            // expects exception
+        }
+        
         #endregion
 
         //[Test]

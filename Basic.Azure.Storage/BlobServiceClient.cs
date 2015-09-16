@@ -309,6 +309,20 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
+        public LeaseBlobChangeResponse LeaseBlobChange(string containerName, string blobName, string currentLeaseId, string proposedLeaseId)
+        {
+            var request = new LeaseBlobChangeRequest(_account, containerName, blobName, currentLeaseId, proposedLeaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+
+        public async Task<LeaseBlobChangeResponse> LeaseBlobChangeAsync(string containerName, string blobName, string currentLeaseId, string proposedLeaseId)
+        {
+            var request = new LeaseBlobChangeRequest(_account, containerName, blobName, currentLeaseId, proposedLeaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         #endregion
 
     }
