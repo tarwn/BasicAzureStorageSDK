@@ -14,7 +14,7 @@ Status:
 
 - Queue Service - 15/15
 - Table Service - 1/14
-- Blob Service - 11/28
+- Blob Service - 15/30
 - File Service - 0/19
 
 (Does not include service preflight and stats operations)
@@ -271,7 +271,7 @@ Entity Operations
 - Insert or Replace Entity - No
 - Insert or Merge Entity - No
 
-Blob Service - 11/30 - BlobServiceClient: IBlobServiceClient
+Blob Service - 15/30 - BlobServiceClient: IBlobServiceClient
 -----------------------------------------------------------
 
 Account Operations
@@ -302,7 +302,7 @@ Blob Operations
 - Set Blob Properties - No
 - Get Blob Metadata - No
 - Set Blob Metadata - No
-- Lease Blob - No
+- Lease Blob - Yes
 - Snapshot Blob - No
 - Copy Blob - No
 - Abort Copy Blob - No
@@ -310,8 +310,8 @@ Blob Operations
 
 Block Blob Operations
 
-- Put Block - No
-- Put Block List - No
+- Put Block - Yes
+- Put Block List - Yes
 - Get Block List - No
 
 Page Blob Operations
