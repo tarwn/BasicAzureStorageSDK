@@ -1429,6 +1429,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #region Blob Operation Tests
 
+        #region PutBlockList
+
         [Test]
         public void PutBlockList_RequiredArgsOnly_CreatesBlockBlobFromLatestBlocks()
         {
@@ -1799,6 +1801,10 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.AreEqual(expectedContentLanguage, blob.Properties.ContentLanguage);
         }
 
+        #endregion
+
+        #region PutBlockBlob
+
         [Test]
         public void PutBlockBlob_RequiredArgsOnly_UploadsBlobSuccessfully()
         {
@@ -2047,6 +2053,10 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
+
+        #endregion
+
+        #region PutBlock
 
         [Test]
         public void PutBlock_RequiredArgsOnly_UploadsBlockSuccessfully()
@@ -2354,6 +2364,10 @@ namespace Basic.Azure.Storage.Tests.Integration
             // throws exception
         }
 
+        #endregion
+
+        #region PutPageBlob
+
         [Test]
         public void PutPageBlob_WithRequiredArgs_CreatesNewPageBlob()
         {
@@ -2486,6 +2500,10 @@ namespace Basic.Azure.Storage.Tests.Integration
             Assert.AreEqual(expectedSize, blob.Properties.Length);
         }
 
+        #endregion
+
+        #region DeleteBlob
+
         [Test]
         public void DeleteBlob_ExistingBlob_DeletesBlob()
         {
@@ -2607,6 +2625,10 @@ namespace Basic.Azure.Storage.Tests.Integration
             // delete blog that doesn't exist => should throw an exception
             await client.DeleteBlobAsync(containerName, blobName);
         }
+
+        #endregion
+
+        #region GetBlob
 
         [Test]
         public void GetBlob_ExistingBlob_DownloadsBlobBytes()
@@ -2731,7 +2753,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // Throws exception
         }
-        
+
         [Test]
         public void GetBlob_ExistingBlob_DownloadsBlobStream()
         {
@@ -2871,6 +2893,88 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             Assert.AreEqual(expectedContent.Substring(2, 5), UTF8Encoding.UTF8.GetString(data));
         }
+
+        #endregion
+
+        #region LeaseBlob
+
+        [Test]
+        public void LeaseBlobAcquire_AcquireLeaseForValidBlob_AcquiresLease()
+        {
+            const int leaseDuration = 30;
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+
+            var response = client.LeaseBlobAcquire(containerName, blobName, leaseDuration);
+
+            AssertBlobIsLeased(containerName, blobName, response.LeaseId);
+        }
+
+        [Test]
+        public void LeaseBlobAcquire_AcquireInfiniteLeaseForValidBlob_AcquiresLease()
+        {
+            const int infiniteLease = -1;
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+
+            var response = client.LeaseBlobAcquire(containerName, blobName, infiniteLease);
+
+            AssertBlobIsLeased(containerName, blobName, response.LeaseId);
+        }
+
+        [Test]
+        public void LeaseBlobAcquire_AcquireSpecificLeaseIdForValidBlob_AcquiresLease()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var expectedLeaseId = Guid.NewGuid().ToString();
+
+            var response = client.LeaseBlobAcquire(containerName, blobName, 30, expectedLeaseId);
+
+            Assert.AreEqual(expectedLeaseId, response.LeaseId);
+            AssertBlobIsLeased(containerName, blobName, response.LeaseId);
+        }
+
+        [Test]
+        [ExpectedException(typeof(BlobNotFoundAzureException))]
+        public void LeaseBlobAcquire_InvalidBlob_ThrowsBlobNotFoundException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            CreateContainer(containerName);
+            var blobName = GenerateSampleBlobName();
+
+            client.LeaseBlobAcquire(containerName, blobName);
+
+            // expects exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseAlreadyPresentAzureException))]
+        public void LeaseBlobAcquire_AlreadyLeasedBlob_ThrowsAlreadyPresentException()
+        {
+            IBlobServiceClient client = new BlobServiceClient(_accountSettings);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName);
+
+            client.LeaseBlobAcquire(containerName, blobName);
+
+            // expects exception
+        }
+
+        #endregion
 
         //[Test]
         //public void GetBlobProperties_ValidBlob_ReturnsProperties()

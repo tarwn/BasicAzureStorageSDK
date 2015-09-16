@@ -282,6 +282,20 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
+        public LeaseBlobAcquireResponse LeaseBlobAcquire(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
+        {
+            var request = new LeaseBlobAcquireRequest(_account, containerName, blobName, leaseDurationInSeconds, proposedLeaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+
+        public async Task<LeaseBlobAcquireResponse> LeaseBlobAcquireAsync(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
+        {
+            var request = new LeaseBlobAcquireRequest(_account, containerName, blobName, leaseDurationInSeconds, proposedLeaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         #endregion
 
     }
