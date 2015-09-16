@@ -6,8 +6,8 @@ using Basic.Azure.Storage.Communications.Utility;
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
     /// <summary>
-    /// Get the blob
-    /// https://msdn.microsoft.com/en-us/library/azure/dd179440.aspx
+    ///     Delete the blob
+    ///     https://msdn.microsoft.com/en-us/library/azure/dd179413.aspx
     /// </summary>
     public class DeleteBlobRequest : RequestBase<DeleteBlobResponse>, ISendAdditionalOptionalHeaders
     {

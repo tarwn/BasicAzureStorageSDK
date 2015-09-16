@@ -7,6 +7,10 @@ using System.Linq;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
+    /// <summary>
+    ///     Put the blob (block or page)
+    ///     https://msdn.microsoft.com/en-us/library/azure/dd179451.aspx
+    /// </summary>
     public class PutBlobRequest : RequestBase<PutBlobResponse>,
                                   ISendAdditionalRequiredHeaders,
                                   ISendAdditionalOptionalHeaders,

@@ -7,6 +7,10 @@ using System.Linq;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
+    /// <summary>
+    ///     Put the block list
+    ///     https://msdn.microsoft.com/en-us/library/azure/dd179467.aspx
+    /// </summary>
     public class PutBlockListRequest : RequestBase<PutBlockListResponse>,
                                   ISendAdditionalOptionalHeaders,
                                   ISendDataWithRequest

@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using Basic.Azure.Storage.Communications.Core;
+﻿using Basic.Azure.Storage.Communications.Core;
 using Basic.Azure.Storage.Communications.Core.Interfaces;
-using Basic.Azure.Storage.Communications.ServiceExceptions;
 using Basic.Azure.Storage.Communications.Utility;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
+    /// <summary>
+    ///     Put the block
+    ///     https://msdn.microsoft.com/en-us/library/azure/dd135726.aspx
+    /// </summary>
     public class PutBlockRequest : RequestBase<PutBlockResponse>,
                                   ISendAdditionalOptionalHeaders,
                                   ISendDataWithRequest
