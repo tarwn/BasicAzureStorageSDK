@@ -41,7 +41,8 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
 
         public void ApplyAdditionalOptionalHeaders(System.Net.WebRequest request)
         {
-            request.Headers.Add(ProtocolConstants.Headers.LeaseId, _lease);
+            if(!String.IsNullOrEmpty(_lease))
+                request.Headers.Add(ProtocolConstants.Headers.LeaseId, _lease);
 
             if (_metadata != null && _metadata.Count > 0)
             {
