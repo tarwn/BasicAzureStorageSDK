@@ -7,6 +7,7 @@ using Microsoft.WindowsAzure.Storage.Queue.Protocol;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -17,8 +18,8 @@ namespace Basic.Azure.Storage.Tests.Integration
     [TestFixture]
     public class QueueServiceClientTests
     {
-        private StorageAccountSettings _accountSettings = new LocalEmulatorAccountSettings();
-        private CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
+        private StorageAccountSettings _accountSettings = StorageAccountSettings.Parse(ConfigurationManager.AppSettings["AzureConnectionString"]);
+        private CloudStorageAccount _storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["AzureConnectionString"]);
 
         private List<string> _queuesToCleanUp = new List<string>();
 

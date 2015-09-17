@@ -11,15 +11,15 @@ using Basic.Azure.Storage.Communications.ServiceExceptions;
 using Basic.Azure.Storage.Communications.Utility;
 using Microsoft.WindowsAzure.Storage.Blob;
 using BlobType = Microsoft.WindowsAzure.Storage.Blob.BlobType;
+using System.Configuration;
 
 namespace Basic.Azure.Storage.Tests.Integration
 {
     [TestFixture]
     public class BaseBlobServiceClientTestFixture
     {
-
-        protected readonly StorageAccountSettings _accountSettings = new LocalEmulatorAccountSettings();
-        protected readonly CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
+        protected StorageAccountSettings _accountSettings = StorageAccountSettings.Parse(ConfigurationManager.AppSettings["AzureConnectionString"]);
+        protected CloudStorageAccount _storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["AzureConnectionString"]);
 
         protected readonly Dictionary<string, string> _containersToCleanUp = new Dictionary<string, string>();
 
