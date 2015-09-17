@@ -83,6 +83,21 @@ namespace Basic.Azure.Storage.ClientContracts
         GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null, string leaseId = null);
         Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, BlobRange range = null, string leaseId = null);
 
+        LeaseBlobAcquireResponse LeaseBlobAcquire(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null);
+        Task<LeaseBlobAcquireResponse> LeaseBlobAcquireAsync(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null);
+
+        LeaseBlobRenewResponse LeaseBlobRenew(string containerName, string blobName, string leaseId);
+        Task<LeaseBlobRenewResponse> LeaseBlobRenewAsync(string containerName, string blobName, string leaseId);
+
+        LeaseBlobChangeResponse LeaseBlobChange(string containerName, string blobName, string currentLeaseId, string proposedLeaseId);
+        Task<LeaseBlobChangeResponse> LeaseBlobChangeAsync(string containerName, string blobName, string currentLeaseId, string proposedLeaseId);
+
+        void LeaseBlobRelease(string containerName, string blobName, string leaseId);
+        Task LeaseBlobReleaseAsync(string containerName, string blobName, string leaseId);
+
+        void LeaseBlobBreak(string containerName, string blobName, string leaseId, int leaseBreakPeriod);
+        Task LeaseBlobBreakAsync(string containerName, string blobName, string leaseId, int leaseBreakPeriod);
+
         void DeleteBlob(string containerName, string blobName, string leaseId = null);
         Task DeleteBlobAsync(string containerName, string blobName, string leaseId = null);
 

@@ -282,6 +282,67 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
+        public LeaseBlobAcquireResponse LeaseBlobAcquire(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
+        {
+            var request = new LeaseBlobAcquireRequest(_account, containerName, blobName, leaseDurationInSeconds, proposedLeaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<LeaseBlobAcquireResponse> LeaseBlobAcquireAsync(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
+        {
+            var request = new LeaseBlobAcquireRequest(_account, containerName, blobName, leaseDurationInSeconds, proposedLeaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
+        public LeaseBlobRenewResponse LeaseBlobRenew(string containerName, string blobName, string leaseId)
+        {
+            var request = new LeaseBlobRenewRequest(_account, containerName, blobName, leaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<LeaseBlobRenewResponse> LeaseBlobRenewAsync(string containerName, string blobName, string leaseId)
+        {
+            var request = new LeaseBlobRenewRequest(_account, containerName, blobName, leaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
+        public LeaseBlobChangeResponse LeaseBlobChange(string containerName, string blobName, string currentLeaseId, string proposedLeaseId)
+        {
+            var request = new LeaseBlobChangeRequest(_account, containerName, blobName, currentLeaseId, proposedLeaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<LeaseBlobChangeResponse> LeaseBlobChangeAsync(string containerName, string blobName, string currentLeaseId, string proposedLeaseId)
+        {
+            var request = new LeaseBlobChangeRequest(_account, containerName, blobName, currentLeaseId, proposedLeaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
+        public void LeaseBlobRelease(string containerName, string blobName, string leaseId)
+        {
+            var request = new LeaseBlobReleaseRequest(_account, containerName, blobName, leaseId);
+            request.Execute();
+        }
+        public async Task LeaseBlobReleaseAsync(string containerName, string blobName, string leaseId)
+        {
+            var request = new LeaseBlobReleaseRequest(_account, containerName, blobName, leaseId);
+            await request.ExecuteAsync();
+        }
+
+        public void LeaseBlobBreak(string containerName, string blobName, string leaseId, int leaseBreakPeriod)
+        {
+            var request = new LeaseBlobBreakRequest(_account, containerName, blobName, leaseId, leaseBreakPeriod);
+            request.Execute();
+        }
+        public async Task LeaseBlobBreakAsync(string containerName, string blobName, string leaseId, int leaseBreakPeriod)
+        {
+            var request = new LeaseBlobBreakRequest(_account, containerName, blobName, leaseId, leaseBreakPeriod);
+            await request.ExecuteAsync();
+        }
+
         #endregion
 
     }

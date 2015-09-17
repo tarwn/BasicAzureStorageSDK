@@ -14,7 +14,7 @@ Status:
 
 - Queue Service - 15/15
 - Table Service - 1/14
-- Blob Service - 11/28
+- Blob Service - 15/30
 - File Service - 0/19
 
 (Does not include service preflight and stats operations)
@@ -119,6 +119,10 @@ all possible inputs for all possible actions on one request.
 optional and some are only optional depending on which flavor you are uploading, so I chose to split it into
 two methods so that only the truly optional parameters would be optional and the ones that are type dependeant
 are not available for the opposite call.
+
+**LeaseBlob** Has 5 actions with different allowed and required inputs and different expected responses.
+I have split this into 5 calls because I would prefer to make it clear and simple which arguments are
+necessary for each call, even if it does somewhat break the model of 1 API call = 1 Request object.
 
 **LeaseContainer** Has 5 actions with different allowed and required inputs and different expected responses.
 I have split this into 5 calls because I would prefer to make it clear and simple which arguments are
@@ -271,7 +275,7 @@ Entity Operations
 - Insert or Replace Entity - No
 - Insert or Merge Entity - No
 
-Blob Service - 11/30 - BlobServiceClient: IBlobServiceClient
+Blob Service - 15/30 - BlobServiceClient: IBlobServiceClient
 -----------------------------------------------------------
 
 Account Operations
@@ -302,7 +306,7 @@ Blob Operations
 - Set Blob Properties - No
 - Get Blob Metadata - No
 - Set Blob Metadata - No
-- Lease Blob - No
+- Lease Blob - Yes
 - Snapshot Blob - No
 - Copy Blob - No
 - Abort Copy Blob - No
@@ -310,8 +314,8 @@ Blob Operations
 
 Block Blob Operations
 
-- Put Block - No
-- Put Block List - No
+- Put Block - Yes
+- Put Block List - Yes
 - Get Block List - No
 
 Page Blob Operations
