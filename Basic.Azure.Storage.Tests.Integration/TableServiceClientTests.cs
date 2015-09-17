@@ -5,6 +5,7 @@ using Microsoft.WindowsAzure.Storage;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -15,10 +16,8 @@ namespace Basic.Azure.Storage.Tests.Integration
     [TestFixture]
     public class TableServiceClientTests
     {
-        private StorageAccountSettings _accountSettings = new LocalEmulatorAccountSettings();
-        //for debugging: "ipv4.fiddler"
-        private CloudStorageAccount _storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
-        //for debugging: "UseDevelopmentStorage=true;DevelopmentStorageProxyUri=http://ipv4.fiddler"
+        private StorageAccountSettings _accountSettings = StorageAccountSettings.Parse(ConfigurationManager.AppSettings["AzureConnectionString"]);
+        private CloudStorageAccount _storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["AzureConnectionString"]);
 
         private List<string> _tablesToCleanup = new List<string>();
 
