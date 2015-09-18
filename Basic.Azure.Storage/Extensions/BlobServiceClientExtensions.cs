@@ -99,8 +99,8 @@ namespace Basic.Azure.Storage.Extensions
         {
             var convertedBlockListBlockIds = rangesAndBlockIds
                 .Select(blockInfo => new BlockListBlockId { Id = blockInfo.Id, ListType = BlockListListType.Uncommitted });
-            var actualBlockIdList = new BlockListBlockIdList(convertedBlockListBlockIds);
-            return actualBlockIdList;
+            
+            return new BlockListBlockIdList(convertedBlockListBlockIds);
         }
 
         private async Task<PutBlockResponse> GeneratePutBlockRequestAsync(string containerName, string blobName, byte[] fullData, ArrayRangeWithBlockIdString range)
