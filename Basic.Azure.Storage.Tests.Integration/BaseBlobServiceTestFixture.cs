@@ -3,7 +3,6 @@ using Basic.Azure.Storage.Communications.Common;
 using Microsoft.WindowsAzure.Storage;
 using NUnit.Framework;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,59 +17,48 @@ namespace Basic.Azure.Storage.Tests.Integration
     [TestFixture]
     public class BaseBlobServiceClientTestFixture
     {
-        private static readonly string AzureConnectionString = ConfigurationManager.AppSettings["AzureConnectionString"];
-        private string RunId { get; set; }
-
-        protected readonly StorageAccountSettings AccountSettings = StorageAccountSettings.Parse(AzureConnectionString);
-
-        private readonly ConcurrentDictionary<string, string> _containersToCleanUp = new ConcurrentDictionary<string, string>();
-
-        protected const string RandomGuid = "E95DA248-A756-4005-A5E9-6C93591E87FF";
         protected const string InvalidLeaseId = "InvalidLeaseId";
+        
+        private readonly string _azureConnectionString = ConfigurationManager.AppSettings["AzureConnectionString"];
+        private readonly string _runId = DateTime.Now.ToString("yyyy-MM-dd");
+        private readonly Dictionary<string, string> _containersToCleanUp = new Dictionary<string, string>();
 
-        protected static CloudStorageAccount StorageAccount
+        protected StorageAccountSettings AccountSettings
         {
-            get { return CloudStorageAccount.Parse(AzureConnectionString); }
+            get
+            {
+                return StorageAccountSettings.Parse(_azureConnectionString);
+            }
         }
 
+        private CloudStorageAccount StorageAccount
+        {
+            get
+            {
+                return CloudStorageAccount.Parse(_azureConnectionString);
+            }
+        }
+        
         protected string GenerateSampleContainerName()
         {
-            var name = string.Format("unit-test-{0}-{1}", RunId, Guid.NewGuid()).ToLower();
-            RegisterContainerForCleanup(name, null, true);
+            var name = string.Format("unit-test-{0}-{1}", _runId, Guid.NewGuid()).ToLower();
+            RegisterContainerForCleanup(name, null);
             return name;
         }
 
         protected string GenerateSampleBlobName()
         {
-            return string.Format("unit-test-{0}-{1}", RunId, Guid.NewGuid());
+            return string.Format("unit-test-{0}-{1}", _runId, Guid.NewGuid());
         }
 
-        protected void RegisterContainerForCleanup(string containerName, string leaseId, bool throwIfExists = false)
+        protected void RegisterContainerForCleanup(string containerName, string leaseId)
         {
-            if (!throwIfExists)
-            {
-                _containersToCleanUp.AddOrUpdate(containerName, leaseId, (s, s1) => leaseId);
-            }
-            else
-            {
-                if (_containersToCleanUp.TryAdd(containerName, leaseId))
-                    return;
-
-                string existingLeaseId;
-                _containersToCleanUp.TryGetValue(containerName, out existingLeaseId);
-                throw new Exception(string.Format("RegisterContainerForCleanup(containerName: {0}, leaseId: {1}): Could not add container for cleanup. Existing leaseId, if any, was {2}", containerName, leaseId, existingLeaseId));
-            }
+            _containersToCleanUp[containerName] = leaseId;
         }
 
         protected static string FakeLeaseId { get { return "a28cf439-8776-4653-9ce8-4e3df49b4a72"; } }
 
-        [TestFixtureSetUp]
-        public void TestFixtureSetup()
-        {
-            RunId = DateTime.Now.ToString("yyyy-MM-dd-HH-ss");
-        }
-
-        [TestFixtureTearDown]
+        [TearDown]
         public void TestFixtureTeardown()
         {
             //let's clean up!
@@ -82,9 +70,12 @@ namespace Basic.Azure.Storage.Tests.Integration
                 {
                     try
                     {
-                        container.ReleaseLease(new AccessCondition() { LeaseId = containerPair.Value });
+                        container.ReleaseLease(new AccessCondition() {LeaseId = containerPair.Value});
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignore
+                    }
                 }
                 container.DeleteIfExists();
             }
@@ -542,9 +533,14 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #endregion
 
-        protected DateTime GetTruncatedUtcNow()
+        protected static DateTime GetTruncatedUtcNow()
         {
             return new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, DateTime.UtcNow.Hour, DateTime.UtcNow.Minute, DateTime.UtcNow.Second, DateTimeKind.Utc);
+        }
+
+        protected static string GetGuidString()
+        {
+            return Guid.NewGuid().ToString();
         }
     }
 }
