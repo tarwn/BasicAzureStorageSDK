@@ -102,7 +102,7 @@ namespace Basic.Azure.Storage.Extensions
             var actualBlockIdList = new BlockListBlockIdList(convertedBlockListBlockIds);
             return actualBlockIdList;
         }
-        
+
         private async Task<PutBlockResponse> GeneratePutBlockRequestAsync(string containerName, string blobName, byte[] fullData, ArrayRangeWithBlockIdString range)
         {
             var md5Task = CalculateMD5Async(fullData, range.Offset, range.Length);
@@ -117,7 +117,7 @@ namespace Basic.Azure.Storage.Extensions
         {
             return Base64Converter.ConvertToBase64(Guid.NewGuid().ToString());
         }
-        
+
         private async static Task<string> CalculateMD5Async(byte[] fullData, int offset, int length)
         {
             return await Task.Run(() => Convert.ToBase64String(MD5.Create().ComputeHash(fullData, offset, length)));
