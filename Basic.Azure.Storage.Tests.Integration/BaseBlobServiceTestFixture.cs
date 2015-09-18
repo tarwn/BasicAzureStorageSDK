@@ -18,7 +18,7 @@ namespace Basic.Azure.Storage.Tests.Integration
     public class BaseBlobServiceClientTestFixture
     {
         protected const string InvalidLeaseId = "InvalidLeaseId";
-        
+
         private readonly string _azureConnectionString = ConfigurationManager.AppSettings["AzureConnectionString"];
         private readonly string _runId = DateTime.Now.ToString("yyyy-MM-dd");
         private readonly Dictionary<string, string> _containersToCleanUp = new Dictionary<string, string>();
@@ -38,7 +38,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 return CloudStorageAccount.Parse(_azureConnectionString);
             }
         }
-        
+
         protected string GenerateSampleContainerName()
         {
             var name = string.Format("unit-test-{0}-{1}", _runId, Guid.NewGuid()).ToLower();
@@ -70,7 +70,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 {
                     try
                     {
-                        container.ReleaseLease(new AccessCondition() {LeaseId = containerPair.Value});
+                        container.ReleaseLease(new AccessCondition() { LeaseId = containerPair.Value });
                     }
                     catch
                     {
@@ -324,7 +324,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void CreateContainer(string containerName, Dictionary<string, string> metadata = null)
         {
-            var client = new CloudBlobClient(StorageAccount.BlobStorageUri, StorageAccount.Credentials);
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
 
             container.Create();
