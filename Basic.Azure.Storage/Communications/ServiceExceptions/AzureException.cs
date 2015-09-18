@@ -23,5 +23,17 @@ namespace Basic.Azure.Storage.Communications.ServiceExceptions
             Details = details;
         }
 
+        /// <summary>
+        /// This constructor is used only to wrap around other Azure Exceptionsd when Microsoft returns the wrong error code and we need to correct it for them
+        /// </summary>
+        public AzureException(AzureException actualExceptionToWrap)
+            : base(actualExceptionToWrap.Message, actualExceptionToWrap)
+        {
+            RequestId = actualExceptionToWrap.RequestId;
+            StatusCode = actualExceptionToWrap.StatusCode;
+            StatusDescription = actualExceptionToWrap.StatusDescription;
+            Details = actualExceptionToWrap.Details;
+        }
+
     }
 }

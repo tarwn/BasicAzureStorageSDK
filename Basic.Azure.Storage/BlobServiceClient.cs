@@ -3,8 +3,12 @@ using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Basic.Azure.Storage.Communications.BlobService.ContainerOperations;
 using Basic.Azure.Storage.Communications.Common;
+using Basic.Azure.Storage.Communications.ServiceExceptions;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 
 namespace Basic.Azure.Storage
 {
@@ -12,9 +16,13 @@ namespace Basic.Azure.Storage
     {
         private StorageAccountSettings _account;
 
+        private readonly ConcurrentDictionary<string, string> _containerNotFoundExceptionOverride;
+
         public BlobServiceClient(StorageAccountSettings account)
         {
             _account = account;
+            _containerNotFoundExceptionOverride = new ConcurrentDictionary<string, string>();
+            _containerNotFoundExceptionOverride.TryAdd("BlobNotFound", "ContainerNotFound");
         }
 
         #region Account Operations
@@ -40,143 +48,143 @@ namespace Basic.Azure.Storage
         public GetContainerPropertiesResponse GetContainerProperties(string containerName)
         {
             var request = new GetContainerPropertiesRequest(_account, containerName);
-            var response = request.Execute();
+            var response = request.Execute(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<GetContainerPropertiesResponse> GetContainerPropertiesAsync(string containerName)
         {
             var request = new GetContainerPropertiesRequest(_account, containerName);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
 
         public GetContainerMetadataResponse GetContainerMetadata(string containerName)
         {
             var request = new GetContainerMetadataRequest(_account, containerName);
-            var response = request.Execute();
+            var response = request.Execute(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<GetContainerMetadataResponse> GetContainerMetadataAsync(string containerName)
         {
             var request = new GetContainerMetadataRequest(_account, containerName);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
 
         public void SetContainerMetadata(string containerName, Dictionary<string, string> metadata, string lease = null)
         {
             var request = new SetContainerMetadataRequest(_account, containerName, metadata, lease);
-            request.Execute();
+            request.Execute(_containerNotFoundExceptionOverride);
         }
         public async Task SetContainerMetadataAsync(string containerName, Dictionary<string, string> metadata, string lease = null)
         {
             var request = new SetContainerMetadataRequest(_account, containerName, metadata, lease);
-            await request.ExecuteAsync();
+            await request.ExecuteAsync(_containerNotFoundExceptionOverride);
         }
 
         public GetContainerACLResponse GetContainerACL(string containerName)
         {
             var request = new GetContainerACLRequest(_account, containerName);
-            var response = request.Execute();
+            var response = request.Execute(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<GetContainerACLResponse> GetContainerACLAsync(string containerName)
         {
             var request = new GetContainerACLRequest(_account, containerName);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
 
         public void SetContainerACL(string containerName, ContainerAccessType containerAccess, List<BlobSignedIdentifier> signedIdentifiers, string leaseId = null)
         {
             var request = new SetContainerACLRequest(_account, containerName, containerAccess, signedIdentifiers, leaseId);
-            request.Execute();
+            request.Execute(_containerNotFoundExceptionOverride);
         }
         public async Task SetContainerACLAsync(string containerName, ContainerAccessType containerAccess, List<BlobSignedIdentifier> signedIdentifiers, string leaseId = null)
         {
             var request = new SetContainerACLRequest(_account, containerName, containerAccess, signedIdentifiers, leaseId);
-            await request.ExecuteAsync();
+            await request.ExecuteAsync(_containerNotFoundExceptionOverride);
         }
 
         public void DeleteContainer(string containerName, string leaseId = null)
         {
             var request = new DeleteContainerRequest(_account, containerName, leaseId);
-            request.Execute();
+            request.Execute(_containerNotFoundExceptionOverride);
         }
         public async Task DeleteContainerAsync(string containerName, string leaseId = null)
         {
             var request = new DeleteContainerRequest(_account, containerName, leaseId);
-            await request.ExecuteAsync();
+            await request.ExecuteAsync(_containerNotFoundExceptionOverride);
         }
 
         public LeaseContainerAcquireResponse LeaseContainerAcquire(string containerName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
         {
             var request = new LeaseContainerAcquireRequest(_account, containerName, leaseDurationInSeconds, proposedLeaseId);
-            var response = request.Execute();
+            var response = request.Execute(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<LeaseContainerAcquireResponse> LeaseContainerAcquireAsync(string containerName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
         {
             var request = new LeaseContainerAcquireRequest(_account, containerName, leaseDurationInSeconds, proposedLeaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
 
         public LeaseContainerRenewResponse LeaseContainerRenew(string containerName, string leaseId)
         {
             var request = new LeaseContainerRenewRequest(_account, containerName, leaseId);
-            var response = request.Execute();
+            var response = request.Execute(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<LeaseContainerRenewResponse> LeaseContainerRenewAsync(string containerName, string leaseId)
         {
             var request = new LeaseContainerRenewRequest(_account, containerName, leaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public LeaseContainerChangeResponse LeaseContainerChange(string containerName, string currentLeaseid, string proposedLeaseId)
         {
             var request = new LeaseContainerChangeRequest(_account, containerName, currentLeaseid, proposedLeaseId);
-            var response = request.Execute();
+            var response = request.Execute(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<LeaseContainerChangeResponse> LeaseContainerChangeAsync(string containerName, string currentLeaseid, string proposedLeaseId)
         {
             var request = new LeaseContainerChangeRequest(_account, containerName, currentLeaseid, proposedLeaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public void LeaseContainerRelease(string containerName, string leaseId)
         {
             var request = new LeaseContainerReleaseRequest(_account, containerName, leaseId);
-            request.Execute();
+            request.Execute(_containerNotFoundExceptionOverride);
         }
         public async Task LeaseContainerReleaseAsync(string containerName, string leaseId)
         {
             var request = new LeaseContainerReleaseRequest(_account, containerName, leaseId);
-            await request.ExecuteAsync();
+            await request.ExecuteAsync(_containerNotFoundExceptionOverride);
         }
         public void LeaseContainerBreak(string containerName, string leaseId, int leaseBreakPeriod)
         {
             var request = new LeaseContainerBreakRequest(_account, containerName, leaseId, leaseBreakPeriod);
-            request.Execute();
+            request.Execute(_containerNotFoundExceptionOverride);
         }
         public async Task LeaseContainerBreakAsync(string containerName, string leaseId, int leaseBreakPeriod)
         {
             var request = new LeaseContainerBreakRequest(_account, containerName, leaseId, leaseBreakPeriod);
-            await request.ExecuteAsync();
+            await request.ExecuteAsync(_containerNotFoundExceptionOverride);
         }
 
         public ListBlobsResponse ListBlobs(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null)
         {
             var request = new ListBlobsRequest(_account, containerName, prefix, delimiter, marker, maxResults, include);
-            var response = request.Execute();
+            var response = request.Execute(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<ListBlobsResponse> ListBlobsAsync(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null)
         {
             var request = new ListBlobsRequest(_account, containerName, prefix, delimiter, marker, maxResults, include);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
 
