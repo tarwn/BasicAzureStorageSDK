@@ -330,11 +330,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void CreateContainer(string containerName, Dictionary<string, string> metadata = null)
         {
-            Console.WriteLine("CreateContainer(containerName {0}, metadata {1})", containerName, metadata);
             var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
-
-            Console.WriteLine("Container already exists: {0}", container.Exists());
             
             container.Create();
 
@@ -347,7 +344,6 @@ namespace Basic.Azure.Storage.Tests.Integration
                 }
                 container.SetMetadata();
             }
-            Console.WriteLine("~CreateContainer()");
         }
 
         protected string LeaseBlob(string containerName, string blobName, TimeSpan? leaseTime = null, string leaseId = null)

@@ -20,7 +20,6 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
         public GetBlobRequest(StorageAccountSettings settings, string containerName, string blobName, BlobRange range, string leaseId = null)
             : base(settings)
         {
-            Console.WriteLine("GetBlobRequest(settings {0}, containerName {1}, blobName {2}, range {3}, leaseId {4}", settings, containerName, blobName, range, leaseId);
             _containerName = containerName;
             _blobName = blobName;
             _range = range;
@@ -30,7 +29,6 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             }
 
             _leaseId = leaseId;
-            Console.WriteLine("~GetBlobRequest()");
         }
 
         protected override string HttpMethod { get { return "GET"; } }
