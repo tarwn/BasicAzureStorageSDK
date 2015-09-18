@@ -58,7 +58,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected static string FakeLeaseId { get { return "a28cf439-8776-4653-9ce8-4e3df49b4a72"; } }
 
-        [TearDown]
+        [TestFixtureTearDown]
         public void TestFixtureTeardown()
         {
             //let's clean up!
