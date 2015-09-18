@@ -271,10 +271,8 @@ namespace Basic.Azure.Storage
 
         public GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null, string leaseId = null)
         {
-            Console.WriteLine("GetBlob(containerName {0}, blobName {1}, range {2}, leaseId {3}", containerName, blobName, range, leaseId);
             var request = new GetBlobRequest(_account, containerName, blobName, range, leaseId);
             var response = request.Execute();
-            Console.WriteLine("~GetBlob()");
             return response.Payload;
         }
 
