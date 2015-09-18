@@ -66,7 +66,7 @@ namespace Basic.Azure.Storage.Extensions
                 .Select(blockInfo => GeneratePutBlockRequestAsync(containerName, blobName, data, blockInfo))
                 .ToList();
 
-            var actualBlockIdList = GeneralBlockIdListFromRangesAndIds(rangesAndBlockIds);
+            var actualBlockIdList = GenerateBlockIdListFromRangesAndIds(rangesAndBlockIds);
 
             await Task.WhenAll(putBlockRequests);
             return await PutBlockListAsync(containerName, blobName, actualBlockIdList,
@@ -95,7 +95,7 @@ namespace Basic.Azure.Storage.Extensions
             return blockRangesAndIds;
         }
 
-        private static BlockListBlockIdList GeneralBlockIdListFromRangesAndIds(IEnumerable<ArrayRangeWithBlockIdString> rangesAndBlockIds)
+        private static BlockListBlockIdList GenerateBlockIdListFromRangesAndIds(IEnumerable<ArrayRangeWithBlockIdString> rangesAndBlockIds)
         {
             var convertedBlockListBlockIds = rangesAndBlockIds
                 .Select(blockInfo => new BlockListBlockId { Id = blockInfo.Id, ListType = BlockListListType.Uncommitted });
