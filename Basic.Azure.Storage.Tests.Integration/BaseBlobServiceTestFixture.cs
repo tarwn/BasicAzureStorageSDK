@@ -324,8 +324,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void CreateContainer(string containerName, Dictionary<string, string> metadata = null)
         {
-            var container = new CloudBlobClient(StorageAccount.BlobStorageUri, StorageAccount.Credentials)
-                .GetContainerReference(containerName);
+            var client = new CloudBlobClient(StorageAccount.BlobStorageUri, StorageAccount.Credentials);
+            var container = client.GetContainerReference(containerName);
 
             container.Create();
 
