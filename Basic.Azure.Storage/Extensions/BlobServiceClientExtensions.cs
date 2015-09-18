@@ -12,11 +12,14 @@ namespace Basic.Azure.Storage.Extensions
 {
     public class BlobServiceClientEx : BlobServiceClient, IBlobServiceClientEx
     {
+        private readonly int _maxSingleBlobUploadSize;
 
-        public BlobServiceClientEx(StorageAccountSettings account)
+        public int MaxSingleBlobUploadSize { get { return _maxSingleBlobUploadSize; } }
+
+        public BlobServiceClientEx(StorageAccountSettings account, int maxSingleBlobUploadSize = BlobServiceConstants.MaxSingleBlobUploadSize)
             : base(account)
         {
-
+            _maxSingleBlobUploadSize = maxSingleBlobUploadSize;
         }
 
         public IBlobOrBlockListResponseWrapper PutBlockBlobIntelligently(int blockSize,
@@ -33,7 +36,7 @@ namespace Basic.Azure.Storage.Extensions
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null)
         {
-            if (data.Length < BlobServiceConstants.MaxSingleBlobUploadSize)
+            if (data.Length < MaxSingleBlobUploadSize)
             {
                 return await PutBlockBlobAsync(containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata);
             }
@@ -63,9 +66,7 @@ namespace Basic.Azure.Storage.Extensions
                 .Select(blockInfo => GeneratePutBlockRequestAsync(containerName, blobName, data, blockInfo))
                 .ToList();
 
-            var convertedBlockListBlockIds = rangesAndBlockIds
-                .Select(blockInfo => new BlockListBlockId { Id = blockInfo.Id, ListType = BlockListListType.Uncommitted });
-            var actualBlockIdList = new BlockListBlockIdList(convertedBlockListBlockIds);
+            var actualBlockIdList = GenerateBlockIdListFromRangesAndIds(rangesAndBlockIds);
 
             await Task.WhenAll(putBlockRequests);
             return await PutBlockListAsync(containerName, blobName, actualBlockIdList,
@@ -94,9 +95,17 @@ namespace Basic.Azure.Storage.Extensions
             return blockRangesAndIds;
         }
 
+        private static BlockListBlockIdList GenerateBlockIdListFromRangesAndIds(IEnumerable<ArrayRangeWithBlockIdString> rangesAndBlockIds)
+        {
+            var convertedBlockListBlockIds = rangesAndBlockIds
+                .Select(blockInfo => new BlockListBlockId { Id = blockInfo.Id, ListType = BlockListListType.Uncommitted });
+            
+            return new BlockListBlockIdList(convertedBlockListBlockIds);
+        }
+
         private async Task<PutBlockResponse> GeneratePutBlockRequestAsync(string containerName, string blobName, byte[] fullData, ArrayRangeWithBlockIdString range)
         {
-            var md5Task = CalculateMD5(fullData, range.Offset, range.Length);
+            var md5Task = CalculateMD5Async(fullData, range.Offset, range.Length);
 
             var chunk = new byte[range.Length];
             Buffer.BlockCopy(fullData, range.Offset, chunk, 0, range.Length);
@@ -109,7 +118,7 @@ namespace Basic.Azure.Storage.Extensions
             return Base64Converter.ConvertToBase64(Guid.NewGuid().ToString());
         }
 
-        private async static Task<string> CalculateMD5(byte[] fullData, int offset, int length)
+        private async static Task<string> CalculateMD5Async(byte[] fullData, int offset, int length)
         {
             return await Task.Run(() => Convert.ToBase64String(MD5.Create().ComputeHash(fullData, offset, length)));
         }
