@@ -1951,7 +1951,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        [TestCase(RandomGuid, ExpectedException = typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
         public void PutBlockBlob_LeasedBlobWithIncorrectLeaseGiven_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
         {
             var containerName = GenerateSampleContainerName();
@@ -1968,7 +1968,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        [TestCase(RandomGuid, ExpectedException = typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
         public async void PutBlockBlobAsync_LeasedBlobWithIncorrectLeaseGiven_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
         {
             var containerName = GenerateSampleContainerName();
@@ -1985,7 +1985,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        [TestCase(InvalidLeaseId, ExpectedException = typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void PutBlockBlob_LeasedBlobWithInvalidLeaseGiven_ThrowsArgumentException()
         {
             var containerName = GenerateSampleContainerName();
@@ -1999,7 +1999,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        [TestCase(InvalidLeaseId, ExpectedException = typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException))]
         public async void PutBlockBlobAsync_LeasedBlobWithInvalidLeaseGiven_ThrowsArgumentException()
         {
             var containerName = GenerateSampleContainerName();
@@ -2939,7 +2939,10 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
-            client.GetBlob(containerName, blobName);
+            var blob = client.GetBlob(containerName, blobName);
+
+            blob = null;
+            client = null;
 
             // no exception thrown
         }

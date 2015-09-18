@@ -59,17 +59,19 @@ namespace Basic.Azure.Storage.Communications.Core
         {
             try
             {
+                Console.WriteLine("Execute()");
                 return Task.Run(() => ExecuteAsync()).Result;
             }
             catch (AggregateException ae)
             {
+                Console.WriteLine("Execute: Exception thrown {0}", ae.Message);
                 throw ae.Flatten().InnerExceptions.First();
             }
         }
 
         public async Task<Response<TPayload>> ExecuteAsync()
         {
-            //var request = BuildRequest();
+            Console.WriteLine("ExecuteAsync()");
 
             // send web request
             return await SendRequestWithRetryAsync();
@@ -80,7 +82,7 @@ namespace Basic.Azure.Storage.Communications.Core
             // create web request
             var requestUri = GetUriBase();
             var request = WebRequest.Create(requestUri.GetUri());
-            
+
             request.Method = HttpMethod;
             if (HasContentToSend)
                 request.ContentLength = ((ISendDataWithRequest)this).GetContentLength();
@@ -146,26 +148,31 @@ namespace Basic.Azure.Storage.Communications.Core
 
         private async Task<Response<TPayload>> SendRequestWithRetryAsync()
         {
+            Console.WriteLine("SendRequestWithRetryAsync()");
             var numberOfAttempts = 0;
             try
             {
+                Console.WriteLine("SendRequestWithRetryAsync: trying RetryPolicy");
                 return await RetryPolicy.ExecuteAsync(async () =>
                 {
+                    Console.WriteLine("SendRequestWithRetryAsync: RetryPolicy.ExecuteAsync()");
                     numberOfAttempts++;
                     try
                     {
-                        var result = await SendRequestAsync(BuildRequest());
+                        var result = await SendRequestAsync();
                         result.NumberOfAttempts = numberOfAttempts;
                         return result;
                     }
                     catch (Exception exc)
                     {
+                        Console.WriteLine("Send Request Exception: {0}", exc.Message);
                         throw GetAzureExceptionForAsync(exc).Result;
                     }
                 });
             }
             catch (Exception exc)
             {
+                Console.WriteLine("SendRequestWithRetryAsync: trying RetryPolicy FAILED with {0}", exc.Message);
                 if (numberOfAttempts > 1)
                     throw new RetriedException(exc, numberOfAttempts);
                 else
@@ -173,8 +180,10 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        private async Task<Response<TPayload>> SendRequestAsync(WebRequest request)
+        private async Task<Response<TPayload>> SendRequestAsync()
         {
+            Console.WriteLine("SendRequestAsync()");
+            var request = BuildRequest();
             if (HasContentToSend)
             {
                 var stream = await request.GetRequestStreamAsync();
@@ -182,6 +191,7 @@ namespace Basic.Azure.Storage.Communications.Core
                 await stream.WriteAsync(content, 0, content.Length);
             }
             var response = await request.GetResponseAsync();
+            Console.WriteLine("~SendRequestAsync()");
             return await ReceiveResponseAsync((HttpWebResponse)response);
         }
 
