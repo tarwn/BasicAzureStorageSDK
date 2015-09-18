@@ -2,6 +2,7 @@
 using Basic.Azure.Storage.Communications.ServiceExceptions;
 using Microsoft.Practices.TransientFaultHandling;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -56,11 +57,11 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        public Response<TPayload> Execute()
+        public Response<TPayload> Execute(ConcurrentDictionary<string,string> responseCodeOverridesForApiBugs = null)
         {
             try
             {
-                return Task.Run(() => ExecuteAsync()).Result;
+                return Task.Run(() => ExecuteAsync(responseCodeOverridesForApiBugs)).Result;
             }
             catch (AggregateException ae)
             {
@@ -68,12 +69,12 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        public async Task<Response<TPayload>> ExecuteAsync()
+        public async Task<Response<TPayload>> ExecuteAsync(ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
             var request = BuildRequest();
 
             // send web request
-            return await SendRequestWithRetryAsync(request);
+            return await SendRequestWithRetryAsync(request, responseCodeOverridesForApiBugs);
         }
 
         public WebRequest BuildRequest()
@@ -145,7 +146,7 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        private async Task<Response<TPayload>> SendRequestWithRetryAsync(WebRequest request)
+        private async Task<Response<TPayload>> SendRequestWithRetryAsync(WebRequest request, ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
             int numberOfAttempts = 0;
             try
@@ -161,7 +162,7 @@ namespace Basic.Azure.Storage.Communications.Core
                     }
                     catch (Exception exc)
                     {
-                        throw GetAzureExceptionForAsync(exc).Result;
+                        throw GetAzureExceptionForAsync(exc, responseCodeOverridesForApiBugs).Result;
                     }
                 });
             }
@@ -193,7 +194,7 @@ namespace Basic.Azure.Storage.Communications.Core
             return response;
         }
 
-        private async Task<Exception> GetAzureExceptionForAsync(Exception exception)
+        private async Task<Exception> GetAzureExceptionForAsync(Exception exception, ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
             if (exception is WebException)
             {
@@ -202,7 +203,7 @@ namespace Basic.Azure.Storage.Communications.Core
                 {
                     var response = new Response<ErrorResponsePayload>((HttpWebResponse)wexc.Response);
                     await response.ProcessResponseStreamAsync((HttpWebResponse)wexc.Response);
-                    return GetAzureExceptionFor(response, wexc);
+                    return GetAzureExceptionFor(response, wexc, responseCodeOverridesForApiBugs);
                 }
                 else
                 {
@@ -215,18 +216,25 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        private Exception GetAzureExceptionFor(Response<ErrorResponsePayload> response, WebException originalException)
+        private Exception GetAzureExceptionFor(Response<ErrorResponsePayload> response, WebException originalException, ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
+            string errorCode = response.Payload.ErrorCode;
+            if (responseCodeOverridesForApiBugs != null && responseCodeOverridesForApiBugs.ContainsKey(errorCode))
+            {
+                string originalErrorCode = errorCode;
+                responseCodeOverridesForApiBugs.TryGetValue(originalErrorCode, out errorCode);
+            }
+
             switch (ServiceType)
             {
                 case StorageServiceType.QueueService:
-                    return QueueServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, response.Payload.ErrorCode, response.Payload.ErrorMessage, response.Payload.Details, originalException);
+                    return QueueServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, errorCode, response.Payload.ErrorMessage, response.Payload.Details, originalException);
                 case StorageServiceType.BlobService:
-                    return BlobServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, response.Payload.ErrorCode, response.Payload.ErrorMessage, response.Payload.Details, originalException);
+                    return BlobServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, errorCode, response.Payload.ErrorMessage, response.Payload.Details, originalException);
                 case StorageServiceType.TableService:
-                    return TableServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, response.Payload.ErrorCode, response.Payload.ErrorMessage, response.Payload.Details, originalException);
+                    return TableServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, errorCode, response.Payload.ErrorMessage, response.Payload.Details, originalException);
                 default:
-                    return CommonServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, response.Payload.ErrorCode, response.Payload.ErrorMessage, response.Payload.Details, originalException);
+                    return CommonServiceAzureExceptions.GetExceptionFor(response.RequestId, response.HttpStatus, errorCode, response.Payload.ErrorMessage, response.Payload.Details, originalException);
             }
         }
 

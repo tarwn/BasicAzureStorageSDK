@@ -123,6 +123,13 @@ foreach(var errorCode in ErrorCodeList)
     {
         public <#=errorCode.Key#>AzureException(string requestId, HttpStatusCode statusCode, string statusDescription, Dictionary<string, string> details, WebException baseException)
             : base(requestId, statusCode, statusDescription, details, baseException) { }
+
+		/// <summary>
+        /// This constructor is used only to wrap around other Azure Exceptionsd when Microsoft returns the wrong error code and we need to correct it for them
+        /// </summary>
+		public <#=errorCode.Key#>AzureException(AzureException actualAzureException)
+			: base(actualAzureException)
+		{ }
     }
 
 	<#
