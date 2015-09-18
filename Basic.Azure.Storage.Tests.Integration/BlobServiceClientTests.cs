@@ -1567,7 +1567,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
-            client.PutBlockList(containerName, blobName, blockListBlockIds, leaseId: RandomGuid);
+            client.PutBlockList(containerName, blobName, blockListBlockIds, leaseId: GetGuidString());
 
             // throws exception
         }
@@ -1587,7 +1587,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
-            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, leaseId: RandomGuid);
+            await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, leaseId: GetGuidString());
 
             // throws exception
         }
@@ -1962,7 +1962,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
             var data = Encoding.UTF8.GetBytes("unit test content");
 
-            client.PutBlockBlob(containerName, blobName, data, leaseId: RandomGuid);
+            client.PutBlockBlob(containerName, blobName, data, leaseId: GetGuidString());
 
             // throws exception
         }
@@ -1979,7 +1979,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
             var data = Encoding.UTF8.GetBytes("unit test content");
 
-            await client.PutBlockBlobAsync(containerName, blobName, data, leaseId: RandomGuid);
+            await client.PutBlockBlobAsync(containerName, blobName, data, leaseId: GetGuidString());
 
             // throws exception
         }
@@ -2294,7 +2294,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
-            client.PutBlock(containerName, blobName, blockId, blockData, leaseId: RandomGuid);
+            client.PutBlock(containerName, blobName, blockId, blockData, leaseId: GetGuidString());
 
             // throws exception
         }
@@ -2312,7 +2312,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
-            await client.PutBlockAsync(containerName, blobName, blockId, blockData, leaseId: RandomGuid);
+            await client.PutBlockAsync(containerName, blobName, blockId, blockData, leaseId: GetGuidString());
 
             // throws exception
         }
@@ -2790,7 +2790,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
             var client = new BlobServiceClient(AccountSettings);
 
-            client.DeleteBlob(containerName, blobName, leaseId: RandomGuid);
+            client.DeleteBlob(containerName, blobName, leaseId: GetGuidString());
 
             // throw exception
         }
@@ -2806,7 +2806,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
             var client = new BlobServiceClient(AccountSettings);
 
-            await client.DeleteBlobAsync(containerName, blobName, leaseId: RandomGuid);
+            await client.DeleteBlobAsync(containerName, blobName, leaseId: GetGuidString());
 
             // throw exception
         }
@@ -2973,7 +2973,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
-            client.GetBlob(containerName, blobName, null, leaseId: RandomGuid);
+            client.GetBlob(containerName, blobName, null, leaseId: GetGuidString());
 
             // Throws exception
         }
@@ -2989,7 +2989,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             LeaseBlob(containerName, blobName);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
-            await client.GetBlobAsync(containerName, blobName, null, leaseId: RandomGuid);
+            await client.GetBlobAsync(containerName, blobName, null, leaseId: GetGuidString());
 
             // Throws exception
         }
