@@ -12,8 +12,6 @@ using Basic.Azure.Storage.Communications.Utility;
 using Microsoft.WindowsAzure.Storage.Blob;
 using BlobType = Microsoft.WindowsAzure.Storage.Blob.BlobType;
 using System.Configuration;
-using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage.Tests.Integration
 {

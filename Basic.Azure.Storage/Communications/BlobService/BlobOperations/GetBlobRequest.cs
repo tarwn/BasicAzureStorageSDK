@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using Basic.Azure.Storage.Communications.Core;
 using Basic.Azure.Storage.Communications.Core.Interfaces;
 using Basic.Azure.Storage.Communications.Utility;

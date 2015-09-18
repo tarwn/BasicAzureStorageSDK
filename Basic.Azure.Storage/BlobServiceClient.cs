@@ -1,5 +1,4 @@
-﻿using System;
-using Basic.Azure.Storage.ClientContracts;
+﻿using Basic.Azure.Storage.ClientContracts;
 using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Basic.Azure.Storage.Communications.BlobService.ContainerOperations;

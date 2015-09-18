@@ -30,15 +30,6 @@ namespace Basic.Azure.Storage.Extensions
             return Task.Run(() =>
                 PutBlockBlobIntelligentlyAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
                 .Result;
-
-            //if (data.Length < MaxSingleBlobUploadSize)
-            //{
-            //    return PutBlockBlob(containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata);
-            //}
-            //else
-            //{
-            //    return PutBlockBlobAsList(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata);
-            //}
         }
         public async Task<IBlobOrBlockListResponseWrapper> PutBlockBlobIntelligentlyAsync(int blockSize,
             string containerName, string blobName, byte[] data,
@@ -63,18 +54,6 @@ namespace Basic.Azure.Storage.Extensions
             return Task.Run(() =>
                     PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
                     .Result;
-
-            //var rangesAndBlockIds = GetBlockRangesAndIds(data.Length, blockSize);
-
-            //foreach (var arrayRangeWithBlockIdString in rangesAndBlockIds)
-            //{
-            //    GeneratePutBlockRequest(containerName, blobName, data, arrayRangeWithBlockIdString);
-            //}
-
-            //var actualBlockIdList = BlockListBlockIdList(rangesAndBlockIds);
-
-            //return PutBlockList(containerName, blobName, actualBlockIdList,
-            //        cacheControl, contentType, contentEncoding, contentLanguage, contentMD5, metadata);
         }
         public async Task<PutBlockListResponse> PutBlockBlobAsListAsync(int blockSize,
             string containerName, string blobName, byte[] data,
@@ -87,7 +66,7 @@ namespace Basic.Azure.Storage.Extensions
                 .Select(blockInfo => GeneratePutBlockRequestAsync(containerName, blobName, data, blockInfo))
                 .ToList();
 
-            var actualBlockIdList = BlockListBlockIdList(rangesAndBlockIds);
+            var actualBlockIdList = GeneralBlockIdListFromRangesAndIds(rangesAndBlockIds);
 
             await Task.WhenAll(putBlockRequests);
             return await PutBlockListAsync(containerName, blobName, actualBlockIdList,
@@ -116,23 +95,14 @@ namespace Basic.Azure.Storage.Extensions
             return blockRangesAndIds;
         }
 
-        private static BlockListBlockIdList BlockListBlockIdList(IEnumerable<ArrayRangeWithBlockIdString> rangesAndBlockIds)
+        private static BlockListBlockIdList GeneralBlockIdListFromRangesAndIds(IEnumerable<ArrayRangeWithBlockIdString> rangesAndBlockIds)
         {
             var convertedBlockListBlockIds = rangesAndBlockIds
                 .Select(blockInfo => new BlockListBlockId { Id = blockInfo.Id, ListType = BlockListListType.Uncommitted });
             var actualBlockIdList = new BlockListBlockIdList(convertedBlockListBlockIds);
             return actualBlockIdList;
         }
-
-        private PutBlockResponse GeneratePutBlockRequest(string containerName, string blobName, byte[] fullData, ArrayRangeWithBlockIdString range)
-        {
-            var md5 = CalculateMD5(fullData, range.Offset, range.Length);
-
-            var chunk = new byte[range.Length];
-            Buffer.BlockCopy(fullData, range.Offset, chunk, 0, range.Length);
-
-            return PutBlock(containerName, blobName, range.Id, chunk, md5);
-        }
+        
         private async Task<PutBlockResponse> GeneratePutBlockRequestAsync(string containerName, string blobName, byte[] fullData, ArrayRangeWithBlockIdString range)
         {
             var md5Task = CalculateMD5Async(fullData, range.Offset, range.Length);
@@ -147,14 +117,10 @@ namespace Basic.Azure.Storage.Extensions
         {
             return Base64Converter.ConvertToBase64(Guid.NewGuid().ToString());
         }
-
-        private static string CalculateMD5(byte[] fullData, int offset, int length)
-        {
-            return Convert.ToBase64String(MD5.Create().ComputeHash(fullData, offset, length));
-        }
+        
         private async static Task<string> CalculateMD5Async(byte[] fullData, int offset, int length)
         {
-            return await Task.Run(() => CalculateMD5(fullData, offset, length));
+            return await Task.Run(() => Convert.ToBase64String(MD5.Create().ComputeHash(fullData, offset, length)));
         }
 
         private struct ArrayRangeWithBlockIdString
