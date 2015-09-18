@@ -18,15 +18,20 @@ namespace Basic.Azure.Storage.Tests.Integration
     [TestFixture]
     public class BaseBlobServiceClientTestFixture
     {
+        private static readonly string AzureConnectionString = ConfigurationManager.AppSettings["AzureConnectionString"];
         private string RunId { get; set; }
 
-        protected readonly StorageAccountSettings AccountSettings = StorageAccountSettings.Parse(ConfigurationManager.AppSettings["AzureConnectionString"]);
-        protected readonly CloudStorageAccount StorageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["AzureConnectionString"]);
+        protected readonly StorageAccountSettings AccountSettings = StorageAccountSettings.Parse(AzureConnectionString);
 
         private readonly ConcurrentDictionary<string, string> _containersToCleanUp = new ConcurrentDictionary<string, string>();
 
         protected const string RandomGuid = "E95DA248-A756-4005-A5E9-6C93591E87FF";
         protected const string InvalidLeaseId = "InvalidLeaseId";
+
+        protected static CloudStorageAccount StorageAccount
+        {
+            get { return CloudStorageAccount.Parse(AzureConnectionString); }
+        }
 
         protected string GenerateSampleContainerName()
         {
@@ -328,9 +333,9 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void CreateContainer(string containerName, Dictionary<string, string> metadata = null)
         {
-            var client = StorageAccount.CreateCloudBlobClient();
-            var container = client.GetContainerReference(containerName);
-            
+            var container = new CloudBlobClient(StorageAccount.BlobStorageUri, StorageAccount.Credentials)
+                .GetContainerReference(containerName);
+
             container.Create();
 
             if (metadata != null)
