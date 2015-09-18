@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Basic.Azure.Storage.Communications.ServiceExceptions;
 using Basic.Azure.Storage.Communications.Utility;
 using Microsoft.WindowsAzure.Storage.Blob;
 using BlobType = Microsoft.WindowsAzure.Storage.Blob.BlobType;
@@ -18,24 +17,38 @@ namespace Basic.Azure.Storage.Tests.Integration
     [TestFixture]
     public class BaseBlobServiceClientTestFixture
     {
-        protected StorageAccountSettings _accountSettings = StorageAccountSettings.Parse(ConfigurationManager.AppSettings["AzureConnectionString"]);
-        protected CloudStorageAccount _storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["AzureConnectionString"]);
-
-        protected readonly Dictionary<string, string> _containersToCleanUp = new Dictionary<string, string>();
-
-        protected const string RandomGuid = "E95DA248-A756-4005-A5E9-6C93591E87FF";
         protected const string InvalidLeaseId = "InvalidLeaseId";
+
+        private readonly string _azureConnectionString = ConfigurationManager.AppSettings["AzureConnectionString"];
+        private readonly string _runId = DateTime.Now.ToString("yyyy-MM-dd");
+        private readonly Dictionary<string, string> _containersToCleanUp = new Dictionary<string, string>();
+
+        protected StorageAccountSettings AccountSettings
+        {
+            get
+            {
+                return StorageAccountSettings.Parse(_azureConnectionString);
+            }
+        }
+
+        private CloudStorageAccount StorageAccount
+        {
+            get
+            {
+                return CloudStorageAccount.Parse(_azureConnectionString);
+            }
+        }
 
         protected string GenerateSampleContainerName()
         {
-            var name = "unit-test-" + Guid.NewGuid().ToString().ToLower();
+            var name = string.Format("unit-test-{0}-{1}", _runId, Guid.NewGuid()).ToLower();
             RegisterContainerForCleanup(name, null);
             return name;
         }
 
         protected string GenerateSampleBlobName()
         {
-            return String.Format("unit-test-{0}", Guid.NewGuid());
+            return string.Format("unit-test-{0}-{1}", _runId, Guid.NewGuid());
         }
 
         protected void RegisterContainerForCleanup(string containerName, string leaseId)
@@ -43,13 +56,13 @@ namespace Basic.Azure.Storage.Tests.Integration
             _containersToCleanUp[containerName] = leaseId;
         }
 
-        public string FakeLeaseId { get { return "a28cf439-8776-4653-9ce8-4e3df49b4a72"; } }
+        protected static string FakeLeaseId { get { return "a28cf439-8776-4653-9ce8-4e3df49b4a72"; } }
 
-        [TestFixtureTearDown]
+        [TearDown]
         public void TestFixtureTeardown()
         {
             //let's clean up!
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             foreach (var containerPair in _containersToCleanUp)
             {
                 var container = client.GetContainerReference(containerPair.Key);
@@ -59,7 +72,10 @@ namespace Basic.Azure.Storage.Tests.Integration
                     {
                         container.ReleaseLease(new AccessCondition() { LeaseId = containerPair.Value });
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignore
+                    }
                 }
                 container.DeleteIfExists();
             }
@@ -69,7 +85,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void AssertContainerExists(string containerName)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (!container.Exists())
                 Assert.Fail(String.Format("AssertContainerExists: The container '{0}' does not exist", containerName));
@@ -77,7 +93,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void AssertContainerDoesNotExist(string containerName)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (container.Exists())
                 Assert.Fail(String.Format("AssertContainerDoesNotExist: The container '{0}' exists", containerName));
@@ -85,7 +101,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void AssertContainerIsLeased(string containerName, string leaseId)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (!container.Exists())
                 Assert.Fail(String.Format("AssertContainerIsLeased: The container '{0}' does not exist", containerName));
@@ -102,7 +118,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void AssertContainerIsNotLeased(string containerName)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (!container.Exists())
                 Assert.Fail(String.Format("AssertContainerIsNotLeased: The container '{0}' does not exist", containerName));
@@ -120,7 +136,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void AssertContainerAccess(string containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType containerAccessType)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (!container.Exists())
                 Assert.Fail(String.Format("AssertContainerAccess: The container '{0}' does not exist", containerName));
@@ -131,7 +147,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected Microsoft.WindowsAzure.Storage.Blob.ICloudBlob AssertBlobExists(string containerName, string blobName, BlobType blobType)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (!container.Exists())
                 Assert.Fail("AssertBlobExists: The container '{0}' does not exist", containerName);
@@ -148,7 +164,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void AssertBlobIsLeased(string containerName, string blobName, string leaseId)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (!container.Exists())
                 Assert.Fail("AssertBlobIsLeased: The container '{0}' does not exist", containerName);
@@ -159,7 +175,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             try
             {
-                blob.RenewLease(new AccessCondition { LeaseId = leaseId});
+                blob.RenewLease(new AccessCondition { LeaseId = leaseId });
             }
             catch (Exception exc)
             {
@@ -169,13 +185,13 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void AssertBlobIsNotLeased(string containerName, string blobName)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (!container.Exists())
                 Assert.Fail("AssertBlobIsNotLeased: The container '{0}' does not exist", containerName);
 
             var blob = container.GetBlockBlobReference(blobName);
-            if(!blob.Exists())
+            if (!blob.Exists())
                 Assert.Fail("AssertBlobIsNotLeased: The blob '{0}' does not exist", blobName);
 
             try
@@ -190,7 +206,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected Microsoft.WindowsAzure.Storage.Blob.ListBlockItem AssertBlockExists(string containerName, string blobName, string blockId, BlockListingFilter blockType = BlockListingFilter.All)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (!container.Exists())
                 Assert.Fail("AssertBlockExists: The container '{0}' does not exist", containerName);
@@ -207,7 +223,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected Microsoft.WindowsAzure.Storage.Blob.ICloudBlob AssertBlobDoesNotExist(string containerName, string blobName, BlobType blobType)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (!container.Exists())
                 Assert.Fail("AssertBlobDoesNotExist: The container '{0}' does not exist", containerName);
@@ -225,7 +241,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected Microsoft.WindowsAzure.Storage.Blob.ICloudBlob AssertBlobContainsData(string containerName, string blobName, BlobType blobType, byte[] expectedData)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (!container.Exists())
                 Assert.Fail("AssertBlobContainsData: The container '{0}' does not exist", containerName);
@@ -256,7 +272,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected IDictionary<string, string> GetContainerMetadata(string containerName)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
 
             container.FetchAttributes();
@@ -265,7 +281,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected BlobProperties GetBlobProperties(string containerName, string blobName)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (!container.Exists())
                 Assert.Fail("GetBlobProperties: The container '{0}' does not exist", containerName);
@@ -280,7 +296,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected IDictionary<string, string> GetBlobMetadata(string containerName, string blobName)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             if (!container.Exists())
                 Assert.Fail("GetBlobProperties: The container '{0}' does not exist", containerName);
@@ -308,7 +324,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void CreateContainer(string containerName, Dictionary<string, string> metadata = null)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
 
             container.Create();
@@ -322,27 +338,26 @@ namespace Basic.Azure.Storage.Tests.Integration
                 }
                 container.SetMetadata();
             }
-
         }
 
         protected string LeaseBlob(string containerName, string blobName, TimeSpan? leaseTime = null, string leaseId = null)
         {
-          var client = _storageAccount.CreateCloudBlobClient();
-          var container = client.GetContainerReference(containerName);
-          if (!container.Exists())
-              Assert.Fail("LeaseBlob: The container '{0}' does not exist", containerName);
+            var client = StorageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            if (!container.Exists())
+                Assert.Fail("LeaseBlob: The container '{0}' does not exist", containerName);
 
-          var blob = container.GetBlockBlobReference(blobName);
+            var blob = container.GetBlockBlobReference(blobName);
 
-          if (!blob.Exists())
-              Assert.Fail("LeaseBlob: The blob '{0}' does not exist", blobName);
+            if (!blob.Exists())
+                Assert.Fail("LeaseBlob: The blob '{0}' does not exist", blobName);
 
-          return blob.AcquireLease(leaseTime, leaseId);
+            return blob.AcquireLease(leaseTime, leaseId);
         }
 
         protected string LeaseContainer(string containerName, TimeSpan? leaseTime, string leaseId)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             var lease = container.AcquireLease(leaseTime, leaseId);
             RegisterContainerForCleanup(containerName, lease);
@@ -351,21 +366,21 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void ReleaseContainerLease(string containerName, string lease)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             container.ReleaseLease(new AccessCondition() { LeaseId = lease });
         }
 
-        protected void BreakContainerLease(string containerName, string lease)
+        protected void BreakContainerLease(string containerName, string lease, int breakPeriod = 1)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
-            container.BreakLease(TimeSpan.FromSeconds(1), new AccessCondition() { LeaseId = lease });
+            container.BreakLease(TimeSpan.FromSeconds(breakPeriod), new AccessCondition() { LeaseId = lease });
         }
 
         protected void AddContainerAccessPolicy(string containerName, Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType publicAccess, string id = null, DateTime? startDate = null, DateTime? expiry = null)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             var permissions = container.GetPermissions();
             permissions.PublicAccess = publicAccess;
@@ -383,7 +398,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected Microsoft.WindowsAzure.Storage.Blob.BlobContainerPermissions GetContainerPermissions(string containerName)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             var permissions = container.GetPermissions();
             return permissions;
@@ -391,7 +406,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected Microsoft.WindowsAzure.Storage.Blob.LeaseState GetContainerLeaseState(string containerName)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             container.FetchAttributes();
             return container.Properties.LeaseState;
@@ -399,7 +414,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected Microsoft.WindowsAzure.Storage.Blob.LeaseState GetBlobLeaseState(string containerName, string blobName)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             var blob = container.GetBlobReferenceFromServer(blobName);
             blob.FetchAttributes();
@@ -409,7 +424,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         protected List<Microsoft.WindowsAzure.Storage.Blob.ListBlockItem> CreateBlockList(string containerName, string blobName,
             IEnumerable<string> blockIdsToCreate, string dataPerBlock, Encoding encoder = null)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             var blob = container.GetBlockBlobReference(blobName);
 
@@ -446,7 +461,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void CreateBlockBlob(string containerName, string blobName, Dictionary<string, string> metadata = null, string content = "Generic content")
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             var blob = container.GetBlockBlobReference(blobName);
 
@@ -465,7 +480,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void CreatePageBlob(string containerName, string blobName, Dictionary<string, string> metadata = null)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             var blob = container.GetPageBlobReference(blobName);
 
@@ -487,7 +502,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void CreateBlobUncommitted(string containerName, string blobName)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             var blob = container.GetBlockBlobReference(blobName);
 
@@ -500,7 +515,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         protected void CopyBlob(string containerName, string sourceBlobName, string targetBlobName)
         {
             // could we have made this require more work?
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             var sourceBlob = container.GetBlockBlobReference(sourceBlobName);
             var targetBlob = container.GetBlockBlobReference(targetBlobName);
@@ -509,7 +524,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         protected void SnapshotBlob(string containerName, string blobName)
         {
-            var client = _storageAccount.CreateCloudBlobClient();
+            var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             var blob = container.GetBlockBlobReference(blobName);
             blob.CreateSnapshot();
@@ -518,9 +533,14 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #endregion
 
-        protected DateTime GetTruncatedUtcNow()
+        protected static DateTime GetTruncatedUtcNow()
         {
             return new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, DateTime.UtcNow.Hour, DateTime.UtcNow.Minute, DateTime.UtcNow.Second, DateTimeKind.Utc);
+        }
+
+        protected static string GetGuidString()
+        {
+            return Guid.NewGuid().ToString();
         }
     }
 }

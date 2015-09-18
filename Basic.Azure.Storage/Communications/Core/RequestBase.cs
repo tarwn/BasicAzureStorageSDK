@@ -17,7 +17,7 @@ namespace Basic.Azure.Storage.Communications.Core
     {
         public const string TargetStorageVersion = "2012-02-12";
 
-        private StorageAccountSettings _settings;
+        private readonly StorageAccountSettings _settings;
 
         public RequestBase(StorageAccountSettings settings)
         {
@@ -71,10 +71,8 @@ namespace Basic.Azure.Storage.Communications.Core
 
         public async Task<Response<TPayload>> ExecuteAsync(ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
-            var request = BuildRequest();
-
             // send web request
-            return await SendRequestWithRetryAsync(request, responseCodeOverridesForApiBugs);
+            return await SendRequestWithRetryAsync(responseCodeOverridesForApiBugs);
         }
 
         public WebRequest BuildRequest()
@@ -90,7 +88,7 @@ namespace Basic.Azure.Storage.Communications.Core
                 request.ContentLength = 0;
 
             {
-                // hacky workaround area 
+                // hacky workaround area
                 //  - Can't test against HttpWebRequest because the ctor isn't accessible
                 //  - Can't set UserAgent as raw header because HttpWebRequest won't allow you to not use the named property
                 if (request is HttpWebRequest)
@@ -128,15 +126,15 @@ namespace Basic.Azure.Storage.Communications.Core
             switch (serviceType)
             {
                 case StorageServiceType.QueueService:
-                    string queueSignedString = SignedAuthorization.GenerateSharedKeySignatureString(request, queryStringParameters, settings);
+                    var queueSignedString = SignedAuthorization.GenerateSharedKeySignatureString(request, queryStringParameters, settings);
                     request.Headers.Add(ProtocolConstants.Headers.Authorization, String.Format("SharedKey {0}:{1}", settings.AccountName, queueSignedString));
                     break;
                 case StorageServiceType.BlobService:
-                    string blobSignedString = SignedAuthorization.GenerateSharedKeySignatureString(request, queryStringParameters, settings);
+                    var blobSignedString = SignedAuthorization.GenerateSharedKeySignatureString(request, queryStringParameters, settings);
                     request.Headers.Add(ProtocolConstants.Headers.Authorization, String.Format("SharedKey {0}:{1}", settings.AccountName, blobSignedString));
                     break;
                 case StorageServiceType.TableService:
-                    string tableSignedString = SignedAuthorization.GenerateSharedKeySignatureStringForTableService(request, queryStringParameters, settings);
+                    var tableSignedString = SignedAuthorization.GenerateSharedKeySignatureStringForTableService(request, queryStringParameters, settings);
                     request.Headers.Add(ProtocolConstants.Headers.Authorization, String.Format("SharedKey {0}:{1}", settings.AccountName, tableSignedString));
                     //string tableSignedString = SignedAuthorization.GenerateSharedKeyLiteSignatureStringForTableService(request, queryStringParameters, settings);
                     //request.Headers.Add(ProtocolConstants.Headers.Authorization, String.Format("SharedKeyLite {0}:{1}", settings.AccountName, tableSignedString));
@@ -146,17 +144,17 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        private async Task<Response<TPayload>> SendRequestWithRetryAsync(WebRequest request, ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
+        private async Task<Response<TPayload>> SendRequestWithRetryAsync(ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
-            int numberOfAttempts = 0;
+            var numberOfAttempts = 0;
             try
             {
-                return await RetryPolicy.ExecuteAsync<Response<TPayload>>(async () =>
+                return await RetryPolicy.ExecuteAsync(async () =>
                 {
                     numberOfAttempts++;
                     try
                     {
-                        var result = await SendRequestAsync(request);
+                        var result = await SendRequestAsync();
                         result.NumberOfAttempts = numberOfAttempts;
                         return result;
                     }
@@ -175,8 +173,9 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        private async Task<Response<TPayload>> SendRequestAsync(WebRequest request)
+        private async Task<Response<TPayload>> SendRequestAsync()
         {
+            var request = BuildRequest();
             if (HasContentToSend)
             {
                 var stream = await request.GetRequestStreamAsync();
@@ -187,7 +186,7 @@ namespace Basic.Azure.Storage.Communications.Core
             return await ReceiveResponseAsync((HttpWebResponse)response);
         }
 
-        private async Task<Response<TPayload>> ReceiveResponseAsync(HttpWebResponse httpWebResponse)
+        private static async Task<Response<TPayload>> ReceiveResponseAsync(HttpWebResponse httpWebResponse)
         {
             var response = new Response<TPayload>(httpWebResponse);
             await response.ProcessResponseStreamAsync(httpWebResponse);

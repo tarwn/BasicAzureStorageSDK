@@ -51,6 +51,7 @@
     <Compile Include="Communications\BlobService\BlobOperations\PutBlockListRequestTests.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobRequestTests.cs" />
     <Compile Include="Communications\BlobService\BlobRangeTests.cs" />
+    <Compile Include="Communications\BlobService\BlobServiceClientExTests.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\LeaseContainerAcquireTests.cs" />
     <Compile Include="Communications\Common\SharedAccessPermissionParseTests.cs" />
     <Compile Include="Communications\Core\ExceptionRetryStrategyTests.cs" />
