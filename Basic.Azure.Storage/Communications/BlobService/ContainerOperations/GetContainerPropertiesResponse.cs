@@ -17,10 +17,10 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
 
         public virtual DateTime LastModified { get; protected set; }
 
-        public ReadOnlyDictionary<string, string> Metadata { get; protected set; }
-        public LeaseDuration LeaseDuration { get; protected set; }
-        public LeaseStatus LeaseStatus { get; protected set; }
-        public LeaseState LeaseState { get; protected set; }
+        public virtual ReadOnlyDictionary<string, string> Metadata { get; protected set; }
+        public virtual LeaseDuration LeaseDuration { get; protected set; }
+        public virtual LeaseStatus LeaseStatus { get; protected set; }
+        public virtual LeaseState LeaseState { get; protected set; }
 
         public void ParseHeaders(System.Net.HttpWebResponse response)
         {

@@ -269,7 +269,6 @@ namespace Basic.Azure.Storage
             var request = new DeleteBlobRequest(_account, containerName, blobName, leaseId);
             request.Execute();
         }
-
         public async Task DeleteBlobAsync(string containerName, string blobName, string leaseId = null)
         {
             var request = new DeleteBlobRequest(_account, containerName, blobName, leaseId);
@@ -282,10 +281,22 @@ namespace Basic.Azure.Storage
             var response = request.Execute();
             return response.Payload;
         }
-
         public async Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, BlobRange range = null, string leaseId = null)
         {
             var request = new GetBlobRequest(_account, containerName, blobName, range, leaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
+        public GetBlobPropertiesResponse GetBlobProperties(string containerName, string blobName, string leaseId = null)
+        {
+            var request = new GetBlobPropertiesRequest(_account, containerName, blobName, leaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<GetBlobPropertiesResponse> GetBlobPropertiesAsync(string containerName, string blobName, string leaseId = null)
+        {
+            var request = new GetBlobPropertiesRequest(_account, containerName, blobName, leaseId);
             var response = await request.ExecuteAsync();
             return response.Payload;
         }

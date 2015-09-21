@@ -2865,6 +2865,26 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #endregion
 
+        #region GetBlobProperties
+
+        [Test]
+        public void GetBlobProperties_ExistingBlob_GetsContentLengthProperty()
+        {
+            const string blobContents = "foo";
+            var contentLength = Encoding.UTF8.GetBytes(blobContents).Length;
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, content: blobContents);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(contentLength, properties.ContentLength);
+        }
+
+        #endregion
+
         #region GetBlob
 
         [Test]
@@ -3326,8 +3346,8 @@ namespace Basic.Azure.Storage.Tests.Integration
         public void LeaseBlobRenew_LeasedBlob_RenewsActiveLease()
         {
             var minimumWaitTime = TimeSpan.FromSeconds(15);
-            var halfOfMinimum = minimumWaitTime.Subtract(TimeSpan.FromSeconds(minimumWaitTime.TotalSeconds*0.5));
-            var threeQuartersOfMinimum = minimumWaitTime.Subtract(TimeSpan.FromSeconds(minimumWaitTime.TotalSeconds*0.75));
+            var halfOfMinimum = minimumWaitTime.Subtract(TimeSpan.FromSeconds(minimumWaitTime.TotalSeconds * 0.5));
+            var threeQuartersOfMinimum = minimumWaitTime.Subtract(TimeSpan.FromSeconds(minimumWaitTime.TotalSeconds * 0.75));
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
@@ -3376,7 +3396,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             Thread.Sleep(moreThanMinimumWaitTime);
 
             client.LeaseBlobRenew(containerName, blobName, leaseId);
-            
+
             AssertBlobIsLeased(containerName, blobName, leaseId);
         }
 
@@ -3677,7 +3697,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
-        
+
         #endregion
 
         //[Test]

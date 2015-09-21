@@ -21,7 +21,9 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string CacheControl = "Cache-Control";
             public const string ContentEncoding = "Content-Encoding";
             public const string ContentLanguage = "Content-Language";
+            public const string ContentLength = "Content-Length";
             public const string ContentMD5 = "Content-MD5";
+            public const string ContentType = "Content-Type";
             public const string Date = "x-ms-date";
             public const string ETag = "ETag";
             public const string LastModified = "Last-Modified";
