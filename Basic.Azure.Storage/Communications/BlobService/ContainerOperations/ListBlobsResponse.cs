@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Basic.Azure.Storage.Communications.Utility;
 
 namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
 {
@@ -19,47 +20,40 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
             BlobList = new ReadOnlyCollection<ListBlobsItem>(new List<ListBlobsItem>());
         }
 
-        public DateTime Date { get; protected set; }
+        public virtual DateTime Date { get; protected set; }
 
-        public DateTime LastModified { get; protected set; }
+        public virtual DateTime LastModified { get; protected set; }
 
-        public ReadOnlyCollection<ListBlobsItem> BlobList { get; protected set; }
+        public virtual ReadOnlyCollection<ListBlobsItem> BlobList { get; protected set; }
 
-        public string Prefix { get; protected set; }
+        public virtual string Prefix { get; protected set; }
 
-        public string Marker { get; protected set; }
+        public virtual string Marker { get; protected set; }
 
-        public int MaxResults { get; protected set; }
+        public virtual int MaxResults { get; protected set; }
 
-        public string Delimiter { get; protected set; }
+        public virtual string Delimiter { get; protected set; }
 
-        public string NextMarker { get; protected set; }
+        public virtual string NextMarker { get; protected set; }
 
         public void ParseHeaders(System.Net.HttpWebResponse response)
         {
             //TODO: determine what we want to do about potential missing headers and date parsing errors
 
-            Date = ParseDate(response.Headers[ProtocolConstants.Headers.OperationDate]);
-            LastModified = ParseDate(response.Headers[ProtocolConstants.Headers.LastModified]);
-        }
-
-        private DateTime ParseDate(string headerValue)
-        {
-            DateTime dateValue;
-            DateTime.TryParse(headerValue, out dateValue);
-            return dateValue;
+            Date = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
+            LastModified = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
         }
 
         public async Task ParseResponseBodyAsync(System.IO.Stream responseStream)
         {
-            using (StreamReader sr = new StreamReader(responseStream))
+            using (var sr = new StreamReader(responseStream))
             {
                 var content = await sr.ReadToEndAsync();
                 if (content.Length > 0)
                 {
                     var xDoc = XDocument.Parse(content);
 
-                    var blobs = xDoc.Root.Elements().Where(e => e.Name.LocalName.Equals("Blobs")).FirstOrDefault();
+                    var blobs = xDoc.Root.Elements().FirstOrDefault(e => e.Name.LocalName.Equals("Blobs"));
                     if (blobs != null)
                     {
                         var blobCollection = blobs.Elements().Where(b => b.Name.LocalName.Equals("Blob"));
@@ -121,7 +115,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
             return blobs;
         }
 
-        private ListBlobsItemProperties ParseBlobProperties(XElement propertiesElement)
+        private static ListBlobsItemProperties ParseBlobProperties(XElement propertiesElement)
         {
             var properties = new ListBlobsItemProperties();
             foreach (var field in propertiesElement.Elements())
@@ -250,17 +244,11 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
             return properties;
         }
 
-        private Dictionary<string, string> ParseBlobMetadata(XElement metadata)
+        private static Dictionary<string, string> ParseBlobMetadata(XElement metadata)
         {
-            var metadataList = new Dictionary<string, string>();
-            foreach (var field in metadata.Elements())
-            {
-                metadataList.Add(field.Name.LocalName, field.Value);
-            }
-            return metadataList;
+            return metadata
+                .Elements()
+                .ToDictionary(field => field.Name.LocalName, field => field.Value);
         }
-
-
-        
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Basic.Azure.Storage.Communications.Core;
 using System;
 using Basic.Azure.Storage.Communications.Core.Interfaces;
+using Basic.Azure.Storage.Communications.Utility;
 using Basic.Azure.Storage.Extensions.Contracts;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
@@ -21,16 +22,9 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             //TODO: determine what we want to do about potential missing headers and date parsing errors
 
             ETag = response.Headers[ProtocolConstants.Headers.ETag].Trim(new char[] { '"' });
-            Date = ParseDate(response.Headers[ProtocolConstants.Headers.OperationDate]);
-            LastModified = ParseDate(response.Headers[ProtocolConstants.Headers.LastModified]);
+            Date = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
+            LastModified = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
             ContentMD5 = response.Headers[ProtocolConstants.Headers.ContentMD5];
-        }
-
-        private DateTime ParseDate(string headerValue)
-        {
-            DateTime dateValue;
-            DateTime.TryParse(headerValue, out dateValue);
-            return dateValue;
         }
 
     }
