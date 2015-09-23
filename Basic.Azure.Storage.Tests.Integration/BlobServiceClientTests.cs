@@ -2870,12 +2870,10 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public void GetBlobProperties_ExistingBlob_GetsProperties()
         {
-            const string blobContents = "foo";
-            var contentLength = Encoding.UTF8.GetBytes(blobContents).Length;
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName, content: blobContents);
+            CreateBlockBlob(containerName, blobName);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
             var properties = client.GetBlobProperties(containerName, blobName);
@@ -2886,12 +2884,10 @@ namespace Basic.Azure.Storage.Tests.Integration
         [Test]
         public async void GetBlobPropertiesAsync_ExistingBlob_GetsProperties()
         {
-            const string blobContents = "foo";
-            var contentLength = Encoding.UTF8.GetBytes(blobContents).Length;
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            CreateBlockBlob(containerName, blobName, content: blobContents);
+            CreateBlockBlob(containerName, blobName);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
             var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
