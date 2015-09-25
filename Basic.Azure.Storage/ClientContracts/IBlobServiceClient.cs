@@ -83,6 +83,9 @@ namespace Basic.Azure.Storage.ClientContracts
         GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null, string leaseId = null);
         Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, BlobRange range = null, string leaseId = null);
 
+        GetBlobPropertiesResponse GetBlobProperties(string containerName, string blobName, string leaseId = null);
+        Task<GetBlobPropertiesResponse> GetBlobPropertiesAsync(string containerName, string blobName, string leaseId = null);
+
         LeaseBlobAcquireResponse LeaseBlobAcquire(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null);
         Task<LeaseBlobAcquireResponse> LeaseBlobAcquireAsync(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null);
 

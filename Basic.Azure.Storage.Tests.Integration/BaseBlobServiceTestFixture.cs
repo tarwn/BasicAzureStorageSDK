@@ -83,6 +83,11 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #region Assertions
 
+        protected void AssertDatesEqualWithTolerance(DateTime expected, DateTime actual, int secondTolerance = 10)
+        {
+            Assert.LessOrEqual(expected.Subtract(actual).TotalSeconds, secondTolerance);
+        }
+
         protected void AssertContainerExists(string containerName)
         {
             var client = StorageAccount.CreateCloudBlobClient();
@@ -459,7 +464,15 @@ namespace Basic.Azure.Storage.Tests.Integration
             return list.Select(bid => bid.Id).ToList();
         }
 
-        protected void CreateBlockBlob(string containerName, string blobName, Dictionary<string, string> metadata = null, string content = "Generic content")
+        protected void BreakBlobLease(string containerName, string blobName, string lease, int breakPeriod = 1)
+        {
+            var client = StorageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            var blob = container.GetBlobReferenceFromServer(blobName);
+            blob.BreakLease(TimeSpan.FromSeconds(breakPeriod), new AccessCondition { LeaseId = lease });
+        }
+
+        protected CloudBlockBlob CreateBlockBlob(string containerName, string blobName, Dictionary<string, string> metadata = null, string content = "Generic content", string contentType = "", string contentEncoding = "", string contentLanguage = "")
         {
             var client = StorageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
@@ -467,6 +480,11 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             byte[] data = UTF8Encoding.UTF8.GetBytes(content);
             blob.UploadFromByteArray(data, 0, data.Length);
+
+            blob.Properties.ContentType = contentType;
+            blob.Properties.ContentEncoding = contentEncoding;
+            blob.Properties.ContentLanguage = contentLanguage;
+            blob.SetProperties();
 
             if (metadata != null)
             {
@@ -476,6 +494,13 @@ namespace Basic.Azure.Storage.Tests.Integration
                 }
                 blob.SetMetadata();
             }
+
+            return blob;
+        }
+
+        protected void UpdateBlockBlob(string containerName, string blobName, Dictionary<string, string> metadata = null, string content = "Generic content", string contentType = "", string contentEncoding = "", string contentLanguage = "")
+        {
+            CreateBlockBlob(containerName, blobName, metadata, content, contentType, contentEncoding, contentLanguage);
         }
 
         protected void CreatePageBlob(string containerName, string blobName, Dictionary<string, string> metadata = null)

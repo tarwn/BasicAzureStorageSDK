@@ -25,52 +25,52 @@ namespace Basic.Azure.Storage.Extensions
         public IBlobOrBlockListResponseWrapper PutBlockBlobIntelligently(int blockSize,
             string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null)
+            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
         {
             return Task.Run(() =>
-                PutBlockBlobIntelligentlyAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
+                PutBlockBlobIntelligentlyAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId))
                 .Result;
         }
         public async Task<IBlobOrBlockListResponseWrapper> PutBlockBlobIntelligentlyAsync(int blockSize,
             string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null)
+            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
         {
             if (data.Length < MaxSingleBlobUploadSize)
             {
-                return await PutBlockBlobAsync(containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata);
+                return await PutBlockBlobAsync(containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId);
             }
             else
             {
-                return await PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata);
+                return await PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId);
             }
         }
 
         public PutBlockListResponse PutBlockBlobAsList(int blockSize,
             string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null)
+            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
         {
             return Task.Run(() =>
-                    PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata))
+                    PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId))
                     .Result;
         }
         public async Task<PutBlockListResponse> PutBlockBlobAsListAsync(int blockSize,
             string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null)
+            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
         {
             var rangesAndBlockIds = GetBlockRangesAndIds(data.Length, blockSize);
 
             var putBlockRequests = rangesAndBlockIds
-                .Select(blockInfo => GeneratePutBlockRequestAsync(containerName, blobName, data, blockInfo))
+                .Select(blockInfo => GeneratePutBlockRequestAsync(containerName, blobName, data, blockInfo, leaseId))
                 .ToList();
 
             var actualBlockIdList = GenerateBlockIdListFromRangesAndIds(rangesAndBlockIds);
 
             await Task.WhenAll(putBlockRequests);
             return await PutBlockListAsync(containerName, blobName, actualBlockIdList,
-                    cacheControl, contentType, contentEncoding, contentLanguage, contentMD5, metadata);
+                    cacheControl, contentType, contentEncoding, contentLanguage, contentMD5, metadata, leaseId);
         }
 
         private static List<ArrayRangeWithBlockIdString> GetBlockRangesAndIds(int arrayLength, int blockSize)
@@ -103,14 +103,14 @@ namespace Basic.Azure.Storage.Extensions
             return new BlockListBlockIdList(convertedBlockListBlockIds);
         }
 
-        private async Task<PutBlockResponse> GeneratePutBlockRequestAsync(string containerName, string blobName, byte[] fullData, ArrayRangeWithBlockIdString range)
+        private async Task<PutBlockResponse> GeneratePutBlockRequestAsync(string containerName, string blobName, byte[] fullData, ArrayRangeWithBlockIdString range, string leaseId = null)
         {
             var md5Task = CalculateMD5Async(fullData, range.Offset, range.Length);
 
             var chunk = new byte[range.Length];
             Buffer.BlockCopy(fullData, range.Offset, chunk, 0, range.Length);
 
-            return await PutBlockAsync(containerName, blobName, range.Id, chunk, await md5Task);
+            return await PutBlockAsync(containerName, blobName, range.Id, chunk, await md5Task, leaseId);
         }
 
         private static string GenerateBlockId()

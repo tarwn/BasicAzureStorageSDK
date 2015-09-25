@@ -49,6 +49,8 @@
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobResponse.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\GetBlobPropertiesResponse.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\GetBlobPropertiesRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\LeaseBlobAcquireRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\LeaseBlobAcquireResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\LeaseBlobRenewRequest.cs" />

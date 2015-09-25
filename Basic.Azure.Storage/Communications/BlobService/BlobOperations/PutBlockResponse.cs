@@ -1,6 +1,7 @@
 ﻿using Basic.Azure.Storage.Communications.Core;
 using Basic.Azure.Storage.Communications.Core.Interfaces;
 using System;
+using Basic.Azure.Storage.Communications.Utility;
 
 namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 {
@@ -10,20 +11,12 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 
         public virtual string ContentMD5 { get; protected set; }
 
-
         public void ParseHeaders(System.Net.HttpWebResponse response)
         {
             //TODO: determine what we want to do about potential missing headers and date parsing errors
 
-            Date = ParseDate(response.Headers[ProtocolConstants.Headers.OperationDate]);
+            Date = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
             ContentMD5 = response.Headers[ProtocolConstants.Headers.ContentMD5];
-        }
-
-        private DateTime ParseDate(string headerValue)
-        {
-            DateTime dateValue;
-            DateTime.TryParse(headerValue, out dateValue);
-            return dateValue;
         }
 
     }

@@ -2865,6 +2865,796 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #endregion
 
+        #region GetBlobProperties
+
+        [Test]
+        public void GetBlobProperties_ExistingBlob_GetsProperties()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.NotNull(properties);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_ExistingBlob_GetsProperties()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.NotNull(properties);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void GetBlobProperties_EmptyContainerName_ThrowsArgumentNullException()
+        {
+            var containerName = string.Empty;
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            // exception thrown
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async void GetBlobPropertiesAsync_EmptyContainerName_ThrowsArgumentNullException()
+        {
+            var containerName = string.Empty;
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            // exception thrown
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void GetBlobProperties_NullContainerName_ThrowsArgumentNullException()
+        {
+            string containerName = null;
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            // exception thrown
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async void GetBlobPropertiesAsync_NullContainerName_ThrowsArgumentNullException()
+        {
+            string containerName = null;
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            // exception thrown
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void GetBlobProperties_EmptyBlobName_ThrowsArgumentNullException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = string.Empty;
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            // exception thrown
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async void GetBlobPropertiesAsync_EmptyBlobName_ThrowsArgumentNullException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = string.Empty;
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            // exception thrown
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void GetBlobProperties_NullBlobName_ThrowsArgumentNullException()
+        {
+            var containerName = GenerateSampleContainerName();
+            string blobName = null;
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            // exception thrown
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async void GetBlobPropertiesAsync_NullBlobName_ThrowsArgumentNullException()
+        {
+            var containerName = GenerateSampleContainerName();
+            string blobName = null;
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            // exception thrown
+        }
+
+        [Test]
+        public void GetBlobProperties_ExistingBlobJustModified_GetsCorrectLastModified()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var createdAt = DateTime.Now;
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            AssertDatesEqualWithTolerance(createdAt, properties.LastModified);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_ExistingBlobJustModified_GetsCorrectLastModified()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var createdAt = DateTime.Now;
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            AssertDatesEqualWithTolerance(createdAt, properties.LastModified);
+        }
+
+        [Test]
+        public void GetBlobProperties_ExistingBlobWithMetadata_GetsCorrectMetadata()
+        {
+            var metadata = new Dictionary<string, string>{
+                { "HeyHey", "We're the" },
+                { "GroundControl", "CallingMajor" }
+            };
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, metadata);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(metadata, properties.Metadata);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_ExistingBlobWithMetadata_GetsCorrectMetadata()
+        {
+            var metadata = new Dictionary<string, string>{
+                { "HeyHey", "We're the" },
+                { "GroundControl", "CallingMajor" }
+            };
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, metadata);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(metadata, properties.Metadata);
+        }
+
+        [Test]
+        public void GetBlobProperties_ExistingBlockBlob_GetsBlockBlobType()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(Communications.BlobService.BlobType.Block, properties.BlobType);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_ExistingBlockBlob_GetsBlockBlobType()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(Communications.BlobService.BlobType.Block, properties.BlobType);
+        }
+
+        [Test]
+        public void GetBlobProperties_ExistingPageBlob_GetsPageBlobType()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreatePageBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(Communications.BlobService.BlobType.Page, properties.BlobType);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_ExistingPageBlob_GetsPageBlobType()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreatePageBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(Communications.BlobService.BlobType.Page, properties.BlobType);
+        }
+
+        [Test]
+        public void GetBlobProperties_UnleasedBlob_GetsLeaseDurationNotSpecified()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(LeaseDuration.NotSpecified, properties.LeaseDuration);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_UnleasedBlob_GetsLeaseDurationNotSpecified()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(LeaseDuration.NotSpecified, properties.LeaseDuration);
+        }
+
+        [Test]
+        public void GetBlobProperties_LeasedBlobWithFixedLeaseTime_GetsLeaseDurationFixed()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName, TimeSpan.FromSeconds(20));
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(LeaseDuration.Fixed, properties.LeaseDuration);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_LeasedBlobWithFixedLeaseTime_GetsLeaseDurationFixed()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName, TimeSpan.FromSeconds(20));
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(LeaseDuration.Fixed, properties.LeaseDuration);
+        }
+
+        [Test]
+        public void GetBlobProperties_LeasedBlobWithInfiniteLeaseTime_GetsLeaseDurationInfinite()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName, null);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(LeaseDuration.Infinite, properties.LeaseDuration);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_LeasedBlobWithInfiniteLeaseTime_GetsLeaseDurationInfinite()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName, null);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(LeaseDuration.Infinite, properties.LeaseDuration);
+        }
+
+        [Test]
+        public void GetBlobProperties_UnleasedBlob_GetsLeaseStateAvailable()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(LeaseState.Available, properties.LeaseState);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_UnleasedBlob_GetsLeaseStateAvailable()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(LeaseState.Available, properties.LeaseState);
+        }
+
+        [Test]
+        public void GetBlobProperties_LeasedBlob_GetsLeaseStateLeased()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(LeaseState.Leased, properties.LeaseState);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_LeasedBlob_GetsLeaseStateLeased()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(LeaseState.Leased, properties.LeaseState);
+        }
+
+        [Test]
+        public void GetBlobProperties_LeasedBlobLeaseExpired_GetsLeaseStateExpired()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName, TimeSpan.FromSeconds(15));
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+            Thread.Sleep(TimeSpan.FromSeconds(16));
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(LeaseState.Expired, properties.LeaseState);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_LeasedBlobLeaseExpired_GetsLeaseStateExpired()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            LeaseBlob(containerName, blobName, TimeSpan.FromSeconds(15));
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+            Thread.Sleep(TimeSpan.FromSeconds(16));
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(LeaseState.Expired, properties.LeaseState);
+        }
+
+        [Test]
+        public void GetBlobProperties_LeasedBlobLeaseBreaking_GetsLeaseStateBreaking()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var lease = LeaseBlob(containerName, blobName, TimeSpan.FromSeconds(60));
+            BreakBlobLease(containerName, blobName, lease, 30);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+            Thread.Sleep(TimeSpan.FromSeconds(16));
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(LeaseState.Breaking, properties.LeaseState);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_LeasedBlobLeaseBreaking_GetsLeaseStateBreaking()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var lease = LeaseBlob(containerName, blobName, TimeSpan.FromSeconds(60));
+            BreakBlobLease(containerName, blobName, lease, 30);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+            Thread.Sleep(TimeSpan.FromSeconds(16));
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(LeaseState.Breaking, properties.LeaseState);
+        }
+
+        [Test]
+        public void GetBlobProperties_LeasedBlobLeaseBroken_GetsLeaseStateBroken()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var lease = LeaseBlob(containerName, blobName, TimeSpan.FromSeconds(15));
+            BreakBlobLease(containerName, blobName, lease);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+            Thread.Sleep(TimeSpan.FromSeconds(2));
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(LeaseState.Broken, properties.LeaseState);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_LeasedBlobLeaseBroken_GetsLeaseStateBroken()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var lease = LeaseBlob(containerName, blobName, TimeSpan.FromSeconds(15));
+            BreakBlobLease(containerName, blobName, lease);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+            Thread.Sleep(TimeSpan.FromSeconds(2));
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(LeaseState.Broken, properties.LeaseState);
+        }
+
+        [Test]
+        public void GetBlobProperties_LeasedBlob_GetsLeaseStatusLocked()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var lease = LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(LeaseStatus.Locked, properties.LeaseStatus);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_LeasedBlob_GetsLeaseStatusLocked()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var lease = LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(LeaseStatus.Locked, properties.LeaseStatus);
+        }
+
+        [Test]
+        public void GetBlobProperties_UnleasedBlob_GetsLeaseStatusUnlocked()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(LeaseStatus.Unlocked, properties.LeaseStatus);
+        }
+
+        [Test]
+        public void GetBlobProperties_ExistingBlob_GetsCorrectContentLength()
+        {
+            const string blobContents = "foo";
+            var expectedContentLength = Encoding.UTF8.GetByteCount(blobContents);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, content: blobContents);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(expectedContentLength, properties.ContentLength);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_ExistingBlob_GetsCorrectContentLength()
+        {
+            const string blobContents = "foo";
+            var expectedContentLength = Encoding.UTF8.GetByteCount(blobContents);
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, content: blobContents);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(expectedContentLength, properties.ContentLength);
+        }
+
+        [Test]
+        public void GetBlobProperties_ExistingBlob_GetsCorrectContentType()
+        {
+            const string expectedContentType = "pigeon/feathers";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, contentType: expectedContentType);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(expectedContentType, properties.ContentType);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_ExistingBlob_GetsCorrectContentType()
+        {
+            const string expectedContentType = "pigeon/feathers";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, contentType: expectedContentType);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(expectedContentType, properties.ContentType);
+        }
+
+        [Test]
+        public void GetBlobProperties_ExistingBlob_HasAnETag()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.IsNotNullOrEmpty(properties.ETag);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_ExistingBlob_HasAnETag()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.IsNotNullOrEmpty(properties.ETag);
+        }
+
+        [Test]
+        public void GetBlobProperties_ExistingBlobModified_ETagPropertyChanges()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var initialProperties = GetBlobProperties(containerName, blobName);
+            UpdateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var postChangeProperties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreNotEqual(initialProperties.ETag, postChangeProperties.ETag);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_ExistingBlobModified_ETagPropertyChanges()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            var initialProperties = GetBlobProperties(containerName, blobName);
+            UpdateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var postChangeProperties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreNotEqual(initialProperties.ETag, postChangeProperties.ETag);
+        }
+
+        [Test]
+        public void GetBlobProperties_ExistingBlobWithSpecifiedContentMD5_GetsCorrectContentMD5()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blobMD5 = CreateBlockBlob(containerName, blobName)
+                .Properties.ContentMD5;
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(blobMD5, properties.ContentMD5);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_ExistingBlobWithSpecifiedContentMD5_GetsCorrectContentMD5()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blobMD5 = CreateBlockBlob(containerName, blobName)
+                .Properties.ContentMD5;
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(blobMD5, properties.ContentMD5);
+        }
+
+        [Test]
+        public void GetBlobProperties_ExistingBlobWithSpecifiedContentEncoding_GetsCorrectContentEncoding()
+        {
+            const string expectedEncoding = "with minimal distraction";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, contentEncoding: expectedEncoding);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(expectedEncoding, properties.ContentEncoding);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_ExistingBlobWithSpecifiedContentEncoding_GetsCorrectContentEncoding()
+        {
+            const string expectedEncoding = "with minimal distraction";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, contentEncoding: expectedEncoding);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(expectedEncoding, properties.ContentEncoding);
+        }
+
+        [Test]
+        public void GetBlobProperties_ExistingBlobWithSpecifiedContentLanguage_GetsCorrectContentLanguage()
+        {
+            const string expectedLanguage = "dour";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, contentLanguage: expectedLanguage);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            Assert.AreEqual(expectedLanguage, properties.ContentLanguage);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_ExistingBlobWithSpecifiedContentLanguage_GetsCorrectContentLanguage()
+        {
+            const string expectedLanguage = "dour";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, contentLanguage: expectedLanguage);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            Assert.AreEqual(expectedLanguage, properties.ContentLanguage);
+        }
+
+        [Test]
+        public void GetBlobProperties_ExistingBlob_GetsCorrectDate()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var createdDate = DateTime.Now;
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = client.GetBlobProperties(containerName, blobName);
+
+            AssertDatesEqualWithTolerance(createdDate, properties.Date);
+        }
+
+        [Test]
+        public async void GetBlobPropertiesAsync_ExistingBlob_GetsCorrectDate()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var createdDate = DateTime.Now;
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
+
+            AssertDatesEqualWithTolerance(createdDate, properties.Date);
+        }
+
+        #endregion
+
         #region GetBlob
 
         [Test]
@@ -3326,8 +4116,8 @@ namespace Basic.Azure.Storage.Tests.Integration
         public void LeaseBlobRenew_LeasedBlob_RenewsActiveLease()
         {
             var minimumWaitTime = TimeSpan.FromSeconds(15);
-            var halfOfMinimum = minimumWaitTime.Subtract(TimeSpan.FromSeconds(minimumWaitTime.TotalSeconds*0.5));
-            var threeQuartersOfMinimum = minimumWaitTime.Subtract(TimeSpan.FromSeconds(minimumWaitTime.TotalSeconds*0.75));
+            var halfOfMinimum = minimumWaitTime.Subtract(TimeSpan.FromSeconds(minimumWaitTime.TotalSeconds * 0.5));
+            var threeQuartersOfMinimum = minimumWaitTime.Subtract(TimeSpan.FromSeconds(minimumWaitTime.TotalSeconds * 0.75));
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
@@ -3376,7 +4166,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             Thread.Sleep(moreThanMinimumWaitTime);
 
             client.LeaseBlobRenew(containerName, blobName, leaseId);
-            
+
             AssertBlobIsLeased(containerName, blobName, leaseId);
         }
 
@@ -3677,7 +4467,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             // expects exception
         }
-        
+
         #endregion
 
         //[Test]

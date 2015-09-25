@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -21,25 +20,24 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
             SignedIdentifiers = new ReadOnlyCollection<BlobSignedIdentifier>(new List<BlobSignedIdentifier>());
         }
 
-        public ReadOnlyCollection<BlobSignedIdentifier> SignedIdentifiers { get; protected set; }
+        public virtual ReadOnlyCollection<BlobSignedIdentifier> SignedIdentifiers { get; protected set; }
 
-        public ContainerAccessType PublicAccess { get; set; }
+        public virtual ContainerAccessType PublicAccess { get; set; }
 
 
-        public DateTime Date { get; protected set; }
+        public virtual DateTime Date { get; protected set; }
 
-        public string ETag { get; protected set; }
+        public virtual string ETag { get; protected set; }
 
-        public DateTime LastModified { get; protected set; }
-
+        public virtual DateTime LastModified { get; protected set; }
 
         public void ParseHeaders(System.Net.HttpWebResponse response)
         {
             //TODO: determine what we want to do about potential missing headers and date parsing errors
 
-            ETag = response.Headers[ProtocolConstants.Headers.ETag].Trim(new char[] { '"' });
-            Date = ParseDate(response.Headers[ProtocolConstants.Headers.OperationDate]);
-            LastModified = ParseDate(response.Headers[ProtocolConstants.Headers.LastModified]);
+            ETag = response.Headers[ProtocolConstants.Headers.ETag].Trim('"');
+            Date = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
+            LastModified = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
 
             if (response.Headers[ProtocolConstants.Headers.BlobPublicAccess] == null)
             {
@@ -59,13 +57,6 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
                         throw new AzureResponseParseException(ProtocolConstants.Headers.BlobPublicAccess, response.Headers[ProtocolConstants.Headers.BlobPublicAccess]);
                 }
             }
-        }
-
-        private DateTime ParseDate(string headerValue)
-        {
-            DateTime dateValue;
-            DateTime.TryParse(headerValue, out dateValue);
-            return dateValue;
         }
 
         public async Task ParseResponseBodyAsync(System.IO.Stream responseStream)
@@ -99,10 +90,10 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
                                                 identifier.AccessPolicy.Permission = SharedAccessPermissionParse.ParseBlob(apElement.Value);
                                                 break;
                                             case "Start":
-                                                identifier.AccessPolicy.StartTime = DateParse.Parse(apElement.Value);
+                                                identifier.AccessPolicy.StartTime = DateParse.ParseUTC(apElement.Value);
                                                 break;
                                             case "Expiry":
-                                                identifier.AccessPolicy.Expiry = DateParse.Parse(apElement.Value);
+                                                identifier.AccessPolicy.Expiry = DateParse.ParseUTC(apElement.Value);
                                                 break;
                                         }
                                     }
