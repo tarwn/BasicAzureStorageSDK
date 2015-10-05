@@ -46,7 +46,7 @@ namespace Basic.Azure.Storage.Communications.Core
                 || exceptionToReview is OperationTimedOutAzureException
                 /* || ex is "TableErrorCodeStrings.TableServerOutOfMemory" */
                 || exceptionToReview is TimeoutException
-                || exceptionToReview is UnidentifiedAzureException;
+                || exceptionToReview is UnidentifiedAzureException;                
 
         }
     }
