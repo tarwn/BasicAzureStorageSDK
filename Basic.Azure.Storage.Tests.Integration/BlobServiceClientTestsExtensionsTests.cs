@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Basic.Azure.Storage.Extensions;
 using Basic.Azure.Storage.Extensions.Contracts;
-using Moq;
 using NUnit.Framework;
 using BlobType = Microsoft.WindowsAzure.Storage.Blob.BlobType;
 
