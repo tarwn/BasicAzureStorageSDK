@@ -6,10 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
-using Basic.Azure.Storage.Communications.Common;
 using Basic.Azure.Storage.Extensions;
 using Basic.Azure.Storage.Extensions.Contracts;
-using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using Moq;
 using NUnit.Framework;
 using BlobType = Microsoft.WindowsAzure.Storage.Blob.BlobType;
@@ -576,29 +574,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #region PutBlockBlobAsList
 
-        //[Test]
-        //public async void PutBlockBlobAsListAsync_ExisingBlobLongRunningPut_CreatesAndMaintainsLease()
-        //{
-        //    const string dataPerBlock = "foo";
-        //    var expectedData = Encoding.UTF8.GetBytes(string.Format("{0}{0}{0}", dataPerBlock));
-        //    var containerName = GenerateSampleContainerName();
-        //    var blobName = GenerateSampleBlobName();
-        //    var blobServiceClientWithLongPutMock = new Mock<IBlobServiceClientEx>();
-        //    blobServiceClientWithLongPutMock.
-        //    blobServiceClientWithLongPutMock
-        //        .Setup(_ => _.PutBlockListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<BlockListBlockIdList>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), It.IsAny<string>()))
-        //        .Callback(() => Thread.Sleep(2*60*1000))
-        //        .CallBase();
-
-        //    CreateContainer(containerName);
-        //    CreateBlockBlob(containerName, blobName);
-
-
-        //    await client.PutBlockBlobAsListAsync(4, containerName, blobName, expectedData);
-
-        //    AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
-        //    AssertBlockBlobContainsData(containerName, blobName, expectedData);
-        //}
+        // TODO Test auto-re-leasing when stream upload is available and we can control how fast they upload
 
         [Test]
         public async void PutBlockBlobAsListAsync_RequiredArgsOnly_CreatesBlockBlobFromLatestBlocks()
