@@ -14,6 +14,7 @@ namespace Basic.Azure.Storage.Extensions
 
         private Task MaintainLeaseTask { get; set; }
         private CancellationTokenSource CancellationTokenSource { get; set; }
+        private Action<BlobLeaseMaintainer, AggregateException> TaskExceptionHandler { get; set; }
 
         public string LeaseId { get; set; }
         public int LeaseDuration { get; set; }
@@ -21,7 +22,7 @@ namespace Basic.Azure.Storage.Extensions
         public string ContainerName { get; private set; }
         public string BlobName { get; private set; }
 
-        private BlobLeaseMaintainer(IBlobServiceClientEx blobServiceClientEx, string containerName, string blobName, string leaseId, DateTime leaseAcquiredOn, int leaseDuration)
+        private BlobLeaseMaintainer(IBlobServiceClientEx blobServiceClientEx, string containerName, string blobName, string leaseId, DateTime leaseAcquiredOn, int leaseDuration, Action<BlobLeaseMaintainer, AggregateException> exceptionHandler)
         {
             _blobServiceClientEx = blobServiceClientEx;
 
@@ -30,6 +31,7 @@ namespace Basic.Azure.Storage.Extensions
             LeaseId = leaseId;
             LeaseAcquiredOn = leaseAcquiredOn;
             LeaseDuration = leaseDuration;
+            TaskExceptionHandler = exceptionHandler;
 
             CancellationTokenSource = new CancellationTokenSource();
 
@@ -50,11 +52,11 @@ namespace Basic.Azure.Storage.Extensions
             await blobServiceClientEx.PutBlockBlobAsync(containerName, blobName, new byte[] { });
             return await LeaseExistingBlockBlob(blobServiceClientEx, containerName, blobName, leaseDuration, proposedLeaseId);
         }
-        public static async Task<BlobLeaseMaintainer> LeaseNewOrExistingBlockBlobAndMaintainLease(IBlobServiceClientEx blobServiceClientEx, string containerName, string blobName, int leaseDuration, string proposedLeaseId = null)
+        public static async Task<BlobLeaseMaintainer> LeaseNewOrExistingBlockBlobAndMaintainLease(IBlobServiceClientEx blobServiceClientEx, string containerName, string blobName, int leaseDuration, string proposedLeaseId = null, Action<BlobLeaseMaintainer, AggregateException> exceptionHandler = null)
         {
             var leaseResponse = await LeaseNewOrExistingBlockBlob(blobServiceClientEx, containerName, blobName, leaseDuration, proposedLeaseId);
 
-            return new BlobLeaseMaintainer(blobServiceClientEx, containerName, blobName, leaseResponse.LeaseId, leaseResponse.Date, leaseDuration);
+            return new BlobLeaseMaintainer(blobServiceClientEx, containerName, blobName, leaseResponse.LeaseId, leaseResponse.Date, leaseDuration, exceptionHandler);
         }
 
         private void StartMaintainingLease()
@@ -77,6 +79,14 @@ namespace Basic.Azure.Storage.Extensions
                     await _blobServiceClientEx.LeaseBlobRenewAsync(ContainerName, BlobName, LeaseId);
                 }
             }, token);
+
+            MaintainLeaseTask.ContinueWith(task =>
+            {
+                if (null != TaskExceptionHandler)
+                {
+                    TaskExceptionHandler(this, task.Exception);
+                }
+            }, TaskContinuationOptions.OnlyOnFaulted);
         }
         public async Task StopMaintainingAndClearLease()
         {
