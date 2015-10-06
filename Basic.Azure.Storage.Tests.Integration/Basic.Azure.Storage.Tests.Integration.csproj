@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseBlobServiceTestFixture.cs" />
+    <Compile Include="BlobLeaseMaintainerTests.cs" />
     <Compile Include="BlobServiceClientTests.cs" />
     <Compile Include="BlobServiceClientTestsExtensionsTests.cs" />
     <Compile Include="ProxyType.cs" />
