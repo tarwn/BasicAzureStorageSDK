@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -69,6 +70,22 @@ namespace Basic.Azure.Storage.Communications.Utility
             if (parameterValue.Length > size)
             {
                 throw new ArgumentException(String.Format("The provided array is longer than maximum size {0}.", size), parameterName);
+            }
+        }
+
+        internal static void ArgumentIsNotNull(string parameterName, object parameterValue)
+        {
+            if (null == parameterValue)
+            {
+                throw new ArgumentNullException(parameterName, String.Format("The provided value {0} is null", parameterName));
+            }
+        }
+
+        internal static void StreamIsReadable(string parameterName, Stream parameterValue)
+        {
+            if (!parameterValue.CanRead)
+            {
+                throw new ArgumentException(String.Format("The provided stream {0} is not readable.", parameterName));
             }
         }
 

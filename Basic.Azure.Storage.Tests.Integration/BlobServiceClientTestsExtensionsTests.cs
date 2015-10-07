@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using Basic.Azure.Storage.Communications.BlobService;
@@ -18,6 +19,31 @@ namespace Basic.Azure.Storage.Tests.Integration
         private const int MaxIntelligentSingleBlobUploadSizeOverride = BlobServiceConstants.MaxSingleBlockUploadSize + 5;
 
         #region PutBlockBlobIntelligently
+
+        #region Stream
+
+        [Test]
+        public async void PutBlockBlobIntelligentlyAsync_StreamWithDefaultArgsOnly_CreatesBlockBlob()
+        {
+            var expectedData = Encoding.UTF8.GetBytes("test data");
+            using (var stream = new MemoryStream(expectedData))
+            {
+                var containerName = GenerateSampleContainerName();
+                var blobName = GenerateSampleBlobName();
+                IBlobServiceClientEx client = new BlobServiceClientEx(AccountSettings);
+                CreateContainer(containerName);
+
+                // Tempt it to do it in two uploads by specifying half megabyte
+                await client.PutBlockBlobIntelligentlyAsync(expectedData.Length - 5, containerName, blobName, stream);
+
+                AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+                AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            }
+        }
+
+        #endregion
+
+        #region Byte Array
 
         [Test]
         public async void PutBlockBlobIntelligentlyAsync_DefaultArgsOnly_CreatesBlockBlob()
@@ -569,9 +595,36 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #endregion
 
+        #endregion
+
         #region PutBlockBlobAsList
 
         // TODO Test auto-re-leasing when stream upload is available and we can control how fast they upload
+
+        #region Stream
+
+        [Test]
+        public async void PutBlockBlobAsListAsync_StreamWithDefaultArgsOnly_CreatesBlockBlob()
+        {
+            var expectedData = Encoding.UTF8.GetBytes("test data");
+            using (var stream = new MemoryStream(expectedData))
+            {
+                var containerName = GenerateSampleContainerName();
+                var blobName = GenerateSampleBlobName();
+                IBlobServiceClientEx client = new BlobServiceClientEx(AccountSettings);
+                CreateContainer(containerName);
+
+                // Tempt it to do it in two uploads by specifying half megabyte
+                await client.PutBlockBlobAsListAsync(expectedData.Length - 5, containerName, blobName, stream);
+
+                AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+                AssertBlockBlobContainsData(containerName, blobName, expectedData);
+            }
+        }
+
+        #endregion
+
+        #region Byte Array
 
         [Test]
         public async void PutBlockBlobAsListAsync_RequiredArgsOnly_CreatesBlockBlobFromLatestBlocks()
@@ -946,6 +999,8 @@ namespace Basic.Azure.Storage.Tests.Integration
             AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
             Assert.AreEqual(specifiedMismatchedContentMD5, properties.ContentMD5);
         }
+
+        #endregion
 
         #endregion
 
