@@ -16,41 +16,20 @@ namespace Basic.Azure.Storage.Communications.Utility
     {
         // http://stackoverflow.com/a/1904361 - Not the fastest way, but the most correct. If speed is an issue we can refactor.
         private static readonly CSharpCodeProvider Provider = new CSharpCodeProvider();
-
-        //TODO: implement a validation check and exception for Identifier rules
-
-        public static void EnsureNameIsValidIdentifier(string name)
-        {
-            if (!IsValidIdentifier(name))
-            {
-                throw GenerateExceptionForInvalidName(name);
-            }
-        }
-
+        
         public static void EnsureNamesAreValidIdentifiers(IEnumerable<string> names)
         {
             const string invalidIdentifiers = "The provided list of names contains invalid identifiers.";
+            const string invalidIdentifier = "The provided identifier [{0}] is not a valid identifier.";
 
             var invalidNames = names
-                .Where(n => !IsValidIdentifier(n))
+                .Where(n => !Provider.IsValidIdentifier(n))
                 .ToList();
 
             if (invalidNames.Any())
             {
-                throw new AggregateException(invalidIdentifiers, invalidNames.Select(GenerateExceptionForInvalidName));
+                throw new AggregateException(invalidIdentifiers, invalidNames.Select(n => new ArgumentException(string.Format(invalidIdentifier, n))));
             }
-        }
-
-        private static bool IsValidIdentifier(string name)
-        {
-            return Provider.IsValidIdentifier(name);
-        }
-
-        private static ArgumentException GenerateExceptionForInvalidName(string name)
-        {
-            const string invalidIdentifier = "The provided identifier [{0}] is not a valid identifier.";
-
-            return new ArgumentException(String.Format(invalidIdentifier, name));
         }
 
     }
