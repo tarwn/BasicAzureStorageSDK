@@ -40,9 +40,6 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
         {
             Guard.ArgumentArrayLengthIsEqualOrSmallerThanSize("data", data, BlobServiceConstants.MaxSingleBlobUploadSize);
 
-            if (null != leaseId)
-                Guard.ArgumentIsAGuid("leaseId", leaseId);
-
             _data = data;
         }
 
@@ -63,6 +60,9 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
                     string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
             : base(settings)
         {
+            if (!string.IsNullOrEmpty(leaseId))
+                Guard.ArgumentIsAGuid("leaseId", leaseId);
+
             _containerName = containerName;
             _blobName = blobName;
             _blobType = blobType;
@@ -76,7 +76,6 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 
             if (_metadata != null)
                 IdentifierValidation.EnsureNamesAreValidIdentifiers(_metadata.Select(kvp => kvp.Key));
-
         }
 
         protected override string HttpMethod { get { return "PUT"; } }

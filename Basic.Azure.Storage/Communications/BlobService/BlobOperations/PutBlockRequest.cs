@@ -27,7 +27,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 
             Guard.ArgumentArrayLengthIsEqualOrSmallerThanSize("data", data, BlobServiceConstants.MaxSingleBlockUploadSize);
 
-            if (null != leaseId)
+            if (!string.IsNullOrEmpty(leaseId))
                 Guard.ArgumentIsAGuid("leaseId", leaseId);
 
             _containerName = containerName;

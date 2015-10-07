@@ -37,7 +37,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             Dictionary<string, string> metadata = null, string leaseId = null)
             : base(settings)
         {
-            if (null != leaseId)
+            if (!string.IsNullOrEmpty(leaseId))
                 Guard.ArgumentIsAGuid("leaseId", leaseId);
 
             var dataAndHash = data.AsXmlByteArrayWithMd5Hash();

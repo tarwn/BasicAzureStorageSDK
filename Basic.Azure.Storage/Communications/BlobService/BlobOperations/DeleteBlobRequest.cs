@@ -18,7 +18,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
         public DeleteBlobRequest(StorageAccountSettings settings, string containerName, string blobName, string leaseId = null)
             : base(settings)
         {
-            if (null != leaseId)
+            if (!string.IsNullOrEmpty(leaseId))
                 Guard.ArgumentIsAGuid("leaseId", leaseId);
 
             _containerName = containerName;

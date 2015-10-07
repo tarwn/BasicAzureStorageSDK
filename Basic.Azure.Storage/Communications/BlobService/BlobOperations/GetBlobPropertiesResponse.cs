@@ -59,7 +59,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 
             ParseLeaseDuration(response);
 
-            ParseMetadata(response);
+            Metadata = MetadataParse.ParseMetadata(response);
         }
 
         private void ParseBlobType(WebResponse response)
@@ -75,15 +75,6 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
                 default:
                     throw new ArgumentException("Reponse signifies unsupported blob type", "response");
             }
-        }
-
-        private void ParseMetadata(WebResponse response)
-        {
-            var parsedMetadata = response.Headers.AllKeys
-                .Where(key => key.StartsWith(ProtocolConstants.Headers.MetaDataPrefix, StringComparison.InvariantCultureIgnoreCase))
-                .ToDictionary(key => key.Substring(ProtocolConstants.Headers.MetaDataPrefix.Length), key => response.Headers[key]);
-
-            Metadata = new ReadOnlyDictionary<string, string>(parsedMetadata);
         }
 
         private void ParseLeaseDuration(WebResponse response)

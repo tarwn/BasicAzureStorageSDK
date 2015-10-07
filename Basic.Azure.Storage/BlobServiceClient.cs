@@ -301,6 +301,19 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
+        public GetBlobMetadataResponse GetBlobMetadata(string containerName, string blobName, string leaseId = null)
+        {
+            var request = new GetBlobMetadataRequest(_account, containerName, blobName, leaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<GetBlobMetadataResponse> GetBlobMetadataAsync(string containerName, string blobName, string leaseId = null)
+        {
+            var request = new GetBlobMetadataRequest(_account, containerName, blobName, leaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         public LeaseBlobAcquireResponse LeaseBlobAcquire(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
         {
             var request = new LeaseBlobAcquireRequest(_account, containerName, blobName, leaseDurationInSeconds, proposedLeaseId);

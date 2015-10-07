@@ -3655,6 +3655,234 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #endregion
 
+        #region GetBlobMetadata
+
+        [Test]
+        public void GetBlobMetadata_ExistingBlobWithMetadata_GetsMetadata()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var expectedMetadata = new Dictionary<string, string>
+            {
+                {"CaptainAmerica", "Shield"},
+                {"Thor", "Hammer"},
+                {"Me", "Code"}
+            };
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, expectedMetadata);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlobMetadata(containerName, blobName);
+
+            Assert.AreEqual(expectedMetadata, response.Metadata);
+        }
+
+        [Test]
+        public async void GetBlobMetadataAsync_ExistingBlobWithMetadata_GetsMetadata()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var expectedMetadata = new Dictionary<string, string>
+            {
+                {"CaptainAmerica", "Shield"},
+                {"Thor", "Hammer"},
+                {"Me", "Code"}
+            };
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, expectedMetadata);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlobMetadataAsync(containerName, blobName);
+
+            Assert.AreEqual(expectedMetadata, response.Metadata);
+        }
+
+        [Test]
+        public void GetBlobMetadata_ExistingBlobWithNoMetadata_GetsEmptyMetadata()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var expectedMetadata = new Dictionary<string, string>();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlobMetadata(containerName, blobName);
+
+            Assert.AreEqual(expectedMetadata, response.Metadata);
+        }
+
+        [Test]
+        public async void GetBlobMetadataAsync_ExistingBlobWithNoMetadata_GetsEmptyMetadata()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var expectedMetadata = new Dictionary<string, string>();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlobMetadataAsync(containerName, blobName);
+
+            Assert.AreEqual(expectedMetadata, response.Metadata);
+        }
+
+        [Test]
+        public void GetBlobMetadata_LeasedBlobWithMetadataCorrectLeaseProvided_GetsMetadata()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var expectedMetadata = new Dictionary<string, string>
+            {
+                {"CaptainAmerica", "Shield"},
+                {"Thor", "Hammer"},
+                {"Me", "Code"}
+            };
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, expectedMetadata);
+            var lease = LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlobMetadata(containerName, blobName, lease);
+
+            Assert.AreEqual(expectedMetadata, response.Metadata);
+        }
+
+        [Test]
+        public async void GetBlobMetadataAsync_LeasedBlobWithMetadataCorrectLeaseProvided_GetsMetadata()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var expectedMetadata = new Dictionary<string, string>
+            {
+                {"CaptainAmerica", "Shield"},
+                {"Thor", "Hammer"},
+                {"Me", "Code"}
+            };
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, expectedMetadata);
+            var lease = LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlobMetadataAsync(containerName, blobName, lease);
+
+            Assert.AreEqual(expectedMetadata, response.Metadata);
+        }
+
+        [Test]
+        public void GetBlobMetadata_LeasedBlobWithMetadataNoLeaseProvided_GetsMetadata()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var expectedMetadata = new Dictionary<string, string>
+            {
+                {"CaptainAmerica", "Shield"},
+                {"Thor", "Hammer"},
+                {"Me", "Code"}
+            };
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, expectedMetadata);
+            LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlobMetadata(containerName, blobName);
+
+            Assert.AreEqual(expectedMetadata, response.Metadata);
+        }
+
+        [Test]
+        public async void GetBlobMetadataAsync_LeasedBlobWithMetadataNoLeaseProvided_GetsMetadata()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var expectedMetadata = new Dictionary<string, string>
+            {
+                {"CaptainAmerica", "Shield"},
+                {"Thor", "Hammer"},
+                {"Me", "Code"}
+            };
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, expectedMetadata);
+            LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlobMetadataAsync(containerName, blobName);
+
+            Assert.AreEqual(expectedMetadata, response.Metadata);
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        public void GetBlobMetadata_LeasedBlobWithMetadataIncorrectLeaseProvided_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var expectedMetadata = new Dictionary<string, string>
+            {
+                {"CaptainAmerica", "Shield"},
+                {"Thor", "Hammer"},
+                {"Me", "Code"}
+            };
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, expectedMetadata);
+            LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            client.GetBlobMetadata(containerName, blobName, FakeLeaseId);
+
+            // throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(LeaseIdMismatchWithBlobOperationAzureException))]
+        public async void GetBlobMetadataAsync_LeasedBlobWithMetadataIncorrectLeaseProvided_ThrowsLeaseIdMismatchWithBlobOperationAzureException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var expectedMetadata = new Dictionary<string, string>
+            {
+                {"CaptainAmerica", "Shield"},
+                {"Thor", "Hammer"},
+                {"Me", "Code"}
+            };
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, expectedMetadata);
+            LeaseBlob(containerName, blobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            await client.GetBlobMetadataAsync(containerName, blobName, FakeLeaseId);
+
+            // throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void GetBlobMetadata_InvalidLeaseProvided_ThrowsArgumentException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            client.GetBlobMetadata(containerName, blobName, InvalidLeaseId);
+
+            // throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public async void GetBlobMetadataAsync_InvalidLeaseProvided_ThrowsArgumentException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            await client.GetBlobMetadataAsync(containerName, blobName, InvalidLeaseId);
+
+            // throws exception
+        }
+
+        #endregion
+
         #region GetBlob
 
         [Test]
@@ -4469,17 +4697,6 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         #endregion
-
-        //[Test]
-        //public void GetBlobProperties_ValidBlob_ReturnsProperties()
-        //{
-        //    IBlobServiceClient client = new BlobServiceClient(_accountSettings);
-        //    var containerName = GenerateSampleContainerName();
-        //    CreateContainer(containerName);
-        //    CreateBlockBlob(containerName, "blob1");
-
-        //    var response = client.GetProperties(containerName, "blob1");
-        //}
 
         #endregion
 

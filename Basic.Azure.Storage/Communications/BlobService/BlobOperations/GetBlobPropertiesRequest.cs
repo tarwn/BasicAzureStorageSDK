@@ -11,15 +11,17 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
     /// </summary>
     public class GetBlobPropertiesRequest : RequestBase<GetBlobPropertiesResponse>, ISendAdditionalOptionalHeaders
     {
-        private string _containerName;
-        private string _blobName;
-        private string _leaseId;
+        private readonly string _containerName;
+        private readonly string _blobName;
+        private readonly string _leaseId;
 
         public GetBlobPropertiesRequest(StorageAccountSettings settings, string containerName, string blobName, string leaseId = null)
             : base(settings)
         {
             Guard.ArgumentIsNotNullOrEmpty("containerName", containerName);
             Guard.ArgumentIsNotNullOrEmpty("blobName", blobName);
+            if(!string.IsNullOrEmpty(leaseId))
+                Guard.ArgumentIsAGuid("leaseId", leaseId);
 
             _containerName = containerName;
             _blobName = blobName;
