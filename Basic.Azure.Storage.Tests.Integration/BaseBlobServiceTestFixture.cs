@@ -83,6 +83,11 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #region Assertions
 
+        protected void AssertStringContainsString(string wholeString, string expectedSubString)
+        {
+            Assert.True(wholeString.Contains(expectedSubString), "Ensuring {0} contains {1}", wholeString, expectedSubString);
+        }
+
         protected void AssertDatesEqualWithTolerance(DateTime expected, DateTime actual, int secondTolerance = 10)
         {
             Assert.LessOrEqual(expected.Subtract(actual).TotalSeconds, secondTolerance);
@@ -165,6 +170,23 @@ namespace Basic.Azure.Storage.Tests.Integration
                 Assert.Fail("AssertBlobExists: The blob '{0}' does not exist", blobName);
 
             return blob;
+        }
+
+        protected IDictionary<string, string> AssertBlobMetadata(string containerName, string blobName, Dictionary<string, string> expectedMetadata)
+        {
+            var client = StorageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            if (!container.Exists())
+                Assert.Fail("AssertBlobExists: The container '{0}' does not exist", containerName);
+
+            var blob = container.GetBlobReferenceFromServer(blobName);
+
+            if (!blob.Exists())
+                Assert.Fail("AssertBlobExists: The blob '{0}' does not exist", blobName);
+
+            Assert.AreEqual(expectedMetadata, blob.Metadata);
+
+            return blob.Metadata;
         }
 
         protected void AssertBlobIsLeased(string containerName, string blobName, string leaseId)

@@ -72,5 +72,13 @@ namespace Basic.Azure.Storage.Communications.Utility
             }
         }
 
+        internal static void ArgumentIsNotNull(string parameterName, object parameterValue)
+        {
+            if (null == parameterValue)
+            {
+                throw new ArgumentException(String.Format("The provided data {0} is null.", parameterName));
+            }
+        }
+
     }
 }
