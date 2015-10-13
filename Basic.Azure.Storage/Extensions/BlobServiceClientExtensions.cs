@@ -27,9 +27,8 @@ namespace Basic.Azure.Storage.Extensions
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
         {
-            return Task.Run(() =>
-                PutBlockBlobIntelligentlyAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId))
-                .Result;
+            return RunSynchronously(async () =>
+                await PutBlockBlobIntelligentlyAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId));
         }
         public async Task<IBlobOrBlockListResponseWrapper> PutBlockBlobIntelligentlyAsync(int blockSize,
             string containerName, string blobName, byte[] data,
@@ -51,9 +50,8 @@ namespace Basic.Azure.Storage.Extensions
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
         {
-            return Task.Run(() =>
-                    PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId))
-                    .Result;
+            return RunSynchronously(async () =>
+                    await PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId));
         }
         public async Task<PutBlockListResponse> PutBlockBlobAsListAsync(int blockSize,
             string containerName, string blobName, byte[] data,
@@ -99,7 +97,7 @@ namespace Basic.Azure.Storage.Extensions
         {
             var convertedBlockListBlockIds = rangesAndBlockIds
                 .Select(blockInfo => new BlockListBlockId { Id = blockInfo.Id, ListType = BlockListListType.Uncommitted });
-            
+
             return new BlockListBlockIdList(convertedBlockListBlockIds);
         }
 
@@ -121,6 +119,15 @@ namespace Basic.Azure.Storage.Extensions
         private async static Task<string> CalculateMD5Async(byte[] fullData, int offset, int length)
         {
             return await Task.Run(() => Convert.ToBase64String(MD5.Create().ComputeHash(fullData, offset, length)));
+        }
+
+        private static T RunSynchronously<T>(Func<Task<T>> function)
+        {
+            var smartTask = Task.Run(function);
+
+            // GetAwaiter().GetResult() doesn't wrap the underlying exception in an AggregateException
+            // http://blogs.msdn.com/b/pfxteam/archive/2011/09/28/task-exception-handling-in-net-4-5.aspx
+            return smartTask.GetAwaiter().GetResult();
         }
 
         private struct ArrayRangeWithBlockIdString
