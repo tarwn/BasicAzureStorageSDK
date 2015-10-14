@@ -571,6 +571,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #region PutBlockBlobAsList
 
+        // TODO Test auto-re-leasing when stream upload is available and we can control how fast they upload
+
         [Test]
         public async void PutBlockBlobAsListAsync_RequiredArgsOnly_CreatesBlockBlobFromLatestBlocks()
         {

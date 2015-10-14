@@ -10,19 +10,35 @@ namespace Basic.Azure.Storage.Extensions.Contracts
         IBlobOrBlockListResponseWrapper PutBlockBlobIntelligently(int blockSize,
             string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null);
+            string cacheControl = null, Dictionary<string, string> metadata = null);
+        IBlobOrBlockListResponseWrapper PutBlockBlobIntelligently(int blockSize,
+            string containerName, string blobName, byte[] data, string leaseId,
+            string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
+            string cacheControl = null, Dictionary<string, string> metadata = null);
         Task<IBlobOrBlockListResponseWrapper> PutBlockBlobIntelligentlyAsync(int blockSize,
             string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null);
+            string cacheControl = null, Dictionary<string, string> metadata = null);
+        Task<IBlobOrBlockListResponseWrapper> PutBlockBlobIntelligentlyAsync(int blockSize,
+            string containerName, string blobName, byte[] data, string leaseId,
+            string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
+            string cacheControl = null, Dictionary<string, string> metadata = null);
 
         PutBlockListResponse PutBlockBlobAsList(int blockSize,
             string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null);
+            string cacheControl = null, Dictionary<string, string> metadata = null);
+        PutBlockListResponse PutBlockBlobAsList(int blockSize,
+            string containerName, string blobName, byte[] data, string leaseId,
+            string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
+            string cacheControl = null, Dictionary<string, string> metadata = null);
         Task<PutBlockListResponse> PutBlockBlobAsListAsync(int blockSize,
             string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
-            string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null);
+            string cacheControl = null, Dictionary<string, string> metadata = null);
+        Task<PutBlockListResponse> PutBlockBlobAsListAsync(int blockSize,
+            string containerName, string blobName, byte[] data, string leaseId,
+            string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
+            string cacheControl = null, Dictionary<string, string> metadata = null);
     }
 }
