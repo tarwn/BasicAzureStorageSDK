@@ -189,6 +189,7 @@
     <Compile Include="Communications\Utility\IdentifierValidation.cs" />
     <Compile Include="ClientContracts\IQueueServiceClient.cs" />
     <Compile Include="Communications\Utility\SharedAccessPermissionParse.cs" />
+    <Compile Include="Extensions\BlobLeaseMaintainer.cs" />
     <Compile Include="Extensions\BlobServiceClientExtensions.cs" />
     <Compile Include="Extensions\Contracts\IBlobOrBlockListResponseWrapper.cs" />
     <Compile Include="Extensions\Contracts\IBlobServiceClientEx.cs" />
