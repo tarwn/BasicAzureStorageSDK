@@ -10,8 +10,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Basic.Azure.Storage.Communications.ServiceExceptions;
 using TestableHttpWebResponse;
 using TestableHttpWebResponse.ResponseSettings;
+using TestableHttpWebResponse = TestableHttpWebResponse.TestableHttpWebResponse;
 
 namespace Basic.Azure.Storage.Tests.Communications.Core
 {
@@ -118,6 +120,29 @@ namespace Basic.Azure.Storage.Tests.Communications.Core
             var response = request.Execute();
 
             Assert.AreEqual(2, response.NumberOfAttempts);
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueueAlreadyExistsAzureException))]
+        public void Execute_ReceiveTransientExceptionThenNonTransient_ThrowsNonTransient()
+        {
+            var expectedUri = "test://queue.abc/whatever/";
+            var expectedRawRequest = new TestableWebRequest(new Uri(expectedUri))
+                .EnqueueResponse(new WebException("Azure hung up after the initial request", new SocketException(1), WebExceptionStatus.ReceiveFailure, null))
+                .EnqueueResponse(HttpStatusCode.Conflict, "QueueAlreadyExists",
+@"<?xml version=""1.0"" encoding=""utf-8""?>
+<Error>
+   <Code>QueueAlreadyExists</Code>
+   <Message>The specified queue does not exist.
+   RequestId:fda2babe-ffbb-4f0e-a11b-2bfbd871ba9f
+   Time:2012-05-02T17:47:55.4334169Z</Message>
+</Error>", true);
+            TestableWebRequestCreateFactory.GetFactory().AddRequest(expectedRawRequest);
+            var request = new RequestWithEmptyPayload(new SettingsFake(), expectedUri, "GET");
+
+            request.Execute();
+
+            // expected non transient exception
         }
 
         [Test]
