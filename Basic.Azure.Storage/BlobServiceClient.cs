@@ -3,8 +3,6 @@ using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Basic.Azure.Storage.Communications.BlobService.ContainerOperations;
 using Basic.Azure.Storage.Communications.Common;
-using Basic.Azure.Storage.Communications.ServiceExceptions;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
