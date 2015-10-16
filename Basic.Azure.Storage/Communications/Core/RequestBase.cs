@@ -90,9 +90,8 @@ namespace Basic.Azure.Storage.Communications.Core
                 // hacky workaround area
                 //  - Can't test against HttpWebRequest because the ctor isn't accessible
                 //  - Can't set UserAgent as raw header because HttpWebRequest won't allow you to not use the named property
-                var httpWebRequest = request as HttpWebRequest;
-                if (null != httpWebRequest)
-                    httpWebRequest.UserAgent = "Basic.Azure.Storage/1.0.0";
+                if (request is HttpWebRequest)
+                    ((HttpWebRequest)request).UserAgent = "Basic.Azure.Storage/1.0.0";
             }
 
             // apply required headers
@@ -147,20 +146,40 @@ namespace Basic.Azure.Storage.Communications.Core
         private async Task<Response<TPayload>> SendRequestWithRetryAsync(ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
             var numberOfAttempts = 0;
+            var retryStack = new Stack<Exception>();
             try
             {
                 return await RetryPolicy.ExecuteAsync(async () =>
                 {
-                    numberOfAttempts++;
-                    return await SendSingleRequest(numberOfAttempts, responseCodeOverridesForApiBugs);
+                    try
+                    {
+                        numberOfAttempts++;
+                        return await SendSingleRequest(numberOfAttempts, responseCodeOverridesForApiBugs);
+                    }
+                    catch (Exception ex)
+                    {
+                        retryStack.Push(ex);
+                        throw;
+                    }
                 });
             }
             catch (Exception exc)
             {
                 if (RetryPolicy.ErrorDetectionStrategy.IsTransient(exc) && numberOfAttempts > 1)
-                    throw new RetriedException(exc, numberOfAttempts);
+                {
+                    throw new RetriedException(exc, numberOfAttempts, retryStack);
+                }
                 else
-                    throw;
+                {
+                    var azureException = exc as AzureException;
+                    if (null != azureException)
+                    {
+                        azureException.ExceptionRetryStack = retryStack;
+                        azureException.RetryCount = retryStack.Count;
+                    }
+
+                    throw exc;
+                }
             }
         }
 
