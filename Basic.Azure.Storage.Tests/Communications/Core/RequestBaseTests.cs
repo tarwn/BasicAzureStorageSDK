@@ -1,15 +1,12 @@
-﻿using Basic.Azure.Storage.Communications;
-using Basic.Azure.Storage.Communications.Core;
+﻿using Basic.Azure.Storage.Communications.Core;
 using Basic.Azure.Storage.Tests.Fakes;
 using Microsoft.Practices.TransientFaultHandling;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+using Basic.Azure.Storage.Communications.ServiceExceptions;
 using TestableHttpWebResponse;
 using TestableHttpWebResponse.ResponseSettings;
 
@@ -18,6 +15,15 @@ namespace Basic.Azure.Storage.Tests.Communications.Core
     [TestFixture]
     public class RequestBaseTests
     {
+        private const string queueAlreadyExistsExceptionText = 
+@"<?xml version=""1.0"" encoding=""utf-8""?>
+<Error>
+   <Code>QueueAlreadyExists</Code>
+   <Message>The specified queue does not exist.
+   RequestId:fda2babe-ffbb-4f0e-a11b-2bfbd871ba9f
+   Time:2012-05-02T17:47:55.4334169Z</Message>
+</Error>";
+
         [TestFixtureSetUp]
         public void SetupFixture()
         {
@@ -121,6 +127,82 @@ namespace Basic.Azure.Storage.Tests.Communications.Core
         }
 
         [Test]
+        [ExpectedException(typeof(QueueAlreadyExistsAzureException))]
+        public void Execute_ReceiveTransientExceptionThenNonTransient_ThrowsNonTransient()
+        {
+            var expectedUri = "test://queue.abc/whatever/";
+            var expectedRawRequest = new TestableWebRequest(new Uri(expectedUri))
+                .EnqueueResponse(new WebException("Azure hung up after the initial request", new SocketException(1), WebExceptionStatus.ReceiveFailure, null))
+                .EnqueueResponse(HttpStatusCode.Conflict, "QueueAlreadyExists", queueAlreadyExistsExceptionText, true);
+            TestableWebRequestCreateFactory.GetFactory().AddRequest(expectedRawRequest);
+            var request = new RequestWithEmptyPayload(new SettingsFake(), expectedUri, "GET");
+
+            request.Execute();
+
+            // expected non transient exception
+        }
+
+        [Test]
+        public void Execute_ReceiveTransientExceptionThenNonTransient_ThrowsExceptionWithProperRetryStack()
+        {
+            var expectedUri = "test://queue.abc/whatever/";
+            var expectedRawRequest = new TestableWebRequest(new Uri(expectedUri))
+                .EnqueueResponse(new WebException("Azure hung up after the initial request", new SocketException(1), WebExceptionStatus.ReceiveFailure, null))
+                .EnqueueResponse(HttpStatusCode.Conflict, "QueueAlreadyExists", queueAlreadyExistsExceptionText, true);
+            TestableWebRequestCreateFactory.GetFactory().AddRequest(expectedRawRequest);
+            var request = new RequestWithEmptyPayload(new SettingsFake(), expectedUri, "GET");
+
+            try
+            {
+                request.Execute();
+            }
+            catch (QueueAlreadyExistsAzureException exc)
+            {
+
+                Assert.AreEqual(2, exc.RetryCount);
+                Assert.AreEqual(exc.RetryCount, exc.ExceptionRetryStack.Count);
+                Assert.IsInstanceOf<QueueAlreadyExistsAzureException>(exc.ExceptionRetryStack.First());
+                Assert.IsInstanceOf<UnidentifiedAzureException>(exc.ExceptionRetryStack.Last());
+                Assert.IsInstanceOf<WebException>(exc.ExceptionRetryStack.Last().InnerException);
+            }
+        }
+
+        [Test]
+        public void Execute_FailsUntilRetryCountExceeded_ThrowsExceptionWithProperRetryStack()
+        {
+            var expectedUri = "test://queue.abc/whatever/";
+            const string message = "message";
+            var expectedRawRequest = new TestableWebRequest(new Uri(expectedUri))
+                .EnqueueResponse(new TimeoutException(message + "1"))
+                .EnqueueResponse(new TimeoutException(message + "2"))
+                .EnqueueResponse(new TimeoutException(message + "3"));
+            TestableWebRequestCreateFactory.GetFactory().AddRequest(expectedRawRequest);
+            var request = new RequestWithEmptyPayload(new SettingsFake(), expectedUri, "GET");
+            request.RetryPolicy = new RetryPolicy<ExceptionRetryStrategy>(2, TimeSpan.FromMilliseconds(1));
+            try
+            {
+
+                // Act
+                request.Execute();
+
+                //Assert, starting with catching the specific exception type
+            }
+            catch (RetriedException exc)
+            {
+                Assert.AreEqual(3, exc.Count);
+                Assert.AreEqual(exc.Count, exc.ExceptionRetryStack.Count);
+                var currentExceptionIndex = 3;
+                foreach (var exception in exc.ExceptionRetryStack)
+                {
+                    Assert.IsInstanceOf<GeneralExceptionDuringAzureOperationException>(exception);
+                    Assert.IsInstanceOf<TimeoutException>(exception.InnerException);
+                    Assert.AreEqual(exception.InnerException.Message, message + currentExceptionIndex);
+                    currentExceptionIndex--; // stack is LIFO
+                }
+            }
+        }
+
+        [Test]
         [ExpectedException()]
         public void Execute_FailsUntilRetryCountExceeded_ThenGivesUp()
         {
@@ -134,7 +216,7 @@ namespace Basic.Azure.Storage.Tests.Communications.Core
             var request = new RequestWithEmptyPayload(new SettingsFake(), expectedUri, "GET");
             request.RetryPolicy = new RetryPolicy<ExceptionRetryStrategy>(2, TimeSpan.FromMilliseconds(1));
 
-            var response = request.Execute();
+            request.Execute();
 
             // expecting an exception
         }
@@ -170,7 +252,6 @@ namespace Basic.Azure.Storage.Tests.Communications.Core
         //}
 
         #endregion
-
     }
 
 

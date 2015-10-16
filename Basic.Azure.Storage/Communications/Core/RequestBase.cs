@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage.Communications.Core
@@ -37,7 +36,7 @@ namespace Basic.Azure.Storage.Communications.Core
         {
             get
             {
-                return typeof(ISendDataWithRequest).IsAssignableFrom(this.GetType());
+                return this is ISendDataWithRequest;
             }
         }
 
@@ -45,7 +44,7 @@ namespace Basic.Azure.Storage.Communications.Core
         {
             get
             {
-                return typeof(ISendAdditionalRequiredHeaders).IsAssignableFrom(this.GetType());
+                return this is ISendAdditionalRequiredHeaders;
             }
         }
 
@@ -53,11 +52,11 @@ namespace Basic.Azure.Storage.Communications.Core
         {
             get
             {
-                return typeof(ISendAdditionalOptionalHeaders).IsAssignableFrom(this.GetType());
+                return this is ISendAdditionalOptionalHeaders;
             }
         }
 
-        public Response<TPayload> Execute(ConcurrentDictionary<string,string> responseCodeOverridesForApiBugs = null)
+        public Response<TPayload> Execute(ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
             try
             {
@@ -147,30 +146,65 @@ namespace Basic.Azure.Storage.Communications.Core
         private async Task<Response<TPayload>> SendRequestWithRetryAsync(ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
             var numberOfAttempts = 0;
+            var retryStack = new Stack<Exception>();
             try
             {
                 return await RetryPolicy.ExecuteAsync(async () =>
                 {
-                    numberOfAttempts++;
                     try
                     {
-                        var result = await SendRequestAsync();
-                        result.NumberOfAttempts = numberOfAttempts;
-                        return result;
+                        numberOfAttempts++;
+                        return await SendSingleRequest(numberOfAttempts, responseCodeOverridesForApiBugs);
                     }
-                    catch (Exception exc)
+                    catch (Exception ex)
                     {
-                        throw GetAzureExceptionForAsync(exc, responseCodeOverridesForApiBugs).Result;
+                        retryStack.Push(ex);
+                        throw;
                     }
                 });
             }
             catch (Exception exc)
             {
-                if (numberOfAttempts > 1)
-                    throw new RetriedException(exc, numberOfAttempts);
+                if (RetryPolicy.ErrorDetectionStrategy.IsTransient(exc) && numberOfAttempts > 1)
+                {
+                    throw new RetriedException(exc, numberOfAttempts, retryStack);
+                }
                 else
-                    throw;
+                {
+                    var azureException = exc as AzureException;
+                    if (null != azureException)
+                    {
+                        azureException.ExceptionRetryStack = retryStack;
+                        azureException.RetryCount = retryStack.Count;
+                    }
+
+                    throw exc;
+                }
             }
+        }
+
+        private async Task<Response<TPayload>> SendSingleRequest(int attemptNumber, ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
+        {
+            Response<TPayload> result = null;
+            Exception exception = null;
+
+            try
+            {
+                result = await SendRequestAsync();
+                result.NumberOfAttempts = attemptNumber;
+            }
+            catch (Exception exc)
+            {
+                // this wonkiness is due to not being able to handle async code in a catch
+                // we can change this in C# 6
+                exception = exc;
+            }
+            if (null != exception)
+            {
+                throw await GetAzureExceptionForAsync(exception, responseCodeOverridesForApiBugs);
+            }
+
+            return result;
         }
 
         private async Task<Response<TPayload>> SendRequestAsync()
@@ -195,18 +229,19 @@ namespace Basic.Azure.Storage.Communications.Core
 
         private async Task<Exception> GetAzureExceptionForAsync(Exception exception, ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
-            if (exception is WebException)
+            var webException = exception as WebException;
+            if (null != webException)
             {
-                var wexc = (WebException)exception;
-                if (wexc.Response != null && typeof(HttpWebResponse).IsAssignableFrom(wexc.Response.GetType()))
+                var httpWebResponse = webException.Response as HttpWebResponse;
+                if (null != httpWebResponse)
                 {
-                    var response = new Response<ErrorResponsePayload>((HttpWebResponse)wexc.Response);
-                    await response.ProcessResponseStreamAsync((HttpWebResponse)wexc.Response);
-                    return GetAzureExceptionFor(response, wexc, responseCodeOverridesForApiBugs);
+                    var response = new Response<ErrorResponsePayload>(httpWebResponse);
+                    await response.ProcessResponseStreamAsync(httpWebResponse);
+                    return GetAzureExceptionFor(response, webException, responseCodeOverridesForApiBugs);
                 }
                 else
                 {
-                    return new UnidentifiedAzureException(wexc);
+                    return new UnidentifiedAzureException(webException);
                 }
             }
             else
@@ -217,10 +252,10 @@ namespace Basic.Azure.Storage.Communications.Core
 
         private Exception GetAzureExceptionFor(Response<ErrorResponsePayload> response, WebException originalException, ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
-            string errorCode = response.Payload.ErrorCode;
+            var errorCode = response.Payload.ErrorCode;
             if (responseCodeOverridesForApiBugs != null && responseCodeOverridesForApiBugs.ContainsKey(errorCode))
             {
-                string originalErrorCode = errorCode;
+                var originalErrorCode = errorCode;
                 responseCodeOverridesForApiBugs.TryGetValue(originalErrorCode, out errorCode);
             }
 
