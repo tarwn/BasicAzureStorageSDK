@@ -3,8 +3,6 @@ using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Basic.Azure.Storage.Communications.BlobService.ContainerOperations;
 using Basic.Azure.Storage.Communications.Common;
-using Basic.Azure.Storage.Communications.ServiceExceptions;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -297,6 +295,32 @@ namespace Basic.Azure.Storage
         public async Task<GetBlobPropertiesResponse> GetBlobPropertiesAsync(string containerName, string blobName, string leaseId = null)
         {
             var request = new GetBlobPropertiesRequest(_account, containerName, blobName, leaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
+        public GetBlobMetadataResponse GetBlobMetadata(string containerName, string blobName, string leaseId = null)
+        {
+            var request = new GetBlobMetadataRequest(_account, containerName, blobName, leaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<GetBlobMetadataResponse> GetBlobMetadataAsync(string containerName, string blobName, string leaseId = null)
+        {
+            var request = new GetBlobMetadataRequest(_account, containerName, blobName, leaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
+        public SetBlobMetadataResponse SetBlobMetadata(string containerName, string blobName, Dictionary<string, string> metadata, string leaseId = null)
+        {
+            var request = new SetBlobMetadataRequest(_account, containerName, blobName, metadata, leaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<SetBlobMetadataResponse> SetBlobMetadataAsync(string containerName, string blobName, Dictionary<string, string> metadata, string leaseId = null)
+        {
+            var request = new SetBlobMetadataRequest(_account, containerName, blobName, metadata, leaseId);
             var response = await request.ExecuteAsync();
             return response.Payload;
         }

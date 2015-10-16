@@ -947,9 +947,11 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             Assert.AreEqual(1, response.Messages.Count);
             var message = response.Messages.Single();
-            Assert.Less(message.InsertionTime, DateTime.UtcNow);
-            Assert.Greater(message.ExpirationTime, DateTime.UtcNow);
-            Assert.Greater(message.TimeNextVisible, DateTime.UtcNow);
+            // Give some tolerance because the server's time might be slightly different
+            var currentTime = DateTime.UtcNow;
+            Assert.Less(message.InsertionTime.Subtract(currentTime).TotalMinutes, 1);
+            Assert.Less(message.ExpirationTime.Subtract(currentTime).TotalDays, 8); // could be slightly larger than 7 depending on the server's time
+            Assert.Less(message.TimeNextVisible.Subtract(currentTime).TotalMinutes, 2); // could be slightly larger than 1 depending on the server's time
         }
 
         [Test]

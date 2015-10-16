@@ -40,9 +40,6 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
         {
             Guard.ArgumentArrayLengthIsEqualOrSmallerThanSize("data", data, BlobServiceConstants.MaxSingleBlobUploadSize);
 
-            if (null != leaseId)
-                Guard.ArgumentIsAGuid("leaseId", leaseId);
-
             _data = data;
         }
 
@@ -63,6 +60,11 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
                     string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
             : base(settings)
         {
+            if (!string.IsNullOrEmpty(leaseId))
+                Guard.ArgumentIsAGuid("leaseId", leaseId);
+            if (null != metadata)
+                IdentifierValidation.EnsureNamesAreValidIdentifiers(metadata.Keys);
+
             _containerName = containerName;
             _blobName = blobName;
             _blobType = blobType;
@@ -73,10 +75,6 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             _cacheControl = cacheControl;
             _metadata = metadata;
             _leaseId = leaseId;
-
-            if (_metadata != null)
-                IdentifierValidation.EnsureNamesAreValidIdentifiers(_metadata.Select(kvp => kvp.Key));
-
         }
 
         protected override string HttpMethod { get { return "PUT"; } }
@@ -124,13 +122,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             if (!string.IsNullOrEmpty(_leaseId))
                 request.Headers.Add(ProtocolConstants.Headers.LeaseId, _leaseId);
 
-            if (_metadata != null && _metadata.Count > 0)
-            {
-                foreach (var kvp in _metadata.Select(kvp => kvp))
-                {
-                    request.Headers.Add(String.Format("{0}{1}", ProtocolConstants.Headers.MetaDataPrefix, kvp.Key), kvp.Value);
-                }
-            }
+            MetadataParse.PrepareAndApplyMetadataHeaders(_metadata, request);
 
             if (_blobType == BlobType.Page)
                 request.Headers.Add(ProtocolConstants.Headers.BlobSequenceNumber, _sequenceNumber.ToString());

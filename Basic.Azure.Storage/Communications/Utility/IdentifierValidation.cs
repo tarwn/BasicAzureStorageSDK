@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.CSharp;
 
 namespace Basic.Azure.Storage.Communications.Utility
 {
@@ -15,16 +14,22 @@ namespace Basic.Azure.Storage.Communications.Utility
     /// </remarks>
     public static class IdentifierValidation
     {
-        //TODO: implement a validation check and exception for Identifier rules
-
-        public static void EnsureNameIsValidIdentifier(string name)
-        { 
-            // add some logic
-        }
-
+        // http://stackoverflow.com/a/1904361 - Not the fastest way, but the most correct. If speed is an issue we can refactor.
+        private static readonly CSharpCodeProvider Provider = new CSharpCodeProvider();
+        
         public static void EnsureNamesAreValidIdentifiers(IEnumerable<string> names)
-        { 
-            // add some logic
+        {
+            const string invalidIdentifiers = "The provided list of names contains invalid identifiers.";
+            const string invalidIdentifier = "The provided identifier [{0}] is not a valid identifier.";
+
+            var invalidNames = names
+                .Where(n => !Provider.IsValidIdentifier(n))
+                .ToList();
+
+            if (invalidNames.Any())
+            {
+                throw new AggregateException(invalidIdentifiers, invalidNames.Select(n => new ArgumentException(string.Format(invalidIdentifier, n))));
+            }
         }
 
     }

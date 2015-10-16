@@ -46,6 +46,10 @@
     <Compile Include="ClientContracts\IBlobServiceClient.cs" />
     <Compile Include="ClientContracts\ITableServiceClient.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobRequest.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\SetBlobMetadataResponse.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\SetBlobMetadataRequest.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\GetBlobMetadataRequest.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\GetBlobMetadataResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobResponse.cs" />
@@ -188,6 +192,7 @@
     <Compile Include="Communications\Utility\GuardRange.cs" />
     <Compile Include="Communications\Utility\IdentifierValidation.cs" />
     <Compile Include="ClientContracts\IQueueServiceClient.cs" />
+    <Compile Include="Communications\Utility\MetadataParse.cs" />
     <Compile Include="Communications\Utility\SharedAccessPermissionParse.cs" />
     <Compile Include="Extensions\BlobLeaseMaintainer.cs" />
     <Compile Include="Extensions\BlobServiceClientExtensions.cs" />

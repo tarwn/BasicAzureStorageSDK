@@ -29,15 +29,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             Date = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
             LastModified = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
 
-            var metadata = new Dictionary<string, string>();
-            foreach (var headerKey in response.Headers.AllKeys)
-            {
-                if (headerKey.StartsWith(ProtocolConstants.Headers.MetaDataPrefix, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    metadata[headerKey.Substring(ProtocolConstants.Headers.MetaDataPrefix.Length)] = response.Headers[headerKey];
-                }
-            }
-            Metadata = new ReadOnlyDictionary<string, string>(metadata);
+            Metadata = MetadataParse.ParseMetadata(response);
         }
 
         public virtual async Task ParseResponseBodyAsync(System.IO.Stream responseStream)

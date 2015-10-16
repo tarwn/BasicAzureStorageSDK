@@ -86,6 +86,12 @@ namespace Basic.Azure.Storage.ClientContracts
         GetBlobPropertiesResponse GetBlobProperties(string containerName, string blobName, string leaseId = null);
         Task<GetBlobPropertiesResponse> GetBlobPropertiesAsync(string containerName, string blobName, string leaseId = null);
 
+        GetBlobMetadataResponse GetBlobMetadata(string containerName, string blobName, string leaseId = null);
+        Task<GetBlobMetadataResponse> GetBlobMetadataAsync(string containerName, string blobName, string leaseId = null);
+
+        SetBlobMetadataResponse SetBlobMetadata(string containerName, string blobName, Dictionary<string, string> metadata, string leaseId = null);
+        Task<SetBlobMetadataResponse> SetBlobMetadataAsync(string containerName, string blobName, Dictionary<string, string> metadata, string leaseId = null);
+
         LeaseBlobAcquireResponse LeaseBlobAcquire(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null);
         Task<LeaseBlobAcquireResponse> LeaseBlobAcquireAsync(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null);
 
@@ -105,13 +111,5 @@ namespace Basic.Azure.Storage.ClientContracts
         Task DeleteBlobAsync(string containerName, string blobName, string leaseId = null);
 
         #endregion
-
-
-
-
-
-
-
-
     }
 }
