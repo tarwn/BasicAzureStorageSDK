@@ -80,5 +80,14 @@ namespace Basic.Azure.Storage.Communications.Utility
             }
         }
 
+        internal static void ArgumentIsValidAbsoluteUri(string parameterName, string parameterValue)
+        {
+            Uri parsedUri;
+            if (!Uri.TryCreate(parameterValue, UriKind.Absolute, out parsedUri))
+            {
+                throw new ArgumentException(String.Format("The provided data {0} [{1}] is not a valid absolute uri.", parameterName, parameterValue));
+            }
+        }
+
     }
 }

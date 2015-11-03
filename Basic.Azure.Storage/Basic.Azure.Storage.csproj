@@ -45,7 +45,10 @@
     <Compile Include="BlobServiceClient.cs" />
     <Compile Include="ClientContracts\IBlobServiceClient.cs" />
     <Compile Include="ClientContracts\ITableServiceClient.cs" />
+    <Compile Include="Communications\BlobService\BlobCopyStatus.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobRequest.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\CopyBlobRequest.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\CopyBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\SetBlobMetadataResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\SetBlobMetadataRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobMetadataRequest.cs" />
@@ -187,6 +190,7 @@
     <Compile Include="Communications\TableService\MetadataPreference.cs" />
     <Compile Include="Communications\Utility\Base64Converter.cs" />
     <Compile Include="Communications\Utility\BlobListIncludeParse.cs" />
+    <Compile Include="Communications\Utility\CopyStatusParse.cs" />
     <Compile Include="Communications\Utility\DateParse.cs" />
     <Compile Include="Communications\Utility\Guard.cs" />
     <Compile Include="Communications\Utility\GuardRange.cs" />

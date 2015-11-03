@@ -1,8 +1,8 @@
 ﻿namespace Basic.Azure.Storage.Communications.BlobService
 {
-    public enum BlobType
+    public enum BlobCopyStatus
     {
-        Block,
-        Page
+        Success,
+        Pending
     }
 }
