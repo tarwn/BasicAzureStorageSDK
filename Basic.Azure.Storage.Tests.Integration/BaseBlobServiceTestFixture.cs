@@ -11,6 +11,9 @@ using Basic.Azure.Storage.Communications.Utility;
 using Microsoft.WindowsAzure.Storage.Blob;
 using BlobType = Microsoft.WindowsAzure.Storage.Blob.BlobType;
 using System.Configuration;
+using System.Threading;
+using System.Threading.Tasks;
+using CopyStatus = Microsoft.WindowsAzure.Storage.Blob.CopyStatus;
 
 namespace Basic.Azure.Storage.Tests.Integration
 {
@@ -170,6 +173,21 @@ namespace Basic.Azure.Storage.Tests.Integration
                 Assert.Fail("AssertBlobExists: The blob '{0}' does not exist", blobName);
 
             return blob;
+        }
+
+        protected void AssertBlobCopyOperationInProgressOrSuccessful(string containerName, string blobName)
+        {
+            var client = StorageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            if (!container.Exists())
+                Assert.Fail("AssertBlobCopyOperationInProgressOrSuccessful: The container '{0}' does not exist", containerName);
+
+            var blob = container.GetBlobReferenceFromServer(blobName);
+
+            if (!blob.Exists())
+                Assert.Fail("AssertBlobCopyOperationInProgressOrSuccessful: The blob '{0}' does not exist", blobName);
+
+            Assert.True(blob.CopyState.Status.HasFlag(CopyStatus.Pending) || blob.CopyState.Status.HasFlag(CopyStatus.Success));
         }
 
         protected IDictionary<string, string> AssertBlobMetadata(string containerName, string blobName, Dictionary<string, string> expectedMetadata)
@@ -575,6 +593,23 @@ namespace Basic.Azure.Storage.Tests.Integration
             var container = client.GetContainerReference(containerName);
             var blob = container.GetBlockBlobReference(blobName);
             blob.CreateSnapshot();
+        }
+
+        protected ICloudBlob WaitUntilBlobCopyIsNotPending(string containerName, string blobName)
+        {
+            var client = StorageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            var blob = container.GetBlobReferenceFromServer(blobName);
+
+            Task.Run(() =>
+            {
+                while (blob.CopyState.Status == CopyStatus.Pending)
+                {
+
+                }
+            }).GetAwaiter().GetResult();
+
+            return blob;
         }
 
 

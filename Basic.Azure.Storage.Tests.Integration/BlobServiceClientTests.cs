@@ -1430,6 +1430,141 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #region Blob Operation Tests
 
+        #region CopyBlob
+
+        [Test]
+        public void CopyBlob_RequiredArgsOnly_BeginsCopyOperation()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blobUri = CreateBlockBlob(containerName, blobName).Uri;
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            client.CopyBlob(containerName, blobName, blobUri.ToString());
+
+            AssertBlobCopyOperationInProgressOrSuccessful(containerName, blobName);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void CopyBlob_EmptyContainerNameGiven_ThrowsArgumentNullException()
+        {
+            var blobName = GenerateSampleBlobName();
+            var fakeUri = "https://foo.foo.foo/";
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            client.CopyBlob("", blobName, fakeUri);
+
+            // throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void CopyBlob_EmptyBlobNameGiven_ThrowsArgumentNullException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var fakeUri = "https://foo.foo.foo/";
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            client.CopyBlob(containerName, "", fakeUri);
+
+            // throws exception
+        }
+
+        [Test]
+        [TestCase("https://foo.foo$#@")]
+        [TestCase("foo.com")]
+        [TestCase("foo/foo")]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CopyBlob_InvalidCopySourceUriGiven_ThrowsArgumentNullException(string invalidUri)
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            client.CopyBlob(containerName, blobName, invalidUri);
+
+            // throws exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CopyBlob_InvalidLeaseId_ThrowsArgumentException()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            var fakeUri = "https://foo.foo.foo/";
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            client.CopyBlob(containerName, blobName, fakeUri, leaseId: InvalidLeaseId);
+
+            // throws exception
+        }
+
+        [Test]
+        public void CopyBlob_MetadataGiven_CopiesBlobUsingProvidedMetadata()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blobUri = CreateBlockBlob(containerName, blobName).Uri;
+            var expectedMetadata = new Dictionary<string, string>{
+                { "firstValue", "1" },
+                { "secondValue", "2"}
+            };
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            client.CopyBlob(containerName, blobName, blobUri.ToString(), metadata: expectedMetadata);
+
+            var blob = WaitUntilBlobCopyIsNotPending(containerName, blobName);
+            Assert.AreEqual(expectedMetadata, blob.Metadata);
+        }
+
+        [Test]
+        public void CopyBlob_MetadataAlreadyPresentNoneGiven_CopiesBlobUsingProvidedMetadata()
+        {
+            var initialMetadata = new Dictionary<string, string>{
+                { "initialFirstValue", "1" },
+                { "initialSecondValue", "2"}
+            };
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blobUri = CreateBlockBlob(containerName, blobName, metadata: initialMetadata).Uri;
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            client.CopyBlob(containerName, blobName, blobUri.ToString());
+
+            var blob = WaitUntilBlobCopyIsNotPending(containerName, blobName);
+            Assert.AreEqual(initialMetadata, blob.Metadata);
+        }
+
+        [Test]
+        public void CopyBlob_MetadataAlreadyPresentNewMetadataGiven_CopiesBlobUsingProvidedMetadata()
+        {
+            var initialMetadata = new Dictionary<string, string>{
+                { "initialFirstValue", "1" },
+                { "initialSecondValue", "2"}
+            };
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blobUri = CreateBlockBlob(containerName, blobName, metadata: initialMetadata).Uri;
+            var expectedMetadata = new Dictionary<string, string>{
+                { "expectedFirstValue", "one" },
+                { "expectedSecondValue", "two"}
+            };
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            client.CopyBlob(containerName, blobName, blobUri.ToString(), metadata: expectedMetadata);
+
+            var blob = WaitUntilBlobCopyIsNotPending(containerName, blobName);
+            Assert.AreEqual(expectedMetadata, blob.Metadata);
+        }
+
+        #endregion
+
         #region PutBlockList
 
         [Test]
