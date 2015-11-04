@@ -11,6 +11,8 @@ namespace Basic.Azure.Storage.Tests.Communications.Utility
         [Test]
         [TestCase("success", CopyStatus.Success)]
         [TestCase("pending", CopyStatus.Pending)]
+        [TestCase("aborted", CopyStatus.Aborted)]
+        [TestCase("failed", CopyStatus.Failed)]
         public void ParseCopyStatus_GivenCorrectStatus_ParsesCorrectly(string rawStatus, CopyStatus expectedParsedStatus)
         {
             var parsed = CopyStatusParse.ParseCopyStatus(rawStatus);
