@@ -13,6 +13,7 @@ using BlobType = Microsoft.WindowsAzure.Storage.Blob.BlobType;
 using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
+using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using CopyStatus = Microsoft.WindowsAzure.Storage.Blob.CopyStatus;
 
 namespace Basic.Azure.Storage.Tests.Integration
@@ -315,6 +316,44 @@ namespace Basic.Azure.Storage.Tests.Integration
             return blob;
         }
 
+        protected void AssertBlobCopyPropertiesMatch(string containerName, string blobName, GetBlobResponse response)
+        {
+            AssertBlobCopyPropertiesMatch(containerName, blobName, response.CopyStatus, response.CopyProgress, response.CopyCompletionTime, response.CopyStatusDescription, response.CopyId, response.CopySource);
+        }
+        protected void AssertBlobCopyPropertiesMatch(string containerName, string blobName, Communications.Common.CopyStatus? copyStatus, BlobCopyProgress copyProgress, DateTime? copyCompletionTime, string copyStatusDescription, string copyId, string copySource)
+        {
+            var client = StorageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            if (!container.Exists())
+                Assert.Fail("AssertBlobCopyPropertiesMatch: The container '{0}' does not exist", containerName);
+
+            var blob = container.GetBlobReferenceFromServer(blobName);
+            if (!blob.Exists())
+                Assert.Fail("AssertBlobCopyPropertiesMatch: The blob '{0}' does not exist", blobName);
+
+            var copyState = blob.CopyState;
+
+            if (null == copyState)
+            {
+                Assert.IsNull(copyStatus);
+                Assert.IsNull(copyProgress);
+                Assert.IsNull(copyCompletionTime);
+                Assert.IsNull(copyStatusDescription);
+                Assert.IsNull(copyId);
+                Assert.IsNull(copySource);
+            }
+            else
+            {
+                Assert.AreEqual(copyState.Status.ToString(), copyStatus.ToString());
+                Assert.AreEqual(copyState.BytesCopied, copyProgress.BytesCopied);
+                Assert.AreEqual(copyState.TotalBytes, copyProgress.BytesTotal);
+                Assert.AreEqual(copyState.CompletionTime.Value.LocalDateTime, copyCompletionTime.Value);
+                Assert.AreEqual(copyState.StatusDescription, copyStatusDescription);
+                Assert.AreEqual(copyState.CopyId, copyId);
+                Assert.AreEqual(copyState.Source, copySource);
+            }
+        }
+
         protected IDictionary<string, string> GetContainerMetadata(string containerName)
         {
             var client = StorageAccount.CreateCloudBlobClient();
@@ -603,9 +642,10 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             Task.Run(() =>
             {
+                blob.FetchAttributes();
                 while (blob.CopyState.Status == CopyStatus.Pending)
                 {
-
+                    Thread.Sleep(50);
                 }
             }).GetAwaiter().GetResult();
 

@@ -4,8 +4,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
-using Basic.Azure.Storage.Communications.BlobService;
+using Basic.Azure.Storage.Communications.Common;
 using TestableHttpWebResponse;
 using TestableHttpWebResponse.ResponseSettings;
 
@@ -71,7 +70,7 @@ namespace Basic.Azure.Storage.Tests.Communications.BlobService.BlobOperations
             Assert.IsTrue(Math.Abs(expectedDate.Subtract(response.Payload.Date).TotalMinutes) < 1);
             Assert.IsTrue(Math.Abs(expectedDate.Subtract(response.Payload.LastModified).TotalMinutes) < 1);
             Assert.AreEqual("123-copy-id", response.Payload.CopyId);
-            Assert.AreEqual(BlobCopyStatus.Success, response.Payload.CopyStatus);
+            Assert.AreEqual(CopyStatus.Success, response.Payload.CopyStatus);
         }
 
     }

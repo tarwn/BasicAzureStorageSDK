@@ -1,5 +1,6 @@
 ﻿using Basic.Azure.Storage.Communications.Core;
 using System;
+using Basic.Azure.Storage.Communications.Common;
 using Basic.Azure.Storage.Communications.Core.Interfaces;
 using Basic.Azure.Storage.Communications.Utility;
 
@@ -15,7 +16,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 
         public virtual string CopyId { get; protected set; }
 
-        public virtual BlobCopyStatus CopyStatus { get; protected set; }
+        public virtual CopyStatus CopyStatus { get; protected set; }
 
         public void ParseHeaders(System.Net.HttpWebResponse response)
         {

@@ -3211,7 +3211,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var properties = client.GetBlobProperties(containerName, blobName);
 
-            Assert.AreEqual(Communications.BlobService.BlobType.Block, properties.BlobType);
+            Assert.AreEqual(Communications.Common.BlobType.Block, properties.BlobType);
         }
 
         [Test]
@@ -3225,7 +3225,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
 
-            Assert.AreEqual(Communications.BlobService.BlobType.Block, properties.BlobType);
+            Assert.AreEqual(Communications.Common.BlobType.Block, properties.BlobType);
         }
 
         [Test]
@@ -3239,7 +3239,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var properties = client.GetBlobProperties(containerName, blobName);
 
-            Assert.AreEqual(Communications.BlobService.BlobType.Page, properties.BlobType);
+            Assert.AreEqual(Communications.Common.BlobType.Page, properties.BlobType);
         }
 
         [Test]
@@ -3253,7 +3253,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var properties = await client.GetBlobPropertiesAsync(containerName, blobName);
 
-            Assert.AreEqual(Communications.BlobService.BlobType.Page, properties.BlobType);
+            Assert.AreEqual(Communications.Common.BlobType.Page, properties.BlobType);
         }
 
         [Test]
@@ -4630,6 +4630,65 @@ namespace Basic.Azure.Storage.Tests.Integration
             var data = response.GetDataBytes();
 
             Assert.AreEqual(expectedContent.Substring(2, 5), Encoding.UTF8.GetString(data));
+        }
+
+        [Test]
+        public void GetBlob_CopiedBlob_GetsCorrectCopyHeaders()
+        {
+            var containerName = GenerateSampleContainerName();
+            var initialBlobName = GenerateSampleBlobName();
+            var copiedBlobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, initialBlobName);
+            CopyBlob(containerName, initialBlobName, copiedBlobName);
+            WaitUntilBlobCopyIsNotPending(containerName, copiedBlobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlob(containerName, copiedBlobName);
+
+            AssertBlobCopyPropertiesMatch(containerName, copiedBlobName, response);
+        }
+
+        [Test]
+        public void GetBlob_NonCopiedBlob_GetsCorrectCopyProperties()
+        {
+            var containerName = GenerateSampleContainerName();
+            var initialBlobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, initialBlobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlob(containerName, initialBlobName);
+
+            AssertBlobCopyPropertiesMatch(containerName, initialBlobName, response);
+        }
+
+        [Test]
+        public void GetBlob_BlockBlob_GetsBlockBlobType()
+        {
+            var containerName = GenerateSampleContainerName();
+            var initialBlobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, initialBlobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlob(containerName, initialBlobName);
+
+            Assert.AreEqual(Communications.Common.BlobType.Block, response.BlobType);
+        }
+
+        [Test]
+        public void GetBlob_PageBlob_GetsBlockBlobType()
+        {
+            var containerName = GenerateSampleContainerName();
+            var initialBlobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreatePageBlob(containerName, initialBlobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlob(containerName, initialBlobName);
+
+            Assert.AreEqual(Communications.Common.BlobType.Page, response.BlobType);
         }
 
         #endregion
