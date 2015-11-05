@@ -190,6 +190,19 @@ namespace Basic.Azure.Storage
 
         #region Blob Operations
 
+        public CopyBlobResponse CopyBlob(string containerName, string blobName, string copySource, Dictionary<string, string> metadata = null, string leaseId = null)
+        {
+            var request = new CopyBlobRequest(_account, containerName, blobName, copySource, metadata, leaseId);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<CopyBlobResponse> CopyBlobAsync(string containerName, string blobName, string copySource, Dictionary<string, string> metadata = null, string leaseId = null)
+        {
+            var request = new CopyBlobRequest(_account, containerName, blobName, copySource, metadata, leaseId);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         /// <summary>
         /// Creates a new BlockBlob (Alias for the PutBlob call with a Blob Type of BlockBlob)
         /// </summary>

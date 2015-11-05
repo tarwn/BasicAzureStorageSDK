@@ -24,6 +24,12 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string ContentLength = "Content-Length";
             public const string ContentMD5 = "Content-MD5";
             public const string ContentType = "Content-Type";
+            public const string CopyCompletionTime = "x-ms-copy-completion-time";
+            public const string CopyId = "x-ms-copy-id";
+            public const string CopyProgress = "x-ms-copy-progress";
+            public const string CopySource = "x-ms-copy-source";
+            public const string CopyStatus = "x-ms-copy-status";
+            public const string CopyStatusDescription = "x-ms-copy-status-description";
             public const string Date = "x-ms-date";
             public const string ETag = "ETag";
             public const string LastModified = "Last-Modified";

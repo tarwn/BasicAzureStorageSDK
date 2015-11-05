@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communications\BlobService\BlobOperations\CopyBlobRequestTests.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlockRequestTests.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobRequestTests.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\PutBlockListRequestTests.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="Communications\Core\ExceptionRetryStrategyTests.cs" />
     <Compile Include="Communications\Core\RequestBaseTests.AzureExceptions.cs" />
     <Compile Include="Communications\Core\RequestBaseTests.cs" />
+    <Compile Include="Communications\Utility\CopyStatusParseTests.cs" />
     <Compile Include="Communications\Utility\GuardTests.cs" />
     <Compile Include="Fakes\RequestWithErrorPayload.cs" />
     <Compile Include="Fakes\RequestWithEmptyPayload.cs" />
