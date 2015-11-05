@@ -36,8 +36,8 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
             //TODO: determine what we want to do about potential missing headers and date parsing errors
 
             ETag = response.Headers[ProtocolConstants.Headers.ETag].Trim('"');
-            Date = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
-            LastModified = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
+            Date = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
+            LastModified = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
 
             if (response.Headers[ProtocolConstants.Headers.BlobPublicAccess] == null)
             {
@@ -90,10 +90,10 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
                                                 identifier.AccessPolicy.Permission = SharedAccessPermissionParse.ParseBlob(apElement.Value);
                                                 break;
                                             case "Start":
-                                                identifier.AccessPolicy.StartTime = DateParse.ParseUTC(apElement.Value);
+                                                identifier.AccessPolicy.StartTime = Parsers.ParseUTCDate(apElement.Value);
                                                 break;
                                             case "Expiry":
-                                                identifier.AccessPolicy.Expiry = DateParse.ParseUTC(apElement.Value);
+                                                identifier.AccessPolicy.Expiry = Parsers.ParseUTCDate(apElement.Value);
                                                 break;
                                         }
                                     }

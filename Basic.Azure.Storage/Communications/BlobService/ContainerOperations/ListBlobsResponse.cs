@@ -40,8 +40,8 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
         {
             //TODO: determine what we want to do about potential missing headers and date parsing errors
 
-            Date = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
-            LastModified = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
+            Date = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
+            LastModified = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
         }
 
         public async Task ParseResponseBodyAsync(System.IO.Stream responseStream)
