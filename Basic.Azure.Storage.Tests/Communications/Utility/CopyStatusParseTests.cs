@@ -15,7 +15,7 @@ namespace Basic.Azure.Storage.Tests.Communications.Utility
         [TestCase("failed", CopyStatus.Failed)]
         public void ParseCopyStatus_GivenCorrectStatus_ParsesCorrectly(string rawStatus, CopyStatus expectedParsedStatus)
         {
-            var parsed = CopyStatusParse.ParseCopyStatus(rawStatus);
+            var parsed = Parsers.ParseCopyStatus(rawStatus);
 
             Assert.AreEqual(parsed, expectedParsedStatus);
         }
@@ -27,7 +27,7 @@ namespace Basic.Azure.Storage.Tests.Communications.Utility
 
             Assert.Throws<ArgumentException>(() =>
             {
-                CopyStatusParse.ParseCopyStatus(invalidRawStatus);
+                Parsers.ParseCopyStatus(invalidRawStatus);
             });
         }
     }

@@ -26,8 +26,8 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
             //TODO: determine what we want to do about potential missing headers and date parsing errors
 
             ETag = response.Headers[ProtocolConstants.Headers.ETag].Trim('"');
-            Date = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
-            LastModified = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
+            Date = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
+            LastModified = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
 
             var metadata = new Dictionary<string, string>();
             foreach (var headerKey in response.Headers.AllKeys)

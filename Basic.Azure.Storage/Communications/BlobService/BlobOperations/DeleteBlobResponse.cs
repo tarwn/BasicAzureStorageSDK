@@ -12,7 +12,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
         public void ParseHeaders(System.Net.HttpWebResponse response)
         {
             //TODO: determine what we want to do about potential missing headers and date parsing errors
-            Date = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
+            Date = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
         }
 
     }

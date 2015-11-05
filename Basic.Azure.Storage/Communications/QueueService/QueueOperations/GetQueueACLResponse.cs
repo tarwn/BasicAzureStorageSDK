@@ -73,10 +73,10 @@ namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
                                                 identifier.AccessPolicy.Permission = SharedAccessPermissionParse.ParseQueue(apElement.Value);
                                                 break;
                                             case "Start":
-                                                identifier.AccessPolicy.StartTime = DateParse.ParseUTC(apElement.Value);
+                                                identifier.AccessPolicy.StartTime = Parsers.ParseUTCDate(apElement.Value);
                                                 break;
                                             case "Expiry":
-                                                identifier.AccessPolicy.Expiry = DateParse.ParseUTC(apElement.Value);
+                                                identifier.AccessPolicy.Expiry = Parsers.ParseUTCDate(apElement.Value);
                                                 break;
                                         }
                                     }

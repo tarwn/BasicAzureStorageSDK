@@ -59,7 +59,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             if (!string.IsNullOrEmpty(_leaseId))
                 request.Headers.Add(ProtocolConstants.Headers.LeaseId, _leaseId);
 
-            MetadataParse.PrepareAndApplyMetadataHeaders(_metadata, request);
+            Parsers.PrepareAndApplyMetadataHeaders(_metadata, request);
         }
     }
 }

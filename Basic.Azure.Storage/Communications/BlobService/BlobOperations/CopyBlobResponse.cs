@@ -23,10 +23,10 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             //TODO: determine what we want to do about potential missing headers and date parsing errors
 
             ETag = response.Headers[ProtocolConstants.Headers.ETag].Trim('"');
-            Date = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
-            LastModified = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
+            Date = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
+            LastModified = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
             CopyId = response.Headers[ProtocolConstants.Headers.CopyId];
-            CopyStatus = CopyStatusParse.ParseCopyStatus(response.Headers[ProtocolConstants.Headers.CopyStatus]);
+            CopyStatus = Parsers.ParseCopyStatus(response.Headers[ProtocolConstants.Headers.CopyStatus]);
         }
 
     }
