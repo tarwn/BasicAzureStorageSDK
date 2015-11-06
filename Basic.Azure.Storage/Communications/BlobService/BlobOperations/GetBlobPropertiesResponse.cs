@@ -38,6 +38,18 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 
         public virtual DateTime Date { get; protected set; }
 
+        public virtual DateTime? CopyCompletionTime { get; protected set; }
+
+        public virtual string CopyStatusDescription { get; protected set; }
+
+        public virtual string CopyId { get; protected set; }
+
+        public virtual BlobCopyProgress CopyProgress { get; protected set; }
+
+        public virtual string CopySource { get; protected set; }
+
+        public virtual CopyStatus? CopyStatus { get; protected set; }
+
         public void ParseHeaders(HttpWebResponse response)
         {
             //TODO: determine what we want to do about potential missing headers and date parsing errors
@@ -54,12 +66,17 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             ParseBlobType(response);
 
             ParseLeaseStatus(response);
-
             ParseLeaseState(response);
-
             ParseLeaseDuration(response);
 
             Metadata = Parsers.ParseMetadata(response);
+
+            CopyCompletionTime = Parsers.ParseCopyCompletionTime(response);
+            CopyStatusDescription = Parsers.ParseCopyStatusDescription(response);
+            CopyId = Parsers.ParseCopyId(response);
+            CopyProgress = Parsers.ParseCopyProgress(response);
+            CopySource = Parsers.ParseCopySource(response);
+            CopyStatus = Parsers.ParseCopyStatus(response);
         }
 
         private void ParseBlobType(WebResponse response)

@@ -3788,6 +3788,37 @@ namespace Basic.Azure.Storage.Tests.Integration
             AssertDatesEqualWithTolerance(createdDate, properties.Date);
         }
 
+        [Test]
+        public void GetBlobProperties_CopiedBlob_GetsCorrectCopyHeaders()
+        {
+            var containerName = GenerateSampleContainerName();
+            var initialBlobName = GenerateSampleBlobName();
+            var copiedBlobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, initialBlobName);
+            CopyBlob(containerName, initialBlobName, copiedBlobName);
+            WaitUntilBlobCopyIsNotPending(containerName, copiedBlobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlobProperties(containerName, copiedBlobName);
+
+            AssertBlobCopyPropertiesMatch(containerName, copiedBlobName, response);
+        }
+
+        [Test]
+        public void GetBlobProperties_NonCopiedBlob_GetsCorrectCopyProperties()
+        {
+            var containerName = GenerateSampleContainerName();
+            var initialBlobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, initialBlobName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlobProperties(containerName, initialBlobName);
+
+            AssertBlobCopyPropertiesMatch(containerName, initialBlobName, response);
+        }
+
         #endregion
 
         #region GetBlobMetadata
