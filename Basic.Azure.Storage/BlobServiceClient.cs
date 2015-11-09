@@ -115,13 +115,13 @@ namespace Basic.Azure.Storage
             await request.ExecuteAsync(_containerNotFoundExceptionOverride);
         }
 
-        public LeaseContainerAcquireResponse LeaseContainerAcquire(string containerName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
+        public LeaseContainerAcquireResponse LeaseContainerAcquire(string containerName, int leaseDurationInSeconds = 60, string proposedLeaseId = null)
         {
             var request = new LeaseContainerAcquireRequest(_account, containerName, leaseDurationInSeconds, proposedLeaseId);
             var response = request.Execute(_containerNotFoundExceptionOverride);
             return response.Payload;
         }
-        public async Task<LeaseContainerAcquireResponse> LeaseContainerAcquireAsync(string containerName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
+        public async Task<LeaseContainerAcquireResponse> LeaseContainerAcquireAsync(string containerName, int leaseDurationInSeconds = 60, string proposedLeaseId = null)
         {
             var request = new LeaseContainerAcquireRequest(_account, containerName, leaseDurationInSeconds, proposedLeaseId);
             var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
@@ -338,13 +338,13 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
-        public LeaseBlobAcquireResponse LeaseBlobAcquire(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
+        public LeaseBlobAcquireResponse LeaseBlobAcquire(string containerName, string blobName, int leaseDurationInSeconds = 60, string proposedLeaseId = null)
         {
             var request = new LeaseBlobAcquireRequest(_account, containerName, blobName, leaseDurationInSeconds, proposedLeaseId);
             var response = request.Execute();
             return response.Payload;
         }
-        public async Task<LeaseBlobAcquireResponse> LeaseBlobAcquireAsync(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null)
+        public async Task<LeaseBlobAcquireResponse> LeaseBlobAcquireAsync(string containerName, string blobName, int leaseDurationInSeconds = 60, string proposedLeaseId = null)
         {
             var request = new LeaseBlobAcquireRequest(_account, containerName, blobName, leaseDurationInSeconds, proposedLeaseId);
             var response = await request.ExecuteAsync();
