@@ -320,6 +320,11 @@ namespace Basic.Azure.Storage.Tests.Integration
         {
             AssertBlobCopyPropertiesMatch(containerName, blobName, response.CopyStatus, response.CopyProgress, response.CopyCompletionTime, response.CopyStatusDescription, response.CopyId, response.CopySource);
         }
+
+        protected void AssertBlobCopyPropertiesMatch(string containerName, string blobName, GetBlobPropertiesResponse response)
+        {
+            AssertBlobCopyPropertiesMatch(containerName, blobName, response.CopyStatus, response.CopyProgress, response.CopyCompletionTime, response.CopyStatusDescription, response.CopyId, response.CopySource);
+        }
         protected void AssertBlobCopyPropertiesMatch(string containerName, string blobName, Communications.Common.CopyStatus? copyStatus, BlobCopyProgress copyProgress, DateTime? copyCompletionTime, string copyStatusDescription, string copyId, string copySource)
         {
             var client = StorageAccount.CreateCloudBlobClient();

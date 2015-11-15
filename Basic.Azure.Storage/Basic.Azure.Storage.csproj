@@ -189,16 +189,11 @@
     <Compile Include="Communications\TableService\MetadataPreference.cs" />
     <Compile Include="Communications\Utility\Base64Converter.cs" />
     <Compile Include="Communications\Utility\BlobListIncludeParse.cs" />
-    <Compile Include="Communications\Utility\BlobTypeParse.cs" />
-    <Compile Include="Communications\Utility\CopyHeadersParse.cs" />
-    <Compile Include="Communications\Utility\CopyProgressParse.cs" />
-    <Compile Include="Communications\Utility\CopyStatusParse.cs" />
-    <Compile Include="Communications\Utility\DateParse.cs" />
     <Compile Include="Communications\Utility\Guard.cs" />
     <Compile Include="Communications\Utility\GuardRange.cs" />
     <Compile Include="Communications\Utility\IdentifierValidation.cs" />
     <Compile Include="ClientContracts\IQueueServiceClient.cs" />
-    <Compile Include="Communications\Utility\MetadataParse.cs" />
+    <Compile Include="Communications\Utility\Parsers.cs" />
     <Compile Include="Communications\Utility\SharedAccessPermissionParse.cs" />
     <Compile Include="Extensions\BlobLeaseMaintainer.cs" />
     <Compile Include="Extensions\BlobServiceClientExtensions.cs" />

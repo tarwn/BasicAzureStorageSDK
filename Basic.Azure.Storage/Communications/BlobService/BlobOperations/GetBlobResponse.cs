@@ -40,19 +40,19 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             //TODO: determine what we want to do about potential missing headers and date parsing errors
 
             ETag = response.Headers[ProtocolConstants.Headers.ETag].Trim(new char[] { '"' });
-            Date = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
-            LastModified = DateParse.ParseHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
+            Date = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
+            LastModified = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
 
-            Metadata = MetadataParse.ParseMetadata(response);
+            Metadata = Parsers.ParseMetadata(response);
 
-            BlobType = BlobTypeParse.ParseBlobType(response.Headers[ProtocolConstants.Headers.BlobType]);
+            BlobType = Parsers.ParseBlobType(response.Headers[ProtocolConstants.Headers.BlobType]);
 
-            CopyCompletionTime = CopyHeadersParse.ParseCopyCompletionTime(response);
-            CopyStatusDescription = CopyHeadersParse.ParseCopyStatusDescription(response);
-            CopyId = CopyHeadersParse.ParseCopyId(response);
-            CopyProgress = CopyHeadersParse.ParseCopyProgress(response);
-            CopySource = CopyHeadersParse.ParseCopySource(response);
-            CopyStatus = CopyHeadersParse.ParseCopyStatus(response);
+            CopyCompletionTime = Parsers.ParseCopyCompletionTime(response);
+            CopyStatusDescription = Parsers.ParseCopyStatusDescription(response);
+            CopyId = Parsers.ParseCopyId(response);
+            CopyProgress = Parsers.ParseCopyProgress(response);
+            CopySource = Parsers.ParseCopySource(response);
+            CopyStatus = Parsers.ParseCopyStatus(response);
         }
 
         public virtual async Task ParseResponseBodyAsync(System.IO.Stream responseStream)

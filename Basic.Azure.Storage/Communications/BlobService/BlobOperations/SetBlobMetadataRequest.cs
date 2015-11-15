@@ -53,7 +53,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
 
         public void ApplyAdditionalRequiredHeaders(WebRequest request)
         {
-            MetadataParse.PrepareAndApplyMetadataHeaders(_metadata, request);
+            Parsers.PrepareAndApplyMetadataHeaders(_metadata, request);
         }
 
         public void ApplyAdditionalOptionalHeaders(WebRequest request)

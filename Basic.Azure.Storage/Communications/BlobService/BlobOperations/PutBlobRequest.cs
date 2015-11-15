@@ -121,7 +121,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             if (!string.IsNullOrEmpty(_leaseId))
                 request.Headers.Add(ProtocolConstants.Headers.LeaseId, _leaseId);
 
-            MetadataParse.PrepareAndApplyMetadataHeaders(_metadata, request);
+            Parsers.PrepareAndApplyMetadataHeaders(_metadata, request);
 
             if (_blobType == BlobType.Page)
                 request.Headers.Add(ProtocolConstants.Headers.BlobSequenceNumber, _sequenceNumber.ToString());
