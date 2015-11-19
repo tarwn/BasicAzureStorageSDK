@@ -76,9 +76,9 @@ namespace Basic.Azure.Storage.Tests.Communications.BlobService.BlobOperations
 id1, id2, id3);
             var givenData = new BlockListBlockIdList
             {
-                new BlockListBlockId { Id = id1, ListType = BlockListListType.Committed},
-                new BlockListBlockId { Id = id2, ListType = BlockListListType.Uncommitted},
-                new BlockListBlockId { Id = id3, ListType = BlockListListType.Latest}
+                new BlockListBlockId { Id = id1, ListType = PutBlockListListType.Committed},
+                new BlockListBlockId { Id = id2, ListType = PutBlockListListType.Uncommitted},
+                new BlockListBlockId { Id = id3, ListType = PutBlockListListType.Latest}
             };
 
             var request = new PutBlockListRequest(_settings, expectedContainer, expectedBlob, givenData);

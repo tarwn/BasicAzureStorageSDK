@@ -1,9 +1,9 @@
 ﻿namespace Basic.Azure.Storage.Communications.BlobService
 {
-    public enum BlockListListType
+    public enum GetBlockListListType
     {
         Committed,
         Uncommitted,
-        Latest
+        All
     }
 }

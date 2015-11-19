@@ -223,6 +223,19 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
+        public GetBlockListResponse GetBlockList(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed)
+        {
+            var request = new GetBlockListRequest(_account, containerName, blobName, leaseId, blockListType);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<GetBlockListResponse> GetBlockListAsync(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed)
+        {
+            var request = new GetBlockListRequest(_account, containerName, blobName, leaseId, blockListType);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         public PutBlockListResponse PutBlockList(string containerName, string blobName, BlockListBlockIdList data,
             string cacheControl = null, string contentType = null,
             string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,

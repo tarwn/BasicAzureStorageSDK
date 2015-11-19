@@ -529,14 +529,23 @@ namespace Basic.Azure.Storage.Tests.Integration
                 .ToList();
         }
 
-        protected BlockListBlockIdList CreateBlockIdList(int idCount, BlockListListType listType)
+        protected void PutBlockList(string containerName, string blobName, IEnumerable<string> blockIds)
+        {
+            var client = StorageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            var blob = container.GetBlockBlobReference(blobName);
+
+            blob.PutBlockList(blockIds);
+        }
+
+        protected BlockListBlockIdList CreateBlockIdList(int idCount, PutBlockListListType listType)
         {
             var idList = new BlockListBlockIdList();
             for (var i = 0; i < idCount; i++)
             {
                 idList.Add(new BlockListBlockId
                 {
-                    Id = Base64Converter.ConvertToBase64("id" + idCount),
+                    Id = Base64Converter.ConvertToBase64("id" + i),
                     ListType = listType
                 });
             }

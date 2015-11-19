@@ -62,13 +62,13 @@ namespace Basic.Azure.Storage.Communications.BlobService
             string element;
             switch (blockId.ListType)
             {
-                case BlockListListType.Committed:
+                case PutBlockListListType.Committed:
                     element = "Committed";
                     break;
-                case BlockListListType.Latest:
+                case PutBlockListListType.Latest:
                     element = "Latest";
                     break;
-                case BlockListListType.Uncommitted:
+                case PutBlockListListType.Uncommitted:
                     element = "Uncommitted";
                     break;
                 default:

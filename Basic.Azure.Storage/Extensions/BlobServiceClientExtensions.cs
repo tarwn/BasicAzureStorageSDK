@@ -138,7 +138,7 @@ namespace Basic.Azure.Storage.Extensions
         private static BlockListBlockIdList GenerateBlockIdListFromRangesAndIds(IEnumerable<ArrayRangeWithBlockIdString> rangesAndBlockIds)
         {
             var convertedBlockListBlockIds = rangesAndBlockIds
-                .Select(blockInfo => new BlockListBlockId { Id = blockInfo.Id, ListType = BlockListListType.Uncommitted });
+                .Select(blockInfo => new BlockListBlockId { Id = blockInfo.Id, ListType = PutBlockListListType.Uncommitted });
 
             return new BlockListBlockIdList(convertedBlockListBlockIds);
         }
