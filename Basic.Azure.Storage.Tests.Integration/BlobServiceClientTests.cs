@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Basic.Azure.Storage.Communications.Utility;
-using Basic.Azure.Storage.Extensions;
+using Microsoft.WindowsAzure.Storage.Blob;
 using BlobType = Microsoft.WindowsAzure.Storage.Blob.BlobType;
 using LeaseDuration = Basic.Azure.Storage.Communications.Common.LeaseDuration;
 using LeaseState = Basic.Azure.Storage.Communications.Common.LeaseState;
@@ -1569,7 +1569,163 @@ namespace Basic.Azure.Storage.Tests.Integration
         #region GetBlockList
 
         [Test]
-        public void GetBlockList_RequiredArgsOnly_GetsCommittedBlocks()
+        public void GetBlockList_RequiredArgsOnly_GetsCommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
+        }
+
+        [Test]
+        public async void GetBlockListAsync_RequiredArgsOnly_GetsCommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.All);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
+        }
+
+        [Test]
+        public void GetBlockList_RequiredArgsOnly_GetsUncommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Uncommitted, response.UncommittedBlocks);
+        }
+
+        [Test]
+        public async void GetBlockListAsync_RequiredArgsOnly_GetsUncommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.All);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Uncommitted, response.UncommittedBlocks);
+        }
+
+        [Test]
+        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestCommitted_GetsCommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var uncommittedBlockList = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            var uncommittedBlockIds = GetIdsFromBlockIdList(uncommittedBlockList);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            CreateBlockList(containerName, blobName, uncommittedBlockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.Committed);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
+        }
+
+        [Test]
+        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestCommitted_GetsCommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var uncommittedBlockList = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            var uncommittedBlockIds = GetIdsFromBlockIdList(uncommittedBlockList);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            CreateBlockList(containerName, blobName, uncommittedBlockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.Committed);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
+        }
+
+        [Test]
+        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestUncommitted_GetsUncommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var uncommittedBlockList = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            var uncommittedBlockIds = GetIdsFromBlockIdList(uncommittedBlockList);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            CreateBlockList(containerName, blobName, uncommittedBlockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.Uncommitted);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.UncommittedBlocks);
+        }
+
+        [Test]
+        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestUncommitted_GetsUncommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var uncommittedBlockList = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            var uncommittedBlockIds = GetIdsFromBlockIdList(uncommittedBlockList);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            CreateBlockList(containerName, blobName, uncommittedBlockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.Uncommitted);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.UncommittedBlocks);
+        }
+
+        [Test]
+        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestAll_GetsAllBlocksInTheRightOrder()
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
@@ -1585,21 +1741,29 @@ namespace Basic.Azure.Storage.Tests.Integration
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
             var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
-            
-            Assert.AreEqual(blockIds.Count, response.CommittedBlocks.Count);
-            for (var i = 0; i < response.CommittedBlocks.Count; i++)
-            {
-                var expectedCommittedBlock = blockIds[i];
-                var currentCommittedBlock = response.CommittedBlocks[i];
-                Assert.AreEqual(expectedCommittedBlock, currentCommittedBlock.Name);
-            }
-            Assert.AreEqual(uncommittedBlockIds.Count, response.UncommittedBlocks.Count);
-            for (var i = 0; i < response.UncommittedBlocks.Count; i++)
-            {
-                var expectedCommittedBlock = uncommittedBlockIds[i];
-                var currentCommittedBlock = response.CommittedBlocks[i];
-                Assert.AreEqual(expectedCommittedBlock, currentCommittedBlock.Name);
-            }
+
+            AssertBlockListsAreEqual(containerName, blobName, response);
+        }
+
+        [Test]
+        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestAll_GetsAllBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var uncommittedBlockList = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            var uncommittedBlockIds = GetIdsFromBlockIdList(uncommittedBlockList);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            CreateBlockList(containerName, blobName, uncommittedBlockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.All);
+
+            AssertBlockListsAreEqual(containerName, blobName, response);
         }
 
         #endregion

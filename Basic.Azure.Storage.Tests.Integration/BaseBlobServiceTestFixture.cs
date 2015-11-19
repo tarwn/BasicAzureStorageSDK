@@ -267,6 +267,51 @@ namespace Basic.Azure.Storage.Tests.Integration
             return block;
         }
 
+        protected List<ListBlockItem> AssertBlockListsAreEqual(string containerName, string blobName, GetBlockListResponse response)
+        {
+            var client = StorageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            if (!container.Exists())
+                Assert.Fail("AssertBlockExists: The container '{0}' does not exist", containerName);
+
+            var blob = container.GetBlockBlobReference(blobName);
+            var blockList = blob.DownloadBlockList(BlockListingFilter.All).ToList();
+
+            var gottenBlocks = response.CommittedBlocks.Concat(response.UncommittedBlocks).ToList();
+            var gottenBlocksCount = gottenBlocks.Count;
+            Assert.AreEqual(blockList.Count, gottenBlocksCount);
+            for (var i = 0; i < gottenBlocksCount; i++)
+            {
+                var expectedBlock = blockList[i];
+                var gottenBlock = gottenBlocks[i];
+                Assert.AreEqual(expectedBlock.Name, gottenBlock.Name);
+                Assert.AreEqual(expectedBlock.Length, gottenBlock.Size);
+            }
+
+            return blockList;
+        }
+        protected List<ListBlockItem> AssertBlockListsAreEqual(string containerName, string blobName, BlockListingFilter blockType, List<ParsedBlockListBlockId> gottenBlocks)
+        {
+            var client = StorageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containerName);
+            if (!container.Exists())
+                Assert.Fail("AssertBlockExists: The container '{0}' does not exist", containerName);
+
+            var blob = container.GetBlockBlobReference(blobName);
+            var blockList = blob.DownloadBlockList(blockType).ToList();
+
+            Assert.AreEqual(blockList.Count, gottenBlocks.Count);
+            for (var i = 0; i < gottenBlocks.Count; i++)
+            {
+                var expectedBlock = blockList[i];
+                var gottenBlock = gottenBlocks[i];
+                Assert.AreEqual(expectedBlock.Name, gottenBlock.Name);
+                Assert.AreEqual(expectedBlock.Length, gottenBlock.Size);
+            }
+
+            return blockList;
+        }
+
         protected Microsoft.WindowsAzure.Storage.Blob.ICloudBlob AssertBlobDoesNotExist(string containerName, string blobName, BlobType blobType)
         {
             var client = StorageAccount.CreateCloudBlobClient();
