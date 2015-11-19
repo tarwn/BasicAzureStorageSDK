@@ -64,6 +64,9 @@ namespace Basic.Azure.Storage.ClientContracts
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null);
 
+        GetBlockListResponse GetBlockList(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed);
+        Task<GetBlockListResponse> GetBlockListAsync(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed);
+
         PutBlockListResponse PutBlockList(string containerName, string blobName, BlockListBlockIdList data,
             string cacheControl = null, string contentType = null,
             string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,

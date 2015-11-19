@@ -4,6 +4,6 @@
     {
         public string Id { get; set; }
 
-        public BlockListListType ListType { get; set; }
+        public PutBlockListListType ListType { get; set; }
     }
 }

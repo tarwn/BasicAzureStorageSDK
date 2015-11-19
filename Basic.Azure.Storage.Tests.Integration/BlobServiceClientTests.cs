@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Basic.Azure.Storage.Communications.Utility;
+using Microsoft.WindowsAzure.Storage.Blob;
 using BlobType = Microsoft.WindowsAzure.Storage.Blob.BlobType;
 using LeaseDuration = Basic.Azure.Storage.Communications.Common.LeaseDuration;
 using LeaseState = Basic.Azure.Storage.Communications.Common.LeaseState;
@@ -1565,6 +1566,208 @@ namespace Basic.Azure.Storage.Tests.Integration
 
         #endregion
 
+        #region GetBlockList
+
+        [Test]
+        public void GetBlockList_RequiredArgsOnly_GetsCommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
+        }
+
+        [Test]
+        public async void GetBlockListAsync_RequiredArgsOnly_GetsCommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.All);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
+        }
+
+        [Test]
+        public void GetBlockList_RequiredArgsOnly_GetsUncommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Uncommitted, response.UncommittedBlocks);
+        }
+
+        [Test]
+        public async void GetBlockListAsync_RequiredArgsOnly_GetsUncommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.All);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Uncommitted, response.UncommittedBlocks);
+        }
+
+        [Test]
+        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestCommitted_GetsCommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var uncommittedBlockList = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            var uncommittedBlockIds = GetIdsFromBlockIdList(uncommittedBlockList);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            CreateBlockList(containerName, blobName, uncommittedBlockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.Committed);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
+        }
+
+        [Test]
+        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestCommitted_GetsCommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var uncommittedBlockList = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            var uncommittedBlockIds = GetIdsFromBlockIdList(uncommittedBlockList);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            CreateBlockList(containerName, blobName, uncommittedBlockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.Committed);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
+        }
+
+        [Test]
+        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestUncommitted_GetsUncommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var uncommittedBlockList = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            var uncommittedBlockIds = GetIdsFromBlockIdList(uncommittedBlockList);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            CreateBlockList(containerName, blobName, uncommittedBlockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.Uncommitted);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.UncommittedBlocks);
+        }
+
+        [Test]
+        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestUncommitted_GetsUncommittedBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var uncommittedBlockList = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            var uncommittedBlockIds = GetIdsFromBlockIdList(uncommittedBlockList);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            CreateBlockList(containerName, blobName, uncommittedBlockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.Uncommitted);
+
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.UncommittedBlocks);
+        }
+
+        [Test]
+        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestAll_GetsAllBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var uncommittedBlockList = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            var uncommittedBlockIds = GetIdsFromBlockIdList(uncommittedBlockList);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            CreateBlockList(containerName, blobName, uncommittedBlockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
+
+            AssertBlockListsAreEqual(containerName, blobName, response);
+        }
+
+        [Test]
+        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestAll_GetsAllBlocksInTheRightOrder()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Committed);
+            var uncommittedBlockList = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            var uncommittedBlockIds = GetIdsFromBlockIdList(uncommittedBlockList);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
+            PutBlockList(containerName, blobName, blockIds);
+            CreateBlockList(containerName, blobName, uncommittedBlockIds, dataPerBlock);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.All);
+
+            AssertBlockListsAreEqual(containerName, blobName, response);
+        }
+
+        #endregion
+
         #region PutBlockList
 
         [Test]
@@ -1575,7 +1778,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
@@ -1594,7 +1797,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
@@ -1614,7 +1817,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             CreateBlockBlob(containerName, blobName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             var lease = LeaseBlob(containerName, blobName);
@@ -1635,7 +1838,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             CreateBlockBlob(containerName, blobName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             var lease = LeaseBlob(containerName, blobName);
@@ -1656,7 +1859,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             CreateBlockBlob(containerName, blobName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             LeaseBlob(containerName, blobName);
@@ -1676,7 +1879,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             CreateBlockBlob(containerName, blobName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             LeaseBlob(containerName, blobName);
@@ -1696,7 +1899,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             CreateBlockBlob(containerName, blobName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             LeaseBlob(containerName, blobName);
@@ -1716,7 +1919,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             CreateBlockBlob(containerName, blobName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             LeaseBlob(containerName, blobName);
@@ -1733,7 +1936,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
             client.PutBlockList(containerName, blobName, blockListBlockIds, leaseId: InvalidLeaseId);
@@ -1747,7 +1950,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         {
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
             await client.PutBlockListAsync(containerName, blobName, blockListBlockIds, leaseId: InvalidLeaseId);
@@ -1763,12 +1966,12 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             blockListBlockIds.Add(new BlockListBlockId
             {
                 Id = Base64Converter.ConvertToBase64("id4"),
-                ListType = BlockListListType.Latest
+                ListType = PutBlockListListType.Latest
             });
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
@@ -1786,12 +1989,12 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             blockListBlockIds.Add(new BlockListBlockId
             {
                 Id = Base64Converter.ConvertToBase64("id4"),
-                ListType = BlockListListType.Latest
+                ListType = PutBlockListListType.Latest
             });
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
@@ -1812,7 +2015,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
@@ -1835,7 +2038,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
@@ -1855,7 +2058,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
@@ -1874,7 +2077,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
@@ -1894,7 +2097,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
@@ -1914,7 +2117,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
@@ -1933,7 +2136,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock, Encoding.UTF32);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
@@ -1952,7 +2155,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock, Encoding.UTF32);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
@@ -1971,7 +2174,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
@@ -1990,7 +2193,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
-            var blockListBlockIds = CreateBlockIdList(3, BlockListListType.Latest);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Latest);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);

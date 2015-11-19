@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.Common;
 using Basic.Azure.Storage.Communications.Core;
@@ -17,15 +18,23 @@ namespace Basic.Azure.Storage.Communications.Utility
         private const string TotalGroupName = "total";
         private const string RegexMatch = @"^(?<" + CopiedGroupName + @">\d*)\/(?<" + TotalGroupName + @">\d*)$";
         private static readonly Regex Matcher = new Regex(RegexMatch);
-        
+
         private const string PageBlob = "PageBlob";
         private const string BlockBlob = "BlockBlob";
         private const string AppendBlob = "AppendBlob";
-        
+
+        private static readonly Dictionary<GetBlockListListType, string> BlockListTypeToStringMapping = new Dictionary<GetBlockListListType, string>
+        {
+            { GetBlockListListType.Committed, "CommittedBlocks" },
+            { GetBlockListListType.Uncommitted, "UncommittedBlocks" }
+        };
+
         public const string Success = "success";
         public const string Pending = "pending";
         public const string Aborted = "aborted";
         public const string Failed = "failed";
+
+
 
         public static DateTime? ParseCopyCompletionTime(WebResponse response)
         {
@@ -83,7 +92,7 @@ namespace Basic.Azure.Storage.Communications.Utility
             var total = Int32.Parse(match.Groups[TotalGroupName].Value);
             return new BlobCopyProgress(copied, total);
         }
-        
+
         public static CopyStatus ParseCopyStatus(string copyStatus)
         {
             switch (copyStatus)
@@ -105,7 +114,7 @@ namespace Basic.Azure.Storage.Communications.Utility
                     break;
             }
         }
-        
+
         public static BlobType ParseBlobType(string rawBlobType)
         {
             switch (rawBlobType)
@@ -153,11 +162,44 @@ namespace Basic.Azure.Storage.Communications.Utility
             const string joinParts = ProtocolConstants.Headers.MetaDataPrefix + "{0}";
 
             if (givenMetadata == null || givenMetadata.Count == 0) return;
-            
+
             foreach (var kvp in givenMetadata)
             {
                 request.Headers.Add(String.Format(joinParts, kvp.Key), kvp.Value);
             }
+        }
+
+        public static Dictionary<GetBlockListListType, List<ParsedBlockListBlockId>> ParseAllXmlBlockLists(XElement blockListRoot)
+        {
+            return BlockListTypeToStringMapping
+                .ToDictionary(
+                    pair => pair.Key,
+                    pair => ParseXmlBlockList(blockListRoot.Element(pair.Value)));
+        }
+
+        private static List<ParsedBlockListBlockId> ParseXmlBlockList(XElement blockListRoot)
+        {
+            if (blockListRoot == null)
+            {
+                return new List<ParsedBlockListBlockId>();
+            }
+
+            return blockListRoot
+                .Elements()
+                .Select(ParseXmlBlock)
+                .ToList();
+        }
+
+        private static ParsedBlockListBlockId ParseXmlBlock(XElement block)
+        {
+            const string nameElement = "Name";
+            const string sizeElement = "Size";
+
+            return new ParsedBlockListBlockId
+            {
+                Name = block.Element(nameElement).Value,
+                Size = int.Parse(block.Element(sizeElement).Value)
+            };
         }
     }
 }

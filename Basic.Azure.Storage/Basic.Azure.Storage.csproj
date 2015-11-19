@@ -48,6 +48,8 @@
     <Compile Include="Communications\BlobService\BlobOperations\CopyBlobRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\CopyBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\DeleteBlobRequest.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\GetBlockListResponse.cs" />
+    <Compile Include="Communications\BlobService\BlobOperations\GetBlockListRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\SetBlobMetadataResponse.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\SetBlobMetadataRequest.cs" />
     <Compile Include="Communications\BlobService\BlobOperations\GetBlobMetadataRequest.cs" />
@@ -73,9 +75,11 @@
     <Compile Include="Communications\BlobService\BlobOperations\PutBlobResponse.cs" />
     <Compile Include="Communications\BlobService\BlobRange.cs" />
     <Compile Include="Communications\BlobService\BlobServiceConstants.cs" />
+    <Compile Include="Communications\BlobService\ParsedBlockListBlockId.cs" />
     <Compile Include="Communications\BlobService\BlockListBlockId.cs" />
     <Compile Include="Communications\BlobService\BlockListBlockIdList.cs" />
-    <Compile Include="Communications\BlobService\BlockListListType.cs" />
+    <Compile Include="Communications\BlobService\GetBlockListListType.cs" />
+    <Compile Include="Communications\BlobService\PutBlockListListType.cs" />
     <Compile Include="Communications\BlobService\ContainerAccessType.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\ListBlobsResponse.cs" />
     <Compile Include="Communications\BlobService\ContainerOperations\ListBlobsRequest.cs" />

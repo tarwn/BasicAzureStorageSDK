@@ -116,6 +116,7 @@ namespace Basic.Azure.Storage.Communications.Core
         public static class QueryParameters
         {
             public const string BlockId = "blockid";
+            public const string BlockListType = "blocklisttype";
             public const string Comp = "comp";
             public const string Delimiter = "delimiter";
             public const string Include = "include";
@@ -133,6 +134,7 @@ namespace Basic.Azure.Storage.Communications.Core
         public static class QueryValues
         {
             public const string ACL = "acl";
+            public const string BlockList = "blocklist";
             public const string List = "list";
             public const string Metadata = "metadata";
 
