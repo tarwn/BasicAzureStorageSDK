@@ -1605,6 +1605,66 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public void GetBlockList_BlobWithNoCommittedBlocks_GetsEmptyETag()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, "foo");
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
+
+            Assert.IsNullOrEmpty(response.ETag);
+        }
+
+        [Test]
+        public void GetBlockList_BlobWithCommittedBlocks_GetsPopulatedETag()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, content: "A Committed Block");
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
+
+            Assert.IsNotEmpty(response.ETag);
+        }
+
+        [Test]
+        public void GetBlockList_BlobWithNoCommittedBlocks_GetsZeroContentLength()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, "foo");
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
+
+            Assert.AreEqual(0, response.BlobContentLength);
+        }
+
+        [Test]
+        public void GetBlockList_BlobWithCommittedBlocks_GetsNonZeroContentLength()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, content: "A Committed Block");
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
+
+            Assert.Greater(response.BlobContentLength, 0);
+        }
+
+        [Test]
         public void GetBlockList_RequiredArgsOnly_GetsUncommittedBlocksInTheRightOrder()
         {
             const string dataPerBlock = "foo";
