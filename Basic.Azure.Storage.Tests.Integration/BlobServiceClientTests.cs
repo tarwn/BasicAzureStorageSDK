@@ -1583,6 +1583,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
 
+            Assert.Greater(response.CommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
         }
 
@@ -1601,6 +1602,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.All);
 
+            Assert.Greater(response.CommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
         }
 
@@ -1674,11 +1676,11 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
-            PutBlockList(containerName, blobName, blockIds);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
             var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
 
+            Assert.Greater(response.UncommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Uncommitted, response.UncommittedBlocks);
         }
 
@@ -1692,11 +1694,11 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
-            PutBlockList(containerName, blobName, blockIds);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
             var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.All);
 
+            Assert.Greater(response.UncommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Uncommitted, response.UncommittedBlocks);
         }
 
@@ -1718,6 +1720,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.Committed);
 
+            Assert.Greater(response.CommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
         }
 
@@ -1739,6 +1742,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.Committed);
 
+            Assert.Greater(response.CommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
         }
 
@@ -1760,7 +1764,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.Uncommitted);
 
-            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.UncommittedBlocks);
+            Assert.Greater(response.UncommittedBlocks.Count, 0);
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Uncommitted, response.UncommittedBlocks);
         }
 
         [Test]
@@ -1781,7 +1786,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.Uncommitted);
 
-            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.UncommittedBlocks);
+            Assert.Greater(response.UncommittedBlocks.Count, 0);
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Uncommitted, response.UncommittedBlocks);
         }
 
         [Test]
@@ -1802,6 +1808,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
 
+            Assert.Greater(response.UncommittedBlocks.Count, 0);
+            Assert.Greater(response.CommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, response);
         }
 
@@ -1823,6 +1831,8 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.All);
 
+            Assert.Greater(response.UncommittedBlocks.Count, 0);
+            Assert.Greater(response.CommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, response);
         }
 
