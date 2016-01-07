@@ -16,15 +16,15 @@ namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
             Metadata = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
         }
 
-        public int ApproximateMessageCount { get; protected set; }
+        public virtual int ApproximateMessageCount { get; protected set; }
 
-        public ReadOnlyDictionary<string, string> Metadata { get; protected set; }
+        public virtual ReadOnlyDictionary<string, string> Metadata { get; protected set; }
 
-        public string RequestId { get; protected set; }
+        public virtual string RequestId { get; protected set; }
 
-        public string Version { get; protected set; }
+        public virtual string Version { get; protected set; }
 
-        public DateTime Date { get; protected set; }
+        public virtual DateTime Date { get; protected set; }
 
         public void ParseHeaders(System.Net.HttpWebResponse response)
         {

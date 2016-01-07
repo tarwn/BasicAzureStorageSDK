@@ -20,13 +20,13 @@ namespace Basic.Azure.Storage.Communications.QueueService.QueueOperations
             SignedIdentifiers = new ReadOnlyCollection<QueueSignedIdentifier>(new List<QueueSignedIdentifier>());
         }
 
-        public ReadOnlyCollection<QueueSignedIdentifier> SignedIdentifiers { get; protected set; }
+        public virtual ReadOnlyCollection<QueueSignedIdentifier> SignedIdentifiers { get; protected set; }
 
-        public string RequestId { get; protected set; }
+        public virtual string RequestId { get; protected set; }
 
-        public string Version { get; protected set; }
+        public virtual string Version { get; protected set; }
 
-        public DateTime Date { get; protected set; }
+        public virtual DateTime Date { get; protected set; }
 
         private DateTime ParseDate(string headerValue)
         {

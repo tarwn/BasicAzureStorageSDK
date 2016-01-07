@@ -17,17 +17,17 @@ namespace Basic.Azure.Storage.Communications.QueueService.AccountOperations
     public class ListQueuesResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse, IReceiveDataWithResponse
     {
 
-        public string Prefix { get; protected set; }
-        public string Marker { get; protected set; }
-        public int MaxResults { get; protected set; }
-        public ReadOnlyCollection<Queue> Queues { get; protected set; }
+        public virtual string Prefix { get; protected set; }
+        public virtual string Marker { get; protected set; }
+        public virtual int MaxResults { get; protected set; }
+        public virtual ReadOnlyCollection<Queue> Queues { get; protected set; }
 
 
-        public string RequestId { get; protected set; }
+        public virtual string RequestId { get; protected set; }
 
-        public string Version { get; protected set; }
+        public virtual string Version { get; protected set; }
 
-        public DateTime Date { get; protected set; }
+        public virtual DateTime Date { get; protected set; }
 
         private DateTime ParseDate(string headerValue)
         {
