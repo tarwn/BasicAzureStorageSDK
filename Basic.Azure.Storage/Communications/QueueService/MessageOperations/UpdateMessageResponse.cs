@@ -16,13 +16,13 @@ namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
 {
     public class UpdateMessageResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse
     {
-        public string PopReceipt { get; protected set; }
+        public virtual string PopReceipt { get; protected set; }
 
-        public string RequestId { get; protected set; }
+        public virtual string RequestId { get; protected set; }
 
-        public string Version { get; protected set; }
+        public virtual string Version { get; protected set; }
 
-        public DateTime Date { get; protected set; }
+        public virtual DateTime Date { get; protected set; }
 
         private DateTime ParseDate(string headerValue)
         {

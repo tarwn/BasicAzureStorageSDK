@@ -16,11 +16,11 @@ namespace Basic.Azure.Storage.Communications.QueueService.AccountOperations
 {
     public class GetQueueServicePropertiesResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse, IReceiveDataWithResponse
     {
-        public StorageServiceProperties Properties { get; private set; }
+        public virtual StorageServiceProperties Properties { get; private set; }
 
-        public string RequestId { get; protected set; }
+        public virtual string RequestId { get; protected set; }
 
-        public string Version { get; protected set; }
+        public virtual string Version { get; protected set; }
 
 
         public void ParseHeaders(System.Net.HttpWebResponse response)
