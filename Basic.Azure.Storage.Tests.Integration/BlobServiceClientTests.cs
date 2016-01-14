@@ -1583,6 +1583,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
 
+            Assert.Greater(response.CommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
         }
 
@@ -1601,29 +1602,72 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.All);
 
+            Assert.Greater(response.CommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
         }
 
         [Test]
-        public void GetBlockList_RequiredArgsOnly_GetsUncommittedBlocksInTheRightOrder()
+        public void GetBlockList_BlobWithNoCommittedBlocks_GetsEmptyETag()
         {
-            const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
             var blobName = GenerateSampleBlobName();
             CreateContainer(containerName);
             var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
-            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
-            PutBlockList(containerName, blobName, blockIds);
+            CreateBlockList(containerName, blobName, blockIds, "foo");
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
             var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
 
-            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Uncommitted, response.UncommittedBlocks);
+            Assert.IsNullOrEmpty(response.ETag);
         }
 
         [Test]
-        public async void GetBlockListAsync_RequiredArgsOnly_GetsUncommittedBlocksInTheRightOrder()
+        public void GetBlockList_BlobWithCommittedBlocks_GetsPopulatedETag()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, content: "A Committed Block");
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
+
+            Assert.IsNotEmpty(response.ETag);
+        }
+
+        [Test]
+        public void GetBlockList_BlobWithNoCommittedBlocks_GetsZeroContentLength()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, "foo");
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
+
+            Assert.AreEqual(0, response.BlobContentLength);
+        }
+
+        [Test]
+        public void GetBlockList_BlobWithCommittedBlocks_GetsNonZeroContentLength()
+        {
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            CreateBlockBlob(containerName, blobName, content: "A Committed Block");
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
+
+            Assert.Greater(response.BlobContentLength, 0);
+        }
+
+        [Test]
+        public void GetBlockList_RequiredArgsOnly_GetsCorrectUncommittedBlocks()
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
@@ -1632,11 +1676,29 @@ namespace Basic.Azure.Storage.Tests.Integration
             var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
             var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
             CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
-            PutBlockList(containerName, blobName, blockIds);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+
+            var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
+
+            Assert.Greater(response.UncommittedBlocks.Count, 0);
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Uncommitted, response.UncommittedBlocks);
+        }
+
+        [Test]
+        public async void GetBlockListAsync_RequiredArgsOnly_GetsCorrectUncommittedBlocks()
+        {
+            const string dataPerBlock = "foo";
+            var containerName = GenerateSampleContainerName();
+            var blobName = GenerateSampleBlobName();
+            CreateContainer(containerName);
+            var blockListBlockIds = CreateBlockIdList(3, PutBlockListListType.Uncommitted);
+            var blockIds = GetIdsFromBlockIdList(blockListBlockIds);
+            CreateBlockList(containerName, blobName, blockIds, dataPerBlock);
             IBlobServiceClient client = new BlobServiceClient(AccountSettings);
 
             var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.All);
 
+            Assert.Greater(response.UncommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Uncommitted, response.UncommittedBlocks);
         }
 
@@ -1658,6 +1720,7 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.Committed);
 
+            Assert.Greater(response.CommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
         }
 
@@ -1679,11 +1742,12 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.Committed);
 
+            Assert.Greater(response.CommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.CommittedBlocks);
         }
 
         [Test]
-        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestUncommitted_GetsUncommittedBlocksInTheRightOrder()
+        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestUncommitted_GetsCorrectUncommittedBlocks()
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
@@ -1700,11 +1764,12 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.Uncommitted);
 
-            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.UncommittedBlocks);
+            Assert.Greater(response.UncommittedBlocks.Count, 0);
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Uncommitted, response.UncommittedBlocks);
         }
 
         [Test]
-        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestUncommitted_GetsUncommittedBlocksInTheRightOrder()
+        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestUncommitted_GetsCorrectUncommittedBlocks()
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
@@ -1721,11 +1786,12 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.Uncommitted);
 
-            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Committed, response.UncommittedBlocks);
+            Assert.Greater(response.UncommittedBlocks.Count, 0);
+            AssertBlockListsAreEqual(containerName, blobName, BlockListingFilter.Uncommitted, response.UncommittedBlocks);
         }
 
         [Test]
-        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestAll_GetsAllBlocksInTheRightOrder()
+        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestAll_GetsAllBlocksCorrectly()
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
@@ -1742,11 +1808,13 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = client.GetBlockList(containerName, blobName, null, GetBlockListListType.All);
 
+            Assert.Greater(response.UncommittedBlocks.Count, 0);
+            Assert.Greater(response.CommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, response);
         }
 
         [Test]
-        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestAll_GetsAllBlocksInTheRightOrder()
+        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestAll_GetsAllBlocksCorrectly()
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
@@ -1763,11 +1831,13 @@ namespace Basic.Azure.Storage.Tests.Integration
 
             var response = await client.GetBlockListAsync(containerName, blobName, null, GetBlockListListType.All);
 
+            Assert.Greater(response.UncommittedBlocks.Count, 0);
+            Assert.Greater(response.CommittedBlocks.Count, 0);
             AssertBlockListsAreEqual(containerName, blobName, response);
         }
 
         #endregion
-
+        
         #region PutBlockList
 
         [Test]

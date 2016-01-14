@@ -275,7 +275,9 @@ namespace Basic.Azure.Storage.Tests.Integration
                 Assert.Fail("AssertBlockExists: The container '{0}' does not exist", containerName);
 
             var blob = container.GetBlockBlobReference(blobName);
-            var blockList = blob.DownloadBlockList(BlockListingFilter.All).ToList();
+            var committedBlockList = blob.DownloadBlockList(BlockListingFilter.Committed);
+            var uncommittedBlockList = blob.DownloadBlockList(BlockListingFilter.Uncommitted);
+            var blockList = committedBlockList.Concat(uncommittedBlockList).ToList();
 
             var gottenBlocks = response.CommittedBlocks.Concat(response.UncommittedBlocks).ToList();
             var gottenBlocksCount = gottenBlocks.Count;
@@ -590,7 +592,7 @@ namespace Basic.Azure.Storage.Tests.Integration
             {
                 idList.Add(new BlockListBlockId
                 {
-                    Id = Base64Converter.ConvertToBase64("id" + i),
+                    Id = Base64Converter.ConvertToBase64(Guid.NewGuid().ToString()),
                     ListType = listType
                 });
             }

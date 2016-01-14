@@ -31,10 +31,16 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             //TODO: determine what we want to do about potential missing headers and date parsing errors
 
             LastModified = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
-            ETag = response.Headers[ProtocolConstants.Headers.ETag].Trim('"');
+
+            // ETag will only be present if the blob has committed blocks
+            var rawETag = response.Headers[ProtocolConstants.Headers.ETag];
+            ETag = (string.IsNullOrEmpty(rawETag) ? "" : rawETag.Trim('"'));
+
             Date = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.OperationDate]);
             ContentType = response.Headers[ProtocolConstants.Headers.ContentType];
-            BlobContentLength = int.Parse(response.Headers[ProtocolConstants.Headers.BlobContentLength]);
+
+            // ContentLength will be null if there are no committed blocks, so we'll use Convert.ToInt
+            BlobContentLength = Convert.ToInt32(response.Headers[ProtocolConstants.Headers.BlobContentLength]);
         }
 
         public async Task ParseResponseBodyAsync(Stream responseStream)
