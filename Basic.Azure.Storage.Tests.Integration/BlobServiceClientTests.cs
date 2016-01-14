@@ -1667,7 +1667,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        public void GetBlockList_RequiredArgsOnly_GetsUncommittedBlocksInTheRightOrder()
+        public void GetBlockList_RequiredArgsOnly_GetsCorrectUncommittedBlocks()
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
@@ -1685,7 +1685,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        public async void GetBlockListAsync_RequiredArgsOnly_GetsUncommittedBlocksInTheRightOrder()
+        public async void GetBlockListAsync_RequiredArgsOnly_GetsCorrectUncommittedBlocks()
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
@@ -1747,7 +1747,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestUncommitted_GetsUncommittedBlocksInTheRightOrder()
+        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestUncommitted_GetsCorrectUncommittedBlocks()
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
@@ -1769,7 +1769,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestUncommitted_GetsUncommittedBlocksInTheRightOrder()
+        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestUncommitted_GetsCorrectUncommittedBlocks()
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
@@ -1791,7 +1791,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestAll_GetsAllBlocksInTheRightOrder()
+        public void GetBlockList_CommittedAndUncommittedBlocksExistsRequestAll_GetsAllBlocksCorrectly()
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
@@ -1814,7 +1814,7 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
-        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestAll_GetsAllBlocksInTheRightOrder()
+        public async void GetBlockListAsync_CommittedAndUncommittedBlocksExistsRequestAll_GetsAllBlocksCorrectly()
         {
             const string dataPerBlock = "foo";
             var containerName = GenerateSampleContainerName();
