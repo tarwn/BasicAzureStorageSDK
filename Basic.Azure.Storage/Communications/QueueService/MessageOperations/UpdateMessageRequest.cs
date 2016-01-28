@@ -1,10 +1,7 @@
 ﻿using Basic.Azure.Storage.Communications.Core;
 using Basic.Azure.Storage.Communications.Core.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
 {
@@ -14,13 +11,12 @@ namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
     /// </summary>
     public class UpdateMessageRequest : RequestBase<UpdateMessageResponse>, ISendDataWithRequest
     {
-        private string _queueName;
-        private string _messageId;
-        private string _popReceipt;
-        private int _visibilityTimeout;
-        private string _messageData;
+        private readonly string _queueName;
+        private readonly string _messageId;
+        private readonly string _popReceipt;
+        private readonly int _visibilityTimeout;
 
-        private byte[] _content;
+        private readonly byte[] _content;
 
         public UpdateMessageRequest(StorageAccountSettings settings, string queueName, string messageId, string popReceipt, int visibilityTimeout = 30, string messageData = null)
             : base(settings)
@@ -31,9 +27,7 @@ namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
             _popReceipt = popReceipt;
             _visibilityTimeout = visibilityTimeout;
 
-            _messageData = messageData;
-
-            PrepareContent();
+            _content = PrepareContent(messageData);
         }
 
         protected override string HttpMethod { get { return "PUT"; } }
@@ -53,17 +47,18 @@ namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
             return builder;
         }
 
-        private void PrepareContent()
+        private static byte[] PrepareContent(string content)
         {
-            if (string.IsNullOrEmpty(_messageData))
+            if (string.IsNullOrEmpty(content))
             {
-                _content = new byte[] { };
+                return new byte[] { };
             }
-            else
-            {
-                string messageWithEnvelope = String.Format("<QueueMessage><MessageText>{0}</MessageText></QueueMessage>", _messageData);
-                _content = UTF8Encoding.UTF8.GetBytes(messageWithEnvelope);
-            }
+
+            var messageWithEnvelopeBuilder =
+                new XElement("QueueMessage",
+                    new XElement("MessageText", content));
+
+            return Encoding.UTF8.GetBytes(messageWithEnvelopeBuilder.ToString(SaveOptions.DisableFormatting));
         }
 
         public byte[] GetContentToSend()

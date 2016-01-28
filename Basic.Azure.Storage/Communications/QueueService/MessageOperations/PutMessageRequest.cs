@@ -1,10 +1,7 @@
 ﻿using Basic.Azure.Storage.Communications.Core;
 using Basic.Azure.Storage.Communications.Core.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
 {
@@ -14,20 +11,21 @@ namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
     /// </summary>
     public class PutMessageRequest : RequestBase<EmptyResponsePayload>, ISendDataWithRequest
     {
-        private string _queueName;
-        private string _messageData;
-        private int? _visibilityTimeout;
-        private int? _messageTtl;
+        private readonly string _queueName;
+        private readonly int? _visibilityTimeout;
+        private readonly int? _messageTtl;
+
+        private readonly byte[] _content;
 
         public PutMessageRequest(StorageAccountSettings settings, string queueName, string messageData, int? visibilityTimeout = null, int? messageTtl = null)
             : base(settings)
         {
             //TODO: add Guard statements against invalid values, short circuit so we don't have the latency roundtrip to the server
             _queueName = queueName;
-            _messageData = messageData;
-
             _visibilityTimeout = visibilityTimeout;
             _messageTtl = messageTtl;
+
+            _content = PrepareContent(messageData);
         }
 
         protected override string HttpMethod { get { return "POST"; } }
@@ -49,15 +47,28 @@ namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
             return builder;
         }
 
+        private static byte[] PrepareContent(string content)
+        {
+            if (string.IsNullOrEmpty(content))
+            {
+                return new byte[] { };
+            }
+
+            var messageWithEnvelopeBuilder =
+                new XElement("QueueMessage",
+                    new XElement("MessageText", content));
+
+            return Encoding.UTF8.GetBytes(messageWithEnvelopeBuilder.ToString(SaveOptions.DisableFormatting));
+        }
+
         public byte[] GetContentToSend()
         {
-            string messageWithEnvelope = String.Format("<QueueMessage><MessageText>{0}</MessageText></QueueMessage>", _messageData);
-            return UTF8Encoding.UTF8.GetBytes(messageWithEnvelope);
+            return _content;
         }
 
         public int GetContentLength()
         {
-            return GetContentToSend().Length;
+            return _content.Length;
         }
     }
 }
