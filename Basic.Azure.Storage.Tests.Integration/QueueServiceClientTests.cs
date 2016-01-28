@@ -817,6 +817,20 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         [Test]
+        public void PutMessage_InvalidXMLCharacters_DoesNotThrowException()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            string message = "{\"KeyValueLogPayload\": {\"UserIP\": \"::1\",\"URL\": \"http://fakeurl/foo?bar=baz&baz=bar\"}}";
+
+            Assert.DoesNotThrow(() =>
+            {
+                client.PutMessage(queueName, message);
+            });
+        }
+
+        [Test]
         [ExpectedException(typeof(RequestBodyTooLargeAzureException))]
         public void PutMessage_TooLargeMessage_ThrowsRequestBodyTooLargeException()
         {
@@ -1292,6 +1306,42 @@ namespace Basic.Azure.Storage.Tests.Integration
             Thread.Sleep(2000); // longer than the original visibility timeout
             var itemFromQueueAgain = GetItemFromQueue(queueName);
             Assert.IsNull(itemFromQueueAgain);
+        }
+
+        [Test]
+        public void UpdateMessage_DifferentMessageText_ChangesMessageText()
+        {
+            const string rawFirstText = "1";
+            const string rawSecondText = "2";
+            var firstText = Convert.ToBase64String(Encoding.UTF8.GetBytes(rawFirstText));
+            var secondText = Convert.ToBase64String(Encoding.UTF8.GetBytes(rawSecondText));
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { firstText });
+            var itemFromQueue = GetItemFromQueue(queueName, 1);
+
+            client.UpdateMessage(queueName, itemFromQueue.Id, itemFromQueue.PopReceipt, 0, secondText);
+
+            var itemFromQueueAgain = GetItemFromQueue(queueName);
+            Assert.AreEqual(rawSecondText, itemFromQueueAgain.AsString);
+        }
+
+        [Test]
+        public void UpdateMessage_InvalidXMLMessageTextCharacters_DoesNotThrowException()
+        {
+            const string rawFirstText = "<QueueMessage><MessageText>Test</MessageText></QueueMessage>";
+            const string rawSecondText = "{\"KeyValueLogPayload\": {\"UserIP\": \"::1\",\"URL\": \"http://fakeurl/foo?bar=baz&baz=bar\"}}";
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            CreateQueue(queueName);
+            AddItemsToQueue(queueName, new List<string>() { rawFirstText });
+            var itemFromQueue = GetItemFromQueue(queueName, 1);
+
+            Assert.DoesNotThrow(() =>
+            {
+                client.UpdateMessage(queueName, itemFromQueue.Id, itemFromQueue.PopReceipt, 0, rawSecondText);
+            });
         }
 
         [Test]
