@@ -3,6 +3,7 @@ using Basic.Azure.Storage.Communications.BlobService;
 using Basic.Azure.Storage.Communications.BlobService.BlobOperations;
 using Basic.Azure.Storage.Communications.BlobService.ContainerOperations;
 using Basic.Azure.Storage.Communications.Common;
+using Microsoft.Practices.TransientFaultHandling;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,13 +16,16 @@ namespace Basic.Azure.Storage
         private StorageAccountSettings _account;
 
         private readonly ConcurrentDictionary<string, string> _containerNotFoundExceptionOverride;
+        private readonly RetryPolicy _optionalRetryPolicy;
 
-        public BlobServiceClient(StorageAccountSettings account)
+        public BlobServiceClient(StorageAccountSettings account, RetryPolicy optionalRetryPolicy = null)
         {
             _account = account;
+            _optionalRetryPolicy = optionalRetryPolicy;
             _containerNotFoundExceptionOverride = new ConcurrentDictionary<string, string>();
             _containerNotFoundExceptionOverride.TryAdd("BlobNotFound", "ContainerNotFound");
         }
+
 
         #region Account Operations
 
@@ -33,156 +37,157 @@ namespace Basic.Azure.Storage
         public CreateContainerResponse CreateContainer(string containerName, ContainerAccessType containerAccessType)
         {
             var request = new CreateContainerRequest(_account, containerName, containerAccessType);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
+
         public async Task<CreateContainerResponse> CreateContainerAsync(string containerName, ContainerAccessType containerAccessType)
         {
             var request = new CreateContainerRequest(_account, containerName, containerAccessType);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
         public GetContainerPropertiesResponse GetContainerProperties(string containerName)
         {
             var request = new GetContainerPropertiesRequest(_account, containerName);
-            var response = request.Execute(_containerNotFoundExceptionOverride);
+            var response = request.Execute(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<GetContainerPropertiesResponse> GetContainerPropertiesAsync(string containerName)
         {
             var request = new GetContainerPropertiesRequest(_account, containerName);
-            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
+            var response = await request.ExecuteAsync(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
 
         public GetContainerMetadataResponse GetContainerMetadata(string containerName)
         {
             var request = new GetContainerMetadataRequest(_account, containerName);
-            var response = request.Execute(_containerNotFoundExceptionOverride);
+            var response = request.Execute(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<GetContainerMetadataResponse> GetContainerMetadataAsync(string containerName)
         {
             var request = new GetContainerMetadataRequest(_account, containerName);
-            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
+            var response = await request.ExecuteAsync(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
 
         public void SetContainerMetadata(string containerName, Dictionary<string, string> metadata, string lease = null)
         {
             var request = new SetContainerMetadataRequest(_account, containerName, metadata, lease);
-            request.Execute(_containerNotFoundExceptionOverride);
+            request.Execute(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
         }
         public async Task SetContainerMetadataAsync(string containerName, Dictionary<string, string> metadata, string lease = null)
         {
             var request = new SetContainerMetadataRequest(_account, containerName, metadata, lease);
-            await request.ExecuteAsync(_containerNotFoundExceptionOverride);
+            await request.ExecuteAsync(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
         }
 
         public GetContainerACLResponse GetContainerACL(string containerName)
         {
             var request = new GetContainerACLRequest(_account, containerName);
-            var response = request.Execute(_containerNotFoundExceptionOverride);
+            var response = request.Execute(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<GetContainerACLResponse> GetContainerACLAsync(string containerName)
         {
             var request = new GetContainerACLRequest(_account, containerName);
-            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
+            var response = await request.ExecuteAsync(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
 
         public void SetContainerACL(string containerName, ContainerAccessType containerAccess, List<BlobSignedIdentifier> signedIdentifiers, string leaseId = null)
         {
             var request = new SetContainerACLRequest(_account, containerName, containerAccess, signedIdentifiers, leaseId);
-            request.Execute(_containerNotFoundExceptionOverride);
+            request.Execute(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
         }
         public async Task SetContainerACLAsync(string containerName, ContainerAccessType containerAccess, List<BlobSignedIdentifier> signedIdentifiers, string leaseId = null)
         {
             var request = new SetContainerACLRequest(_account, containerName, containerAccess, signedIdentifiers, leaseId);
-            await request.ExecuteAsync(_containerNotFoundExceptionOverride);
+            await request.ExecuteAsync(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
         }
 
         public void DeleteContainer(string containerName, string leaseId = null)
         {
             var request = new DeleteContainerRequest(_account, containerName, leaseId);
-            request.Execute(_containerNotFoundExceptionOverride);
+            request.Execute(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
         }
         public async Task DeleteContainerAsync(string containerName, string leaseId = null)
         {
             var request = new DeleteContainerRequest(_account, containerName, leaseId);
-            await request.ExecuteAsync(_containerNotFoundExceptionOverride);
+            await request.ExecuteAsync(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
         }
 
         public LeaseContainerAcquireResponse LeaseContainerAcquire(string containerName, int leaseDurationInSeconds = 60, string proposedLeaseId = null)
         {
             var request = new LeaseContainerAcquireRequest(_account, containerName, leaseDurationInSeconds, proposedLeaseId);
-            var response = request.Execute(_containerNotFoundExceptionOverride);
+            var response = request.Execute(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<LeaseContainerAcquireResponse> LeaseContainerAcquireAsync(string containerName, int leaseDurationInSeconds = 60, string proposedLeaseId = null)
         {
             var request = new LeaseContainerAcquireRequest(_account, containerName, leaseDurationInSeconds, proposedLeaseId);
-            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
+            var response = await request.ExecuteAsync(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
 
         public LeaseContainerRenewResponse LeaseContainerRenew(string containerName, string leaseId)
         {
             var request = new LeaseContainerRenewRequest(_account, containerName, leaseId);
-            var response = request.Execute(_containerNotFoundExceptionOverride);
+            var response = request.Execute(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<LeaseContainerRenewResponse> LeaseContainerRenewAsync(string containerName, string leaseId)
         {
             var request = new LeaseContainerRenewRequest(_account, containerName, leaseId);
-            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
+            var response = await request.ExecuteAsync(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public LeaseContainerChangeResponse LeaseContainerChange(string containerName, string currentLeaseid, string proposedLeaseId)
         {
             var request = new LeaseContainerChangeRequest(_account, containerName, currentLeaseid, proposedLeaseId);
-            var response = request.Execute(_containerNotFoundExceptionOverride);
+            var response = request.Execute(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<LeaseContainerChangeResponse> LeaseContainerChangeAsync(string containerName, string currentLeaseid, string proposedLeaseId)
         {
             var request = new LeaseContainerChangeRequest(_account, containerName, currentLeaseid, proposedLeaseId);
-            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
+            var response = await request.ExecuteAsync(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public void LeaseContainerRelease(string containerName, string leaseId)
         {
             var request = new LeaseContainerReleaseRequest(_account, containerName, leaseId);
-            request.Execute(_containerNotFoundExceptionOverride);
+            request.Execute(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
         }
         public async Task LeaseContainerReleaseAsync(string containerName, string leaseId)
         {
             var request = new LeaseContainerReleaseRequest(_account, containerName, leaseId);
-            await request.ExecuteAsync(_containerNotFoundExceptionOverride);
+            await request.ExecuteAsync(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
         }
         public void LeaseContainerBreak(string containerName, string leaseId, int leaseBreakPeriod)
         {
             var request = new LeaseContainerBreakRequest(_account, containerName, leaseId, leaseBreakPeriod);
-            request.Execute(_containerNotFoundExceptionOverride);
+            request.Execute(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
         }
         public async Task LeaseContainerBreakAsync(string containerName, string leaseId, int leaseBreakPeriod)
         {
             var request = new LeaseContainerBreakRequest(_account, containerName, leaseId, leaseBreakPeriod);
-            await request.ExecuteAsync(_containerNotFoundExceptionOverride);
+            await request.ExecuteAsync(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
         }
 
         public ListBlobsResponse ListBlobs(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null)
         {
             var request = new ListBlobsRequest(_account, containerName, prefix, delimiter, marker, maxResults, include);
-            var response = request.Execute(_containerNotFoundExceptionOverride);
+            var response = request.Execute(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
         public async Task<ListBlobsResponse> ListBlobsAsync(string containerName, string prefix = "", string delimiter = "", string marker = "", int maxResults = 5000, ListBlobsInclude? include = null)
         {
             var request = new ListBlobsRequest(_account, containerName, prefix, delimiter, marker, maxResults, include);
-            var response = await request.ExecuteAsync(_containerNotFoundExceptionOverride);
+            var response = await request.ExecuteAsync(_optionalRetryPolicy, _containerNotFoundExceptionOverride);
             return response.Payload;
         }
 
@@ -193,13 +198,13 @@ namespace Basic.Azure.Storage
         public CopyBlobResponse CopyBlob(string containerName, string blobName, string copySource, Dictionary<string, string> metadata = null, string leaseId = null)
         {
             var request = new CopyBlobRequest(_account, containerName, blobName, copySource, metadata, leaseId);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
         public async Task<CopyBlobResponse> CopyBlobAsync(string containerName, string blobName, string copySource, Dictionary<string, string> metadata = null, string leaseId = null)
         {
             var request = new CopyBlobRequest(_account, containerName, blobName, copySource, metadata, leaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
@@ -211,7 +216,7 @@ namespace Basic.Azure.Storage
             string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
         {
             var request = new PutBlobRequest(_account, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
         public async Task<PutBlobResponse> PutBlockBlobAsync(string containerName, string blobName, byte[] data,
@@ -219,20 +224,20 @@ namespace Basic.Azure.Storage
             string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
         {
             var request = new PutBlobRequest(_account, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
         public GetBlockListResponse GetBlockList(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed)
         {
             var request = new GetBlockListRequest(_account, containerName, blobName, leaseId, blockListType);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
         public async Task<GetBlockListResponse> GetBlockListAsync(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed)
         {
             var request = new GetBlockListRequest(_account, containerName, blobName, leaseId, blockListType);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
@@ -242,7 +247,7 @@ namespace Basic.Azure.Storage
             Dictionary<string, string> metadata = null, string leaseId = null)
         {
             var request = new PutBlockListRequest(_account, containerName, blobName, data, cacheControl, contentType, contentEncoding, contentLanguage, blobContentMD5, metadata, leaseId);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
         public async Task<PutBlockListResponse> PutBlockListAsync(string containerName, string blobName, BlockListBlockIdList data,
@@ -251,20 +256,20 @@ namespace Basic.Azure.Storage
             Dictionary<string, string> metadata = null, string leaseId = null)
         {
             var request = new PutBlockListRequest(_account, containerName, blobName, data, cacheControl, contentType, contentEncoding, contentLanguage, blobContentMD5, metadata, leaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
         public PutBlockResponse PutBlock(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null)
         {
             var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5, leaseId);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
         public async Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null)
         {
             var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5, leaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
@@ -276,7 +281,7 @@ namespace Basic.Azure.Storage
             string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0, string leaseId = null)
         {
             var request = new PutBlobRequest(_account, containerName, blobName, contentLength, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, sequenceNumber, leaseId);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
         public async Task<PutBlobResponse> PutPageBlobAsync(string containerName, string blobName, int contentLength,
@@ -284,132 +289,132 @@ namespace Basic.Azure.Storage
             string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0, string leaseId = null)
         {
             var request = new PutBlobRequest(_account, containerName, blobName, contentLength, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, sequenceNumber, leaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
         public void DeleteBlob(string containerName, string blobName, string leaseId = null)
         {
             var request = new DeleteBlobRequest(_account, containerName, blobName, leaseId);
-            request.Execute();
+            request.Execute(_optionalRetryPolicy);
         }
         public async Task DeleteBlobAsync(string containerName, string blobName, string leaseId = null)
         {
             var request = new DeleteBlobRequest(_account, containerName, blobName, leaseId);
-            await request.ExecuteAsync();
+            await request.ExecuteAsync(_optionalRetryPolicy);
         }
 
         public GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null, string leaseId = null)
         {
             var request = new GetBlobRequest(_account, containerName, blobName, range, leaseId);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
         public async Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, BlobRange range = null, string leaseId = null)
         {
             var request = new GetBlobRequest(_account, containerName, blobName, range, leaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
         public GetBlobPropertiesResponse GetBlobProperties(string containerName, string blobName, string leaseId = null)
         {
             var request = new GetBlobPropertiesRequest(_account, containerName, blobName, leaseId);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
         public async Task<GetBlobPropertiesResponse> GetBlobPropertiesAsync(string containerName, string blobName, string leaseId = null)
         {
             var request = new GetBlobPropertiesRequest(_account, containerName, blobName, leaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
         public GetBlobMetadataResponse GetBlobMetadata(string containerName, string blobName, string leaseId = null)
         {
             var request = new GetBlobMetadataRequest(_account, containerName, blobName, leaseId);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
         public async Task<GetBlobMetadataResponse> GetBlobMetadataAsync(string containerName, string blobName, string leaseId = null)
         {
             var request = new GetBlobMetadataRequest(_account, containerName, blobName, leaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
         public SetBlobMetadataResponse SetBlobMetadata(string containerName, string blobName, Dictionary<string, string> metadata, string leaseId = null)
         {
             var request = new SetBlobMetadataRequest(_account, containerName, blobName, metadata, leaseId);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
         public async Task<SetBlobMetadataResponse> SetBlobMetadataAsync(string containerName, string blobName, Dictionary<string, string> metadata, string leaseId = null)
         {
             var request = new SetBlobMetadataRequest(_account, containerName, blobName, metadata, leaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
         public LeaseBlobAcquireResponse LeaseBlobAcquire(string containerName, string blobName, int leaseDurationInSeconds = 60, string proposedLeaseId = null)
         {
             var request = new LeaseBlobAcquireRequest(_account, containerName, blobName, leaseDurationInSeconds, proposedLeaseId);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
         public async Task<LeaseBlobAcquireResponse> LeaseBlobAcquireAsync(string containerName, string blobName, int leaseDurationInSeconds = 60, string proposedLeaseId = null)
         {
             var request = new LeaseBlobAcquireRequest(_account, containerName, blobName, leaseDurationInSeconds, proposedLeaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
         public LeaseBlobRenewResponse LeaseBlobRenew(string containerName, string blobName, string leaseId)
         {
             var request = new LeaseBlobRenewRequest(_account, containerName, blobName, leaseId);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
         public async Task<LeaseBlobRenewResponse> LeaseBlobRenewAsync(string containerName, string blobName, string leaseId)
         {
             var request = new LeaseBlobRenewRequest(_account, containerName, blobName, leaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
         public LeaseBlobChangeResponse LeaseBlobChange(string containerName, string blobName, string currentLeaseId, string proposedLeaseId)
         {
             var request = new LeaseBlobChangeRequest(_account, containerName, blobName, currentLeaseId, proposedLeaseId);
-            var response = request.Execute();
+            var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
         public async Task<LeaseBlobChangeResponse> LeaseBlobChangeAsync(string containerName, string blobName, string currentLeaseId, string proposedLeaseId)
         {
             var request = new LeaseBlobChangeRequest(_account, containerName, blobName, currentLeaseId, proposedLeaseId);
-            var response = await request.ExecuteAsync();
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
 
         public void LeaseBlobRelease(string containerName, string blobName, string leaseId)
         {
             var request = new LeaseBlobReleaseRequest(_account, containerName, blobName, leaseId);
-            request.Execute();
+            request.Execute(_optionalRetryPolicy);
         }
         public async Task LeaseBlobReleaseAsync(string containerName, string blobName, string leaseId)
         {
             var request = new LeaseBlobReleaseRequest(_account, containerName, blobName, leaseId);
-            await request.ExecuteAsync();
+            await request.ExecuteAsync(_optionalRetryPolicy);
         }
 
         public void LeaseBlobBreak(string containerName, string blobName, string leaseId, int leaseBreakPeriod)
         {
             var request = new LeaseBlobBreakRequest(_account, containerName, blobName, leaseId, leaseBreakPeriod);
-            request.Execute();
+            request.Execute(_optionalRetryPolicy);
         }
         public async Task LeaseBlobBreakAsync(string containerName, string blobName, string leaseId, int leaseBreakPeriod)
         {
             var request = new LeaseBlobBreakRequest(_account, containerName, blobName, leaseId, leaseBreakPeriod);
-            await request.ExecuteAsync();
+            await request.ExecuteAsync(_optionalRetryPolicy);
         }
 
         #endregion

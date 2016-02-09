@@ -56,11 +56,11 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        public Response<TPayload> Execute(ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
+        public Response<TPayload> Execute(RetryPolicy optionalRetryPolicy = null, ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
             try
             {
-                return Task.Run(() => ExecuteAsync(responseCodeOverridesForApiBugs)).Result;
+                return Task.Run(() => ExecuteAsync(optionalRetryPolicy, responseCodeOverridesForApiBugs)).Result;
             }
             catch (AggregateException ae)
             {
@@ -68,10 +68,10 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        public async Task<Response<TPayload>> ExecuteAsync(ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
+        public async Task<Response<TPayload>> ExecuteAsync(RetryPolicy optionalRetryPolicy = null, ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
             // send web request
-            return await SendRequestWithRetryAsync(responseCodeOverridesForApiBugs);
+            return await SendRequestWithRetryAsync(optionalRetryPolicy, responseCodeOverridesForApiBugs);
         }
 
         public WebRequest BuildRequest()
@@ -143,13 +143,14 @@ namespace Basic.Azure.Storage.Communications.Core
             }
         }
 
-        private async Task<Response<TPayload>> SendRequestWithRetryAsync(ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
+        private async Task<Response<TPayload>> SendRequestWithRetryAsync(RetryPolicy optionalRetryPolicy = null, ConcurrentDictionary<string, string> responseCodeOverridesForApiBugs = null)
         {
             var numberOfAttempts = 0;
             var retryStack = new Stack<Exception>();
+            var retryPolicy = optionalRetryPolicy ?? RetryPolicy;
             try
             {
-                return await RetryPolicy.ExecuteAsync(async () =>
+                return await retryPolicy.ExecuteAsync(async () =>
                 {
                     try
                     {
@@ -165,7 +166,7 @@ namespace Basic.Azure.Storage.Communications.Core
             }
             catch (Exception exc)
             {
-                if (RetryPolicy.ErrorDetectionStrategy.IsTransient(exc) && numberOfAttempts > 1)
+                if (retryPolicy.ErrorDetectionStrategy.IsTransient(exc) && numberOfAttempts > 1)
                 {
                     throw new RetriedException(exc, numberOfAttempts, retryStack);
                 }
