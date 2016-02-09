@@ -37,7 +37,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 .Throws(new LeaseAlreadyBrokenAzureException("requestId", HttpStatusCode.SeeOther, "daquell", new Dictionary<string, string>(), new WebException()))
                 .Verifiable();
 
-            await BlobLeaseMaintainer.LeaseNewOrExistingBlockBlobAndMaintainLease(blobServiceClientExMock.Object, "testContainer", "testBlob", 15, null, exceptionHandler);
+            await BlobLeaseMaintainer.LeaseNewOrExistingBlockBlobAndMaintainLeaseAsync(blobServiceClientExMock.Object, "testContainer", "testBlob", 15, null, exceptionHandler);
 
             Thread.Sleep(10000);
             blobServiceClientExMock.VerifyAll();
@@ -63,7 +63,7 @@ namespace Basic.Azure.Storage.Tests.Integration
                 .Throws(new LeaseAlreadyBrokenAzureException("requestId", HttpStatusCode.SeeOther, "daquell", new Dictionary<string, string>(), new WebException()))
                 .Verifiable();
 
-            await BlobLeaseMaintainer.LeaseNewOrExistingBlockBlobAndMaintainLease(blobServiceClientExMock.Object, "testContainer", "testBlob", 15);
+            await BlobLeaseMaintainer.LeaseNewOrExistingBlockBlobAndMaintainLeaseAsync(blobServiceClientExMock.Object, "testContainer", "testBlob", 15);
 
             Thread.Sleep(10000);
             blobServiceClientExMock.VerifyAll();
