@@ -57,11 +57,11 @@ namespace Basic.Azure.Storage.Extensions
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null)
         {
-            var lease = await BlobLeaseMaintainer.LeaseNewOrExistingBlockBlobAndMaintainLease(this, containerName, blobName, 60 /* seconds */);
+            var lease = await BlobLeaseMaintainer.LeaseNewOrExistingBlockBlobAndMaintainLeaseAsync(this, containerName, blobName, 60 /* seconds */);
 
             var putResult = await PutBlockBlobIntelligentlyAsync(blockSize, containerName, blobName, data, lease.LeaseId, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata);
 
-            await lease.StopMaintainingAndClearLease();
+            await lease.StopMaintainingAndClearLeaseAsync();
 
             return putResult;
         }
@@ -104,11 +104,11 @@ namespace Basic.Azure.Storage.Extensions
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null)
         {
-            var lease = await BlobLeaseMaintainer.LeaseNewOrExistingBlockBlobAndMaintainLease(this, containerName, blobName, 60 /* seconds */);
+            var lease = await BlobLeaseMaintainer.LeaseNewOrExistingBlockBlobAndMaintainLeaseAsync(this, containerName, blobName, 60 /* seconds */);
 
             var putResult = await PutBlockBlobAsListAsync(blockSize, containerName, blobName, data, lease.LeaseId, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata);
 
-            await lease.StopMaintainingAndClearLease();
+            await lease.StopMaintainingAndClearLeaseAsync();
 
             return putResult;
         }
