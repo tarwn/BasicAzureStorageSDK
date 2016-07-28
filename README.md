@@ -275,7 +275,7 @@ Entity Operations
 - Insert or Replace Entity - No
 - Insert or Merge Entity - No
 
-Blob Service - 15/30 - BlobServiceClient: IBlobServiceClient
+Blob Service - 20/31 - BlobServiceClient: IBlobServiceClient
 -----------------------------------------------------------
 
 Account Operations
@@ -302,13 +302,13 @@ Blob Operations
 
 - Put Blob - Yes - two flavors (see notes above): PutBlockBlob and PutPageBlob
 - Get Blob - Yes
-- Get Blob Properties - No
+- Get Blob Properties - Yes
 - Set Blob Properties - No
-- Get Blob Metadata - No
-- Set Blob Metadata - No
+- Get Blob Metadata - Yes
+- Set Blob Metadata - Yes
 - Lease Blob - Yes
 - Snapshot Blob - No
-- Copy Blob - No
+- Copy Blob - Yes
 - Abort Copy Blob - No
 - Delete Blob - Yes
 
@@ -316,12 +316,16 @@ Block Blob Operations
 
 - Put Block - Yes
 - Put Block List - Yes
-- Get Block List - No
+- Get Block List - Yes
 
 Page Blob Operations
 
 - Put Page - No
 - Get Page Ranges - No
+
+Append Blob Operations
+
+- Append Block - No
 
 File Service - 0/19 - N/A
 -----------------------------------------------------------

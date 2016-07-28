@@ -54,9 +54,9 @@ namespace Basic.Azure.Storage.ClientContracts
 
         #region Blob Operations
 
-        CopyBlobResponse CopyBlob(string containerName, string blobName, string copySource, Dictionary<string, string> metadata = null, string leaseId = null);
-        Task<CopyBlobResponse> CopyBlobAsync(string containerName, string blobName, string copySource, Dictionary<string, string> metadata = null, string leaseId = null);
-
+        /// <summary>
+        /// Creates a new BlockBlob (Alias for the PutBlob call with a Blob Type of BlockBlob)
+        /// </summary>
         PutBlobResponse PutBlockBlob(string containerName, string blobName, byte[] data,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null);
@@ -64,21 +64,9 @@ namespace Basic.Azure.Storage.ClientContracts
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null);
 
-        GetBlockListResponse GetBlockList(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed);
-        Task<GetBlockListResponse> GetBlockListAsync(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed);
-
-        PutBlockListResponse PutBlockList(string containerName, string blobName, BlockListBlockIdList data,
-            string cacheControl = null, string contentType = null,
-            string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
-            Dictionary<string, string> metadata = null, string leaseId = null);
-        Task<PutBlockListResponse> PutBlockListAsync(string containerName, string blobName, BlockListBlockIdList data,
-            string cacheControl = null, string contentType = null,
-            string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
-            Dictionary<string, string> metadata = null, string leaseId = null);
-
-        PutBlockResponse PutBlock(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null);
-        Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null);
-
+        /// <summary>
+        /// Creates a new PageBlob (Alias for the PutBlob call with a Blob Type of PageBlob)
+        /// </summary>
         PutBlobResponse PutPageBlob(string containerName, string blobName, int contentLength,
             string contentType = null, string contentEncoding = null, string contentLanguage = null, string contentMD5 = null,
             string cacheControl = null, Dictionary<string, string> metadata = null, long sequenceNumber = 0, string leaseId = null);
@@ -89,6 +77,7 @@ namespace Basic.Azure.Storage.ClientContracts
         GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null, string leaseId = null);
         Task<GetBlobResponse> GetBlobAsync(string containerName, string blobName, BlobRange range = null, string leaseId = null);
 
+
         GetBlobPropertiesResponse GetBlobProperties(string containerName, string blobName, string leaseId = null);
         Task<GetBlobPropertiesResponse> GetBlobPropertiesAsync(string containerName, string blobName, string leaseId = null);
 
@@ -98,8 +87,8 @@ namespace Basic.Azure.Storage.ClientContracts
         SetBlobMetadataResponse SetBlobMetadata(string containerName, string blobName, Dictionary<string, string> metadata, string leaseId = null);
         Task<SetBlobMetadataResponse> SetBlobMetadataAsync(string containerName, string blobName, Dictionary<string, string> metadata, string leaseId = null);
 
-        LeaseBlobAcquireResponse LeaseBlobAcquire(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null);
-        Task<LeaseBlobAcquireResponse> LeaseBlobAcquireAsync(string containerName, string blobName, int leaseDurationInSeconds = -1, string proposedLeaseId = null);
+        LeaseBlobAcquireResponse LeaseBlobAcquire(string containerName, string blobName, int leaseDurationInSeconds = 60, string proposedLeaseId = null);
+        Task<LeaseBlobAcquireResponse> LeaseBlobAcquireAsync(string containerName, string blobName, int leaseDurationInSeconds = 60, string proposedLeaseId = null);
 
         LeaseBlobRenewResponse LeaseBlobRenew(string containerName, string blobName, string leaseId);
         Task<LeaseBlobRenewResponse> LeaseBlobRenewAsync(string containerName, string blobName, string leaseId);
@@ -113,8 +102,38 @@ namespace Basic.Azure.Storage.ClientContracts
         void LeaseBlobBreak(string containerName, string blobName, string leaseId, int leaseBreakPeriod);
         Task LeaseBlobBreakAsync(string containerName, string blobName, string leaseId, int leaseBreakPeriod);
 
+        CopyBlobResponse CopyBlob(string containerName, string blobName, string copySource, Dictionary<string, string> metadata = null, string leaseId = null);
+        Task<CopyBlobResponse> CopyBlobAsync(string containerName, string blobName, string copySource, Dictionary<string, string> metadata = null, string leaseId = null);
+
         void DeleteBlob(string containerName, string blobName, string leaseId = null);
         Task DeleteBlobAsync(string containerName, string blobName, string leaseId = null);
+
+        #region Block Blob Operations
+
+        PutBlockResponse PutBlock(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null);
+        Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null);
+
+        PutBlockListResponse PutBlockList(string containerName, string blobName, BlockListBlockIdList data,
+            string cacheControl = null, string contentType = null,
+            string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
+            Dictionary<string, string> metadata = null, string leaseId = null);
+        Task<PutBlockListResponse> PutBlockListAsync(string containerName, string blobName, BlockListBlockIdList data,
+            string cacheControl = null, string contentType = null,
+            string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
+            Dictionary<string, string> metadata = null, string leaseId = null);
+
+        GetBlockListResponse GetBlockList(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed);
+        Task<GetBlockListResponse> GetBlockListAsync(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed);
+
+        #endregion
+
+        #region Page Blob Operations
+
+        #endregion
+
+        #region Append Blobs
+
+        #endregion
 
         #endregion
     }

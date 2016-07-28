@@ -195,19 +195,6 @@ namespace Basic.Azure.Storage
 
         #region Blob Operations
 
-        public CopyBlobResponse CopyBlob(string containerName, string blobName, string copySource, Dictionary<string, string> metadata = null, string leaseId = null)
-        {
-            var request = new CopyBlobRequest(_account, containerName, blobName, copySource, metadata, leaseId);
-            var response = request.Execute(_optionalRetryPolicy);
-            return response.Payload;
-        }
-        public async Task<CopyBlobResponse> CopyBlobAsync(string containerName, string blobName, string copySource, Dictionary<string, string> metadata = null, string leaseId = null)
-        {
-            var request = new CopyBlobRequest(_account, containerName, blobName, copySource, metadata, leaseId);
-            var response = await request.ExecuteAsync(_optionalRetryPolicy);
-            return response.Payload;
-        }
-
         /// <summary>
         /// Creates a new BlockBlob (Alias for the PutBlob call with a Blob Type of BlockBlob)
         /// </summary>
@@ -224,51 +211,6 @@ namespace Basic.Azure.Storage
             string cacheControl = null, Dictionary<string, string> metadata = null, string leaseId = null)
         {
             var request = new PutBlobRequest(_account, containerName, blobName, data, contentType, contentEncoding, contentLanguage, contentMD5, cacheControl, metadata, leaseId);
-            var response = await request.ExecuteAsync(_optionalRetryPolicy);
-            return response.Payload;
-        }
-
-        public GetBlockListResponse GetBlockList(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed)
-        {
-            var request = new GetBlockListRequest(_account, containerName, blobName, leaseId, blockListType);
-            var response = request.Execute(_optionalRetryPolicy);
-            return response.Payload;
-        }
-        public async Task<GetBlockListResponse> GetBlockListAsync(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed)
-        {
-            var request = new GetBlockListRequest(_account, containerName, blobName, leaseId, blockListType);
-            var response = await request.ExecuteAsync(_optionalRetryPolicy);
-            return response.Payload;
-        }
-
-        public PutBlockListResponse PutBlockList(string containerName, string blobName, BlockListBlockIdList data,
-            string cacheControl = null, string contentType = null,
-            string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
-            Dictionary<string, string> metadata = null, string leaseId = null)
-        {
-            var request = new PutBlockListRequest(_account, containerName, blobName, data, cacheControl, contentType, contentEncoding, contentLanguage, blobContentMD5, metadata, leaseId);
-            var response = request.Execute(_optionalRetryPolicy);
-            return response.Payload;
-        }
-        public async Task<PutBlockListResponse> PutBlockListAsync(string containerName, string blobName, BlockListBlockIdList data,
-            string cacheControl = null, string contentType = null,
-            string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
-            Dictionary<string, string> metadata = null, string leaseId = null)
-        {
-            var request = new PutBlockListRequest(_account, containerName, blobName, data, cacheControl, contentType, contentEncoding, contentLanguage, blobContentMD5, metadata, leaseId);
-            var response = await request.ExecuteAsync(_optionalRetryPolicy);
-            return response.Payload;
-        }
-
-        public PutBlockResponse PutBlock(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null)
-        {
-            var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5, leaseId);
-            var response = request.Execute(_optionalRetryPolicy);
-            return response.Payload;
-        }
-        public async Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null)
-        {
-            var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5, leaseId);
             var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
@@ -293,17 +235,6 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
-        public void DeleteBlob(string containerName, string blobName, string leaseId = null)
-        {
-            var request = new DeleteBlobRequest(_account, containerName, blobName, leaseId);
-            request.Execute(_optionalRetryPolicy);
-        }
-        public async Task DeleteBlobAsync(string containerName, string blobName, string leaseId = null)
-        {
-            var request = new DeleteBlobRequest(_account, containerName, blobName, leaseId);
-            await request.ExecuteAsync(_optionalRetryPolicy);
-        }
-
         public GetBlobResponse GetBlob(string containerName, string blobName, BlobRange range = null, string leaseId = null)
         {
             var request = new GetBlobRequest(_account, containerName, blobName, range, leaseId);
@@ -316,6 +247,7 @@ namespace Basic.Azure.Storage
             var response = await request.ExecuteAsync(_optionalRetryPolicy);
             return response.Payload;
         }
+
 
         public GetBlobPropertiesResponse GetBlobProperties(string containerName, string blobName, string leaseId = null)
         {
@@ -416,6 +348,88 @@ namespace Basic.Azure.Storage
             var request = new LeaseBlobBreakRequest(_account, containerName, blobName, leaseId, leaseBreakPeriod);
             await request.ExecuteAsync(_optionalRetryPolicy);
         }
+
+        public CopyBlobResponse CopyBlob(string containerName, string blobName, string copySource, Dictionary<string, string> metadata = null, string leaseId = null)
+        {
+            var request = new CopyBlobRequest(_account, containerName, blobName, copySource, metadata, leaseId);
+            var response = request.Execute(_optionalRetryPolicy);
+            return response.Payload;
+        }
+        public async Task<CopyBlobResponse> CopyBlobAsync(string containerName, string blobName, string copySource, Dictionary<string, string> metadata = null, string leaseId = null)
+        {
+            var request = new CopyBlobRequest(_account, containerName, blobName, copySource, metadata, leaseId);
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
+            return response.Payload;
+        }
+
+        public void DeleteBlob(string containerName, string blobName, string leaseId = null)
+        {
+            var request = new DeleteBlobRequest(_account, containerName, blobName, leaseId);
+            request.Execute(_optionalRetryPolicy);
+        }
+        public async Task DeleteBlobAsync(string containerName, string blobName, string leaseId = null)
+        {
+            var request = new DeleteBlobRequest(_account, containerName, blobName, leaseId);
+            await request.ExecuteAsync(_optionalRetryPolicy);
+        }
+
+        #region Block Blob Operations
+        
+        public PutBlockResponse PutBlock(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null)
+        {
+            var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5, leaseId);
+            var response = request.Execute(_optionalRetryPolicy);
+            return response.Payload;
+        }
+        public async Task<PutBlockResponse> PutBlockAsync(string containerName, string blobName, string blockId, byte[] data, string contentMD5 = null, string leaseId = null)
+        {
+            var request = new PutBlockRequest(_account, containerName, blobName, blockId, data, contentMD5, leaseId);
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
+            return response.Payload;
+        }
+
+        public PutBlockListResponse PutBlockList(string containerName, string blobName, BlockListBlockIdList data,
+            string cacheControl = null, string contentType = null,
+            string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
+            Dictionary<string, string> metadata = null, string leaseId = null)
+        {
+            var request = new PutBlockListRequest(_account, containerName, blobName, data, cacheControl, contentType, contentEncoding, contentLanguage, blobContentMD5, metadata, leaseId);
+            var response = request.Execute(_optionalRetryPolicy);
+            return response.Payload;
+        }
+        public async Task<PutBlockListResponse> PutBlockListAsync(string containerName, string blobName, BlockListBlockIdList data,
+            string cacheControl = null, string contentType = null,
+            string contentEncoding = null, string contentLanguage = null, string blobContentMD5 = null,
+            Dictionary<string, string> metadata = null, string leaseId = null)
+        {
+            var request = new PutBlockListRequest(_account, containerName, blobName, data, cacheControl, contentType, contentEncoding, contentLanguage, blobContentMD5, metadata, leaseId);
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
+            return response.Payload;
+        }
+
+        public GetBlockListResponse GetBlockList(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed)
+        {
+            var request = new GetBlockListRequest(_account, containerName, blobName, leaseId, blockListType);
+            var response = request.Execute(_optionalRetryPolicy);
+            return response.Payload;
+        }
+        public async Task<GetBlockListResponse> GetBlockListAsync(string containerName, string blobName, string leaseId = null, GetBlockListListType blockListType = GetBlockListListType.Committed)
+        {
+            var request = new GetBlockListRequest(_account, containerName, blobName, leaseId, blockListType);
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
+            return response.Payload;
+        }
+
+
+        #endregion
+
+        #region Page Blob Operations
+
+        #endregion
+
+        #region Append Blobs
+
+        #endregion
 
         #endregion
 
