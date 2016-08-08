@@ -79,10 +79,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseBlobServiceTestFixture.cs" />
-    <Compile Include="BlobLeaseMaintainerTests.cs" />
-    <Compile Include="BlobServiceClientExtensionsTests.cs" />
-    <Compile Include="BlobServiceClientTests.cs" />
+    <Compile Include="BlobServiceClientTests\BlobLeaseMaintainerTests.cs" />
+    <Compile Include="BlobServiceClientTests\BlobServiceClientExtensionsTests.cs" />
+    <Compile Include="BlobServiceClientTests\AccountOperationsTests.cs" />
+    <Compile Include="BlobServiceClientTests\BlobUtil.cs" />
+    <Compile Include="BlobServiceClientTests\ContainerOperationsTests.cs" />
+    <Compile Include="BlobServiceClientTests\BlobOperationsTests.cs" />
     <Compile Include="ProxyType.cs" />
     <Compile Include="QueueServiceClientTests\MessageOperationsTests.cs" />
     <Compile Include="QueueServiceClientTests\QueueOperationsTests.cs" />
@@ -90,7 +92,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Fakes\SampleEntity.cs" />
     <Compile Include="QueueServiceClientTests\QueueUtil.cs" />
-    <Compile Include="TableServiceClientTests.cs" />
+    <Compile Include="TableServiceClientTests\AccountOperationsTests.cs" />
+    <Compile Include="TableServiceClientTests\TableOperationsTests.cs" />
+    <Compile Include="TableServiceClientTests\EntityOperationsTests.cs" />
+    <Compile Include="TableServiceClientTests\TableUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
