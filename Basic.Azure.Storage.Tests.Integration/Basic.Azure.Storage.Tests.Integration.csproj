@@ -84,8 +84,12 @@
     <Compile Include="BlobServiceClientExtensionsTests.cs" />
     <Compile Include="BlobServiceClientTests.cs" />
     <Compile Include="ProxyType.cs" />
-    <Compile Include="QueueServiceClientTests.cs" />
+    <Compile Include="QueueServiceClientTests\MessageOperationsTests.cs" />
+    <Compile Include="QueueServiceClientTests\QueueOperationsTests.cs" />
+    <Compile Include="QueueServiceClientTests\AccountOperationsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Fakes\SampleEntity.cs" />
+    <Compile Include="QueueServiceClientTests\QueueUtil.cs" />
     <Compile Include="TableServiceClientTests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,8 @@
 ﻿using Basic.Azure.Storage.ClientContracts;
 using Basic.Azure.Storage.Communications.TableService;
+using Basic.Azure.Storage.Communications.TableService.EntityOperations;
+using Basic.Azure.Storage.Communications.TableService.Interfaces;
+using Basic.Azure.Storage.Communications.TableService.TableOperations;
 using Microsoft.Practices.TransientFaultHandling;
 using System;
 using System.Collections.Generic;
@@ -43,6 +46,15 @@ namespace Basic.Azure.Storage
 
         #region Entity Operations
 
+        public void InsertEntity<TEntity>(string tableName, TEntity entity) where TEntity : ITableEntity, new()
+        {
+            var request = new InsertEntityRequest<TEntity>(_account, tableName, entity);
+            request.Execute(_optionalRetryPolicy);
+        }
+
         #endregion
+
+
+
     }
 }

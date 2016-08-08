@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basic.Azure.Storage.Communications.TableService
+namespace Basic.Azure.Storage.Communications.TableService.TableOperations
 {
     public class CreateTableRequest : RequestBase<CreateTableResponse>,
                                       ISendAdditionalRequiredHeaders,

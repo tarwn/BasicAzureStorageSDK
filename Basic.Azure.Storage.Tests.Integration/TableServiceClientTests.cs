@@ -1,6 +1,7 @@
 ﻿using Basic.Azure.Storage.ClientContracts;
 using Basic.Azure.Storage.Communications.ServiceExceptions;
 using Basic.Azure.Storage.Communications.TableService;
+using Basic.Azure.Storage.Tests.Integration.Fakes;
 using Microsoft.WindowsAzure.Storage;
 using NUnit.Framework;
 using System;
@@ -41,6 +42,19 @@ namespace Basic.Azure.Storage.Tests.Integration
         }
 
         #region Account Operations
+
+        public void InsertEntity_ValidTable_InsertsEntityInTable()
+        {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
+            var tableName = GenerateSampleTableName();
+            CreateTable(tableName);
+            var sampleEntity = new SampleEntity();
+
+            client.InsertEntity(tableName, sampleEntity);
+
+            AssertEntityExists(tableName, sampleEntity);
+        }
+
 
         #endregion
 
@@ -134,6 +148,19 @@ namespace Basic.Azure.Storage.Tests.Integration
             var table = client.GetTableReference(tableName);
             if(!table.Exists())
                 Assert.Fail(String.Format("The table '{0}' does not exist", tableName));
+        }
+
+
+        private void AssertEntityExists(string tableName, SampleEntity sampleEntity)
+        {
+            var client = _storageAccount.CreateCloudTableClient();
+            var table = client.GetTableReference(tableName);
+            if (!table.Exists())
+                Assert.Fail(String.Format("The table '{0}' does not exist", tableName));
+            var retrieveOperation = Microsoft.WindowsAzure.Storage.Table.TableOperation.Retrieve(sampleEntity.PartitionKey, sampleEntity.RowKey);
+            var result = table.Execute(retrieveOperation);
+            if(result.Result == null)
+                Assert.Fail("The entity was not found in the table");
         }
 
         #endregion

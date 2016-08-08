@@ -12,11 +12,20 @@ namespace Basic.Azure.Storage.Communications.Common
         { 
             // for 2012-02-12 and earlier all elements are required
             Logging = StorageServiceLoggingProperties.GetDefault();
-            Metrics = StorageServiceMetricsProperties.GetDefault();
+            HourMetrics = StorageServiceMetricsProperties.GetDefault();
+            MinuteMetrics = StorageServiceMetricsProperties.GetDefault();
+            Cors = new List<StorageServiceCorsRule>();
         }
 
         public StorageServiceLoggingProperties Logging { get; set; }
 
-        public StorageServiceMetricsProperties Metrics { get; set; }
+        [Obsolete("Azure API 2013-08-15 split this into separate Hour and Minute results - this deprecated property returns the HourMetrics")]
+        public StorageServiceMetricsProperties Metrics { get { return HourMetrics; } }
+
+        public StorageServiceMetricsProperties HourMetrics { get; set; }
+
+        public StorageServiceMetricsProperties MinuteMetrics { get; set; }
+
+        public List<StorageServiceCorsRule> Cors { get; set; }
     }
 }

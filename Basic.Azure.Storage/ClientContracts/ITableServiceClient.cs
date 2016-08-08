@@ -1,4 +1,6 @@
 ﻿using Basic.Azure.Storage.Communications.TableService;
+using Basic.Azure.Storage.Communications.TableService.Interfaces;
+using Basic.Azure.Storage.Communications.TableService.TableOperations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +25,11 @@ namespace Basic.Azure.Storage.ClientContracts
 
         #region Entity Operations
 
+        void InsertEntity<TEntity>(string tableName, TEntity entity)
+            where TEntity : ITableEntity, new();
+
         #endregion
+
+        
     }
 }

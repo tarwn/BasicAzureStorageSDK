@@ -14,7 +14,7 @@ namespace Basic.Azure.Storage.Communications.Core
     public abstract class RequestBase<TPayload>
         where TPayload : IResponsePayload, new()
     {
-        public const string TargetStorageVersion = "2012-02-12";
+        public const string TargetStorageVersion = "2013-08-15";
 
         private readonly StorageAccountSettings _settings;
 
@@ -91,7 +91,7 @@ namespace Basic.Azure.Storage.Communications.Core
                 //  - Can't test against HttpWebRequest because the ctor isn't accessible
                 //  - Can't set UserAgent as raw header because HttpWebRequest won't allow you to not use the named property
                 if (request is HttpWebRequest)
-                    ((HttpWebRequest)request).UserAgent = "Basic.Azure.Storage/1.0.0";
+                    ((HttpWebRequest)request).UserAgent = "Basic.Azure.Storage/1.1.0";
             }
 
             // apply required headers

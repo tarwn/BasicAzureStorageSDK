@@ -57,21 +57,41 @@ namespace Basic.Azure.Storage.Communications.QueueService.AccountOperations
                 sb.Append("<RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></Logging>");
 
             // Metrics properties
-            sb.AppendFormat("<Metrics><Version>{0}</Version><Enabled>{1}</Enabled>",
-                "1.0",
-                properties.Metrics.Enabled ? "true" : "false");
-
-            if (properties.Metrics.Enabled)
-                sb.AppendFormat("<IncludeAPIs>{0}</IncludeAPIs>", properties.Metrics.IncludeAPIs ? "true" : "false");
-
-            if (properties.Metrics.RetentionPolicyEnabled)
-                sb.AppendFormat("<RetentionPolicy><Enabled>true</Enabled><Days>{0}</Days></RetentionPolicy></Metrics>", properties.Metrics.RetentionPolicyNumberOfDays);
-            else
-                sb.Append("<RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></Metrics>");
+            AppendMetricsString(sb, "HourMetrics", properties.HourMetrics);
+            AppendMetricsString(sb, "MinuteMetrics", properties.MinuteMetrics);
+            
+            // Cors
+            sb.Append("<Cors>");
+            foreach (var rule in properties.Cors)
+            {
+                sb.AppendFormat("<CorsRule><AllowedOrigins>{0}</AllowedOrigins><AllowedMethods>{1}</AllowedMethods><MaxAgeInSeconds>{2}</MaxAgeInSeconds><ExposedHeaders>{3}</ExposedHeaders><AllowedHeaders>{4}</AllowedHeaders></CorsRule>",
+                                 string.Join(",",rule.AllowedOrigins),
+                                 string.Join(",",rule.AllowedMethods),
+                                 rule.MaxAgeInSeconds,
+                                 string.Join(",",rule.ExposedHeaders),
+                                 string.Join(",",rule.AllowedHeaders));
+            }
+            sb.Append("</Cors>");
 
             sb.Append("</StorageServiceProperties>");
 
             return Encoding.ASCII.GetBytes(sb.ToString());
+        }
+
+        private static void AppendMetricsString(StringBuilder sb, string metricsName, StorageServiceMetricsProperties metrics)
+        {
+            sb.AppendFormat("<{0}><Version>{1}</Version><Enabled>{2}</Enabled>",
+                metricsName,
+                "1.0",
+                metrics.Enabled ? "true" : "false");
+
+            if (metrics.Enabled)
+                sb.AppendFormat("<IncludeAPIs>{0}</IncludeAPIs>", metrics.IncludeAPIs ? "true" : "false");
+
+            if (metrics.RetentionPolicyEnabled)
+                sb.AppendFormat("<RetentionPolicy><Enabled>true</Enabled><Days>{0}</Days></RetentionPolicy></{1}>", metrics.RetentionPolicyNumberOfDays, metricsName);
+            else
+                sb.AppendFormat("<RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></{0}>", metricsName);
         }
 
         public byte[] GetContentToSend()
