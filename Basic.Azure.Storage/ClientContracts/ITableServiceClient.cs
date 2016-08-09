@@ -1,4 +1,5 @@
 ﻿using Basic.Azure.Storage.Communications.TableService;
+using Basic.Azure.Storage.Communications.TableService.EntityOperations;
 using Basic.Azure.Storage.Communications.TableService.Interfaces;
 using Basic.Azure.Storage.Communications.TableService.TableOperations;
 using System;
@@ -28,10 +29,18 @@ namespace Basic.Azure.Storage.ClientContracts
 
         #region Entity Operations
 
-        void InsertEntity<TEntity>(string tableName, TEntity entity)
+        InsertEntityResponse InsertEntity<TEntity>(string tableName, TEntity entity)
+            where TEntity : ITableEntity, new();
+        Task<InsertEntityResponse> InsertEntityAsync<TEntity>(string tableName, TEntity entity)
+            where TEntity : ITableEntity, new();
+
+        UpdateEntityResponse UpdateEntity<TEntity>(string tableName, TEntity sampleEntity, string etag = null)
+            where TEntity : ITableEntity, new();
+        Task<UpdateEntityResponse> UpdateEntityAsync<TEntity>(string tableName, TEntity sampleEntity, string etag = null)
             where TEntity : ITableEntity, new();
 
         #endregion
+
 
 
 

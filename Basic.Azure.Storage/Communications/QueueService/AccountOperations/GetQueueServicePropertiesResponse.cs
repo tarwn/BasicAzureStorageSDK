@@ -29,7 +29,7 @@ namespace Basic.Azure.Storage.Communications.QueueService.AccountOperations
             Version = response.Headers[ProtocolConstants.Headers.Version];
         }
 
-        public async Task ParseResponseBodyAsync(Stream responseStream)
+        public async Task ParseResponseBodyAsync(Stream responseStream, string contentType)
         {
             Properties = new StorageServiceProperties();
 

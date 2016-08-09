@@ -141,7 +141,8 @@ public static class BlobServiceAzureExceptions
 			
 		}
 
-		switch(statusDescription)
+		var shortStatusDescription = statusDescription.Split('\n')[0];
+		switch(shortStatusDescription)
 		{
 			 
 				case "The specified blob or block content is invalid.":

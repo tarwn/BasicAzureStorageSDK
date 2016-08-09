@@ -32,11 +32,14 @@ var ErrorCodeList = new Dictionary<string,string>(){
 	{ "TableBeingDeleted", "The specified table is being deleted." },
 	{ "TableNotFound", "The table specified does not exist." },
 	{ "TooManyProperties", "The entity contains more properties than allowed." },
-	{ "UpdateConditionNotSatisfied", "The update condition specified in the request was not satisfied." },
+	//{ "UpdateConditionNotSatisfied", "The update condition specified in the request was not satisfied." },
 	{ "XMethodIncorrectCount", "More than one X-HTTP-Method is specified." },
 	{ "XMethodIncorrectValue", "The specified X-HTTP-Method is invalid." },
 	{ "XMethodNotUsingPost", "The request uses X-HTTP-Method with an HTTP verb other than POST." }
 };
+
+// undocumented? errors
+ErrorCodeList.Add("UpdateConditionNotSatisfied","The condition specified using HTTP conditional header(s) is not met.");
 
 #>
 // -----------------------------------------------------------------------------
@@ -75,7 +78,8 @@ public static class TableServiceAzureExceptions
 		#>
 		}
 
-		switch(statusDescription)
+		var shortStatusDescription = statusDescription.Split('\n')[0];
+		switch(shortStatusDescription)
 		{
 			<#
 			foreach(var errorCode in ErrorCodeList)

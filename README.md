@@ -268,8 +268,8 @@ Table Operations
 Entity Operations
 
 - Query Entities - No
-- Insert Entity - No
-- Update Entity - No
+- Insert Entity - Yes
+- Update Entity - Yes
 - Merge Entity - No
 - Delete Entity - No
 - Insert or Replace Entity - No

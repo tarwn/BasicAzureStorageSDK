@@ -44,7 +44,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
             LastModified = Parsers.ParseDateHeader(response.Headers[ProtocolConstants.Headers.LastModified]);
         }
 
-        public async Task ParseResponseBodyAsync(System.IO.Stream responseStream)
+        public async Task ParseResponseBodyAsync(System.IO.Stream responseStream, string contentType)
         {
             using (var sr = new StreamReader(responseStream))
             {

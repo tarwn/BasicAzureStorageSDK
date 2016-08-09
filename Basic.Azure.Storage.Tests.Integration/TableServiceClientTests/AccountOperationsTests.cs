@@ -29,17 +29,7 @@ namespace Basic.Azure.Storage.Tests.Integration.TableServiceClientTests
 
         #region Account Operations
 
-        public void InsertEntity_ValidTable_InsertsEntityInTable()
-        {
-            ITableServiceClient client = new TableServiceClient(_accountSettings);
-            var tableName = _util.GenerateSampleTableName();
-            _util.CreateTable(tableName);
-            var sampleEntity = new SampleEntity();
 
-            client.InsertEntity(tableName, sampleEntity);
-
-            _util.AssertEntityExists(tableName, sampleEntity);
-        }
 
 
         #endregion

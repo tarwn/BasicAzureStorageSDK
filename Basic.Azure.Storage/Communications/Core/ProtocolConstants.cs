@@ -6,6 +6,7 @@ namespace Basic.Azure.Storage.Communications.Core
     {
         public static class Headers
         {
+            public const string Accept = "Accept";
             public const string ApproximateMessagesCount = "x-ms-approximate-messages-count";
             public const string Authorization = "Authorization";
             public const string BlobCacheControl = "x-ms-blob-cache-control";
@@ -33,6 +34,7 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string CopyStatusDescription = "x-ms-copy-status-description";
             public const string Date = "x-ms-date";
             public const string ETag = "ETag";
+            public const string IfMatch = "If-Match";
             public const string LastModified = "Last-Modified";
             public const string LeaseAction = "x-ms-lease-action";
             public const string LeaseBreakPeriod = "x-ms-lease-break-period";
@@ -44,6 +46,7 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string OperationDate = "Date";
             public const string ProposedLeaseId = "x-ms-proposed-lease-id";
             public const string PopReceipt = "x-ms-popreceipt";
+            public const string Prefer = "Prefer";
             public const string PreferenceApplied = "Preference-Applied";
             public const string RequestId = "x-ms-request-id";
             public const string StorageVersion = "x-ms-version";

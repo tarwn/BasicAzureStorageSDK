@@ -8,15 +8,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Basic.Azure.Storage.Communications.TableService.TableOperations
+namespace Basic.Azure.Storage.Communications.TableService.EntityOperations
 {
-    public class CreateTableResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse, IReceiveDataWithResponse
+    public class InsertEntityResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse
     {
-        public string Link { get; private set; }
+
+        public string ETag { get; private set; }
+        
         public MetadataPreference? MetadataPreferenceApplied { get; private set; }
 
         public void ParseHeaders(System.Net.HttpWebResponse response)
         {
+            ETag = response.Headers[ProtocolConstants.Headers.ETag];
+
             if (response.Headers[ProtocolConstants.Headers.PreferenceApplied] == null)
             {
                 MetadataPreferenceApplied = null;
@@ -30,28 +34,6 @@ namespace Basic.Azure.Storage.Communications.TableService.TableOperations
                 MetadataPreferenceApplied = MetadataPreference.ReturnNoContent;
             }
 
-        }
-
-        public async Task ParseResponseBodyAsync(System.IO.Stream responseStream, string contentType)
-        {
-            using (StreamReader sr = new StreamReader(responseStream))
-            {
-                var content = await sr.ReadToEndAsync();
-
-                //TODO: add test with non-XML response so we can wrap that in a readable error
-                var doc = XDocument.Parse(content);
-
-                try
-                {
-                    Link = doc.Root.Elements()
-                              .Where(e => e.Name.LocalName.Equals("id"))
-                              .Single()
-                              .Value;
-                }
-                catch
-                { 
-                }
-            }
         }
 
     }

@@ -45,7 +45,7 @@ namespace Basic.Azure.Storage.Communications.QueueService.AccountOperations
             Date = ParseDate(response.Headers[ProtocolConstants.Headers.OperationDate]);
         }
 
-        public async Task ParseResponseBodyAsync(Stream responseStream)
+        public async Task ParseResponseBodyAsync(Stream responseStream, string contentType)
         {
             using (StreamReader sr = new StreamReader(responseStream))
             {

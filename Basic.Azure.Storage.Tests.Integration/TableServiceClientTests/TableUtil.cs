@@ -1,5 +1,6 @@
 ﻿using Basic.Azure.Storage.Tests.Integration.Fakes;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -70,6 +71,16 @@ namespace Basic.Azure.Storage.Tests.Integration.TableServiceClientTests
             table.Create();
         }
 
+        public string InsertTableEntity(string tableName, string partitionKey, string rowKey)
+        {
+            var client = _storageAccount.CreateCloudTableClient();
+            var table = client.GetTableReference(tableName);
+            var insertOperation = TableOperation.Insert(new TableEntity(partitionKey, rowKey));
+            var result = table.Execute(insertOperation);
+            return result.Etag;
+        }
+
         #endregion
+
     }
 }

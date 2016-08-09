@@ -59,12 +59,35 @@ namespace Basic.Azure.Storage
 
         #region Entity Operations
 
-        public void InsertEntity<TEntity>(string tableName, TEntity entity) where TEntity : ITableEntity, new()
+        public InsertEntityResponse InsertEntity<TEntity>(string tableName, TEntity entity) where TEntity : ITableEntity, new()
         {
             var request = new InsertEntityRequest<TEntity>(_account, tableName, entity);
-            request.Execute(_optionalRetryPolicy);
+            var response = request.Execute(_optionalRetryPolicy);
+            return response.Payload;
         }
 
+        public async Task<InsertEntityResponse> InsertEntityAsync<TEntity>(string tableName, TEntity entity) where TEntity : ITableEntity, new()
+        {
+            var request = new InsertEntityRequest<TEntity>(_account, tableName, entity);
+            var result = await request.ExecuteAsync(_optionalRetryPolicy);
+            return result.Payload;
+        }
+
+        public UpdateEntityResponse UpdateEntity<TEntity>(string tableName, TEntity entity, string etag = null) 
+            where TEntity : ITableEntity, new()
+        {
+            var request = new UpdateEntityRequest<TEntity>(_account, tableName, entity, etag);
+            var response = request.Execute(_optionalRetryPolicy);
+            return response.Payload;
+        }
+
+        public async Task<UpdateEntityResponse> UpdateEntityAsync<TEntity>(string tableName, TEntity entity, string etag = null) 
+            where TEntity : ITableEntity, new()
+        {
+            var request = new UpdateEntityRequest<TEntity>(_account, tableName, entity, etag);
+            var result = await request.ExecuteAsync(_optionalRetryPolicy);
+            return result.Payload;
+        }
         #endregion
 
 

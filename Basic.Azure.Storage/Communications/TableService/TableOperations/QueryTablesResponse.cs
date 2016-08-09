@@ -33,7 +33,7 @@ namespace Basic.Azure.Storage.Communications.TableService.TableOperations
             }
         }
 
-        public async Task ParseResponseBodyAsync(Stream responseStream)
+        public async Task ParseResponseBodyAsync(Stream responseStream, string contentType)
         {
             using (StreamReader sr = new StreamReader(responseStream))
             {

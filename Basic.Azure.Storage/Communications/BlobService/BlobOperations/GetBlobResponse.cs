@@ -55,7 +55,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             CopyStatus = Parsers.ParseCopyStatus(response);
         }
 
-        public virtual Task ParseResponseBodyAsync(System.IO.Stream responseStream)
+        public virtual Task ParseResponseBodyAsync(System.IO.Stream responseStream, string contentType)
         {
             _stream = responseStream;
             return Task.FromResult(0);

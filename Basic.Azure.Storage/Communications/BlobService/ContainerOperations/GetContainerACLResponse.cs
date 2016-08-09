@@ -59,7 +59,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.ContainerOperations
             }
         }
 
-        public async Task ParseResponseBodyAsync(System.IO.Stream responseStream)
+        public async Task ParseResponseBodyAsync(System.IO.Stream responseStream, string contentType)
         {
             using (StreamReader sr = new StreamReader(responseStream))
             {

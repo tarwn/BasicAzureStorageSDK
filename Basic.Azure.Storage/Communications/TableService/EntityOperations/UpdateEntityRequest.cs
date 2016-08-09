@@ -11,35 +11,46 @@ using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage.Communications.TableService.EntityOperations
 {
-    public class InsertEntityRequest<TEntity> : RequestBase<InsertEntityResponse>,
+    public class UpdateEntityRequest<TEntity> : RequestBase<UpdateEntityResponse>,
                                                 ISendAdditionalRequiredHeaders,
                                                 ISendAdditionalOptionalHeaders,
                                                 ISendDataWithRequest
         where TEntity : ITableEntity, new()
     {
         private string _tableName;
+        private ITableEntity _entity;
         private string _content;
         private byte[] _contentData;
+        private string _etag;
         private MetadataPreference _entityResponseEcho;
 
-        public InsertEntityRequest(StorageAccountSettings settings, string tableName, TEntity entity)
+        public UpdateEntityRequest(StorageAccountSettings settings, string tableName, TEntity entity, string ETag)
             : base(settings)
         {
             _tableName = tableName;
+            _entity = entity;
             // emulator prior to 2.2.1 preview does not support json
             _content = JsonConvert.SerializeObject(entity);
             _contentData = UTF8Encoding.UTF8.GetBytes(_content);
             _entityResponseEcho = MetadataPreference.ReturnNoContent;
+            if (string.IsNullOrEmpty(ETag))
+            {
+                _etag = "*";
+            }
+            else
+            {
+                _etag = ETag;
+            }
         }
 
-        protected override string HttpMethod { get { return "POST"; } }
+        protected override string HttpMethod { get { return "PUT"; } }
 
         protected override StorageServiceType ServiceType { get { return StorageServiceType.TableService; } }
 
         protected override RequestUriBuilder GetUriBase()
         {
             var builder = new RequestUriBuilder(Settings.TableEndpoint);
-            builder.AddSegment(_tableName);
+            builder.AddSegment(String.Format("{0}(PartitionKey='{1}',RowKey='{2}')", _tableName, _entity.PartitionKey, _entity.RowKey));
             return builder;
         }
 
@@ -59,6 +70,7 @@ namespace Basic.Azure.Storage.Communications.TableService.EntityOperations
 
         public void ApplyAdditionalOptionalHeaders(WebRequest request)
         {
+            request.Headers.Add(ProtocolConstants.Headers.IfMatch, _etag);
             request.Headers.Add(ProtocolConstants.Headers.Prefer, ProtocolConstants.HeaderValues.TableMetadataPreference.GetValue(_entityResponseEcho));
         }
 
