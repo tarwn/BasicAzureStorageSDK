@@ -7,14 +7,14 @@ no internal methods.
 
 Because "use a real storage account" is not good advice and "400 Bad Request" is not a suitable error message.
 
-Current Supported API Version: 2012-02-12 - This will be caught up after I have finished the current round of
+Current Supported API Version: 2013-08-15 - This will be caught up after I have finished the current round of
 additions.
 
 Status:
 
-- Queue Service - 15/15
-- Table Service - 1/14
-- Blob Service - 15/30
+- Queue Service - 15/17
+- Table Service - 7.5/16
+- Blob Service - 20/31
 - File Service - 0/19
 
 (Does not include service preflight and stats operations)
