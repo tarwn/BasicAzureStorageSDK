@@ -272,8 +272,8 @@ Entity Operations
 - Update Entity - Yes
 - Merge Entity - Yes
 - Delete Entity - No
-- Insert or Replace Entity - No
-- Insert or Merge Entity - No
+- Insert or Replace Entity - Yes
+- Insert or Merge Entity - Yes
 
 Blob Service - 20/31 - BlobServiceClient: IBlobServiceClient
 -----------------------------------------------------------

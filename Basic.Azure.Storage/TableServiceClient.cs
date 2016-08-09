@@ -59,7 +59,7 @@ namespace Basic.Azure.Storage
 
         #region Entity Operations
 
-        public InsertEntityResponse InsertEntity<TEntity>(string tableName, TEntity entity) 
+        public InsertEntityResponse InsertEntity<TEntity>(string tableName, TEntity entity)
             where TEntity : ITableEntity, new()
         {
             var request = new InsertEntityRequest<TEntity>(_account, tableName, entity);
@@ -67,7 +67,7 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
-        public async Task<InsertEntityResponse> InsertEntityAsync<TEntity>(string tableName, TEntity entity) 
+        public async Task<InsertEntityResponse> InsertEntityAsync<TEntity>(string tableName, TEntity entity)
             where TEntity : ITableEntity, new()
         {
             var request = new InsertEntityRequest<TEntity>(_account, tableName, entity);
@@ -75,7 +75,7 @@ namespace Basic.Azure.Storage
             return result.Payload;
         }
 
-        public UpdateEntityResponse UpdateEntity<TEntity>(string tableName, TEntity entity, string etag = null) 
+        public UpdateEntityResponse UpdateEntity<TEntity>(string tableName, TEntity entity, string etag = null)
             where TEntity : ITableEntity, new()
         {
             var request = new UpdateEntityRequest<TEntity>(_account, tableName, entity, etag);
@@ -83,7 +83,7 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
-        public async Task<UpdateEntityResponse> UpdateEntityAsync<TEntity>(string tableName, TEntity entity, string etag = null) 
+        public async Task<UpdateEntityResponse> UpdateEntityAsync<TEntity>(string tableName, TEntity entity, string etag = null)
             where TEntity : ITableEntity, new()
         {
             var request = new UpdateEntityRequest<TEntity>(_account, tableName, entity, etag);
@@ -107,8 +107,17 @@ namespace Basic.Azure.Storage
             return result.Payload;
         }
 
-        // Delete here
+        public void DeleteEntity(string tableName, string partitionKey, string rowKey, string etag = null)
+        {
+            var request = new DeleteEntityRequest(_account, tableName, partitionKey, rowKey, etag);
+            request.Execute(_optionalRetryPolicy);
+        }
 
+        public async Task DeleteEntityAsync(string tableName, string partitionKey, string rowKey, string etag = null)
+        {
+            var request = new DeleteEntityRequest(_account, tableName, partitionKey, rowKey, etag);
+            await request.ExecuteAsync(_optionalRetryPolicy);
+        }
 
         public InsertOrReplaceEntityResponse InsertOrReplaceEntity<TEntity>(string tableName, TEntity entity)
             where TEntity : ITableEntity, new()
@@ -118,10 +127,26 @@ namespace Basic.Azure.Storage
             return response.Payload;
         }
 
-        public async Task<InsertOrReplaceEntityResponse> InsertOrReplaceEntityAsync<TEntity>(string tableName, TEntity entity) 
+        public async Task<InsertOrReplaceEntityResponse> InsertOrReplaceEntityAsync<TEntity>(string tableName, TEntity entity)
             where TEntity : ITableEntity, new()
         {
             var request = new InsertOrReplaceEntityRequest<TEntity>(_account, tableName, entity);
+            var result = await request.ExecuteAsync(_optionalRetryPolicy);
+            return result.Payload;
+        }
+
+        public InsertOrMergeEntityResponse InsertOrMergeEntity<TEntity>(string tableName, TEntity entity)
+            where TEntity : ITableEntity, new()
+        {
+            var request = new InsertOrMergeEntityRequest<TEntity>(_account, tableName, entity);
+            var response = request.Execute(_optionalRetryPolicy);
+            return response.Payload;
+        }
+
+        public async Task<InsertOrMergeEntityResponse> InsertOrMergeEntityAsync<TEntity>(string tableName, TEntity entity)
+            where TEntity : ITableEntity, new()
+        {
+            var request = new InsertOrMergeEntityRequest<TEntity>(_account, tableName, entity);
             var result = await request.ExecuteAsync(_optionalRetryPolicy);
             return result.Payload;
         }

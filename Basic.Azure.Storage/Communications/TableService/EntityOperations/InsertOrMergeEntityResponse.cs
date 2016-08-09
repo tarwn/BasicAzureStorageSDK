@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace Basic.Azure.Storage.Communications.TableService.EntityOperations
 {
-    public class InsertOrReplaceEntityResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse
+    public class InsertOrMergeEntityResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse
     {
 
         public string ETag { get; private set; }

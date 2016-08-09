@@ -13,7 +13,6 @@ namespace Basic.Azure.Storage.Communications.TableService.EntityOperations
 {
     public class MergeEntityRequest<TEntity> : RequestBase<MergeEntityResponse>,
                                                 ISendAdditionalRequiredHeaders,
-                                                ISendAdditionalOptionalHeaders,
                                                 ISendDataWithRequest
         where TEntity : ITableEntity, new()
     {
@@ -66,10 +65,7 @@ namespace Basic.Azure.Storage.Communications.TableService.EntityOperations
             {
                 request.Headers.Add(ProtocolConstants.Headers.Accept, "application/json");
             }
-        }
 
-        public void ApplyAdditionalOptionalHeaders(WebRequest request)
-        {
             request.Headers.Add(ProtocolConstants.Headers.IfMatch, _etag);
             request.Headers.Add(ProtocolConstants.Headers.Prefer, ProtocolConstants.HeaderValues.TableMetadataPreference.GetValue(_entityResponseEcho));
         }

@@ -11,36 +11,34 @@ using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage.Communications.TableService.EntityOperations
 {
-    public class InsertOrReplaceEntityRequest<TEntity> : RequestBase<InsertOrReplaceEntityResponse>,
-                                                ISendAdditionalRequiredHeaders,
-                                                ISendDataWithRequest
-        where TEntity : ITableEntity, new()
+    public class DeleteEntityRequest : RequestBase<EmptyResponsePayload>,
+                                        ISendAdditionalRequiredHeaders
     {
         private string _tableName;
-        private ITableEntity _entity;
-        private string _content;
-        private byte[] _contentData;
-        private MetadataPreference _entityResponseEcho;
+        private string _partitionKey;
+        private string _rowKey;
+        private string _etag;
 
-        public InsertOrReplaceEntityRequest(StorageAccountSettings settings, string tableName, TEntity entity)
+        public DeleteEntityRequest(StorageAccountSettings settings, string tableName, string partitionKey, string rowKey, string etag)
             : base(settings)
         {
             _tableName = tableName;
-            _entity = entity;
-            // emulator prior to 2.2.1 preview does not support json
-            _content = JsonConvert.SerializeObject(entity);
-            _contentData = UTF8Encoding.UTF8.GetBytes(_content);
-            _entityResponseEcho = MetadataPreference.ReturnNoContent;
+            _partitionKey = partitionKey;
+            _rowKey = rowKey;
+            if (string.IsNullOrEmpty(etag))
+                _etag = "*";
+            else
+                _etag = etag;
         }
 
-        protected override string HttpMethod { get { return "PUT"; } }
+        protected override string HttpMethod { get { return "DELETE"; } }
 
         protected override StorageServiceType ServiceType { get { return StorageServiceType.TableService; } }
 
         protected override RequestUriBuilder GetUriBase()
         {
             var builder = new RequestUriBuilder(Settings.TableEndpoint);
-            builder.AddSegment(String.Format("{0}(PartitionKey='{1}',RowKey='{2}')", _tableName, _entity.PartitionKey, _entity.RowKey));
+            builder.AddSegment(String.Format("{0}(PartitionKey='{1}',RowKey='{2}')", _tableName, _partitionKey, _rowKey));
             return builder;
         }
 
@@ -56,16 +54,9 @@ namespace Basic.Azure.Storage.Communications.TableService.EntityOperations
             {
                 request.Headers.Add(ProtocolConstants.Headers.Accept, "application/json");
             }
+
+            request.Headers.Add(ProtocolConstants.Headers.IfMatch, _etag);
         }
 
-        public byte[] GetContentToSend()
-        {
-            return _contentData;
-        }
-
-        public int GetContentLength()
-        {
-            return _contentData.Length;
-        }
     }
 }

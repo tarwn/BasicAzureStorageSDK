@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Basic.Azure.Storage.Communications.TableService.EntityOperations
 {
-    public class UpdateEntityRequest<TEntity> : RequestBase<UpdateEntityResponse>,
+    public class InsertOrMergeEntityRequest<TEntity> : RequestBase<InsertOrMergeEntityResponse>,
                                                 ISendAdditionalRequiredHeaders,
                                                 ISendDataWithRequest
         where TEntity : ITableEntity, new()
@@ -20,10 +20,9 @@ namespace Basic.Azure.Storage.Communications.TableService.EntityOperations
         private ITableEntity _entity;
         private string _content;
         private byte[] _contentData;
-        private string _etag;
         private MetadataPreference _entityResponseEcho;
 
-        public UpdateEntityRequest(StorageAccountSettings settings, string tableName, TEntity entity, string ETag)
+        public InsertOrMergeEntityRequest(StorageAccountSettings settings, string tableName, TEntity entity)
             : base(settings)
         {
             _tableName = tableName;
@@ -32,14 +31,6 @@ namespace Basic.Azure.Storage.Communications.TableService.EntityOperations
             _content = JsonConvert.SerializeObject(entity);
             _contentData = UTF8Encoding.UTF8.GetBytes(_content);
             _entityResponseEcho = MetadataPreference.ReturnNoContent;
-            if (string.IsNullOrEmpty(ETag))
-            {
-                _etag = "*";
-            }
-            else
-            {
-                _etag = ETag;
-            }
         }
 
         protected override string HttpMethod { get { return "PUT"; } }
@@ -56,7 +47,6 @@ namespace Basic.Azure.Storage.Communications.TableService.EntityOperations
         public void ApplyAdditionalRequiredHeaders(System.Net.WebRequest request)
         {
             request.ContentType = "application/json;charset=utf-8";
-            request.Headers.Add(ProtocolConstants.Headers.IfMatch, _etag);
 
             if (request is HttpWebRequest)
             {

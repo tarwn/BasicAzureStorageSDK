@@ -60,6 +60,19 @@ namespace Basic.Azure.Storage.Tests.Integration.TableServiceClientTests
                 Assert.Fail("The entity was not found in the table");
         }
 
+        public void AssertEntityDoesNotExist(string tableName, string partitionKey, string rowKey)
+        {
+            var client = _storageAccount.CreateCloudTableClient();
+            var table = client.GetTableReference(tableName);
+            if (!table.Exists())
+                Assert.Fail(String.Format("The table '{0}' does not exist", tableName));
+            var retrieveOperation = Microsoft.WindowsAzure.Storage.Table.TableOperation.Retrieve(partitionKey, rowKey);
+            var result = table.Execute(retrieveOperation);
+            if (result.Result != null)
+                Assert.Fail("The entity was found in the table");
+        }
+
+
         #endregion
 
         #region Setup Mechanics
@@ -92,6 +105,7 @@ namespace Basic.Azure.Storage.Tests.Integration.TableServiceClientTests
             var result = table.Execute(operation);
             return (T)result.Result;
         }
+
 
     }
 }

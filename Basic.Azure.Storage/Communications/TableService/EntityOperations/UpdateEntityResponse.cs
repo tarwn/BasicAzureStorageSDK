@@ -15,25 +15,9 @@ namespace Basic.Azure.Storage.Communications.TableService.EntityOperations
 
         public string ETag { get; private set; }
         
-        public MetadataPreference? MetadataPreferenceApplied { get; private set; }
-
         public void ParseHeaders(System.Net.HttpWebResponse response)
         {
             ETag = response.Headers[ProtocolConstants.Headers.ETag];
-
-            if (response.Headers[ProtocolConstants.Headers.PreferenceApplied] == null)
-            {
-                MetadataPreferenceApplied = null;
-            }
-            else if (response.Headers[ProtocolConstants.Headers.PreferenceApplied].Equals(ProtocolConstants.HeaderValues.TableMetadataPreference.ReturnContent, StringComparison.InvariantCultureIgnoreCase))
-            {
-                MetadataPreferenceApplied = MetadataPreference.ReturnContent;
-            }
-            else
-            {
-                MetadataPreferenceApplied = MetadataPreference.ReturnNoContent;
-            }
-
         }
 
     }

@@ -43,14 +43,19 @@ namespace Basic.Azure.Storage.ClientContracts
             where TEntity : ITableEntity, new();
         Task<MergeEntityResponse> MergeEntityAsync<TEntity>(string tableName, TEntity sampleEntity, string etag = null)
             where TEntity : ITableEntity, new();
-        
-        // delete here
+
+        void DeleteEntity(string tableName, string partitionKey, string rowKey, string etag = null);
+        Task DeleteEntityAsync(string tableName, string partitionKey, string rowKey, string etag = null);
 
         InsertOrReplaceEntityResponse InsertOrReplaceEntity<TEntity>(string tableName, TEntity entity)
             where TEntity : ITableEntity, new();
         Task<InsertOrReplaceEntityResponse> InsertOrReplaceEntityAsync<TEntity>(string tableName, TEntity entity)
             where TEntity : ITableEntity, new();
 
+        InsertOrMergeEntityResponse InsertOrMergeEntity<TEntity>(string tableName, TEntity entity)
+            where TEntity : ITableEntity, new();
+        Task<InsertOrMergeEntityResponse> InsertOrMergeEntityAsync<TEntity>(string tableName, TEntity entity)
+            where TEntity : ITableEntity, new();
 
         #endregion
 
@@ -58,5 +63,7 @@ namespace Basic.Azure.Storage.ClientContracts
 
 
 
+
+        
     }
 }
