@@ -44,7 +44,16 @@ namespace Basic.Azure.Storage.ClientContracts
         Task<MergeEntityResponse> MergeEntityAsync<TEntity>(string tableName, TEntity sampleEntity, string etag = null)
             where TEntity : ITableEntity, new();
         
+        // delete here
+
+        InsertOrReplaceEntityResponse InsertOrReplaceEntity<TEntity>(string tableName, TEntity entity)
+            where TEntity : ITableEntity, new();
+        Task<InsertOrReplaceEntityResponse> InsertOrReplaceEntityAsync<TEntity>(string tableName, TEntity entity)
+            where TEntity : ITableEntity, new();
+
+
         #endregion
+
 
 
 

@@ -59,14 +59,16 @@ namespace Basic.Azure.Storage
 
         #region Entity Operations
 
-        public InsertEntityResponse InsertEntity<TEntity>(string tableName, TEntity entity) where TEntity : ITableEntity, new()
+        public InsertEntityResponse InsertEntity<TEntity>(string tableName, TEntity entity) 
+            where TEntity : ITableEntity, new()
         {
             var request = new InsertEntityRequest<TEntity>(_account, tableName, entity);
             var response = request.Execute(_optionalRetryPolicy);
             return response.Payload;
         }
 
-        public async Task<InsertEntityResponse> InsertEntityAsync<TEntity>(string tableName, TEntity entity) where TEntity : ITableEntity, new()
+        public async Task<InsertEntityResponse> InsertEntityAsync<TEntity>(string tableName, TEntity entity) 
+            where TEntity : ITableEntity, new()
         {
             var request = new InsertEntityRequest<TEntity>(_account, tableName, entity);
             var result = await request.ExecuteAsync(_optionalRetryPolicy);
@@ -101,6 +103,25 @@ namespace Basic.Azure.Storage
             where TEntity : ITableEntity, new()
         {
             var request = new MergeEntityRequest<TEntity>(_account, tableName, entity, etag);
+            var result = await request.ExecuteAsync(_optionalRetryPolicy);
+            return result.Payload;
+        }
+
+        // Delete here
+
+
+        public InsertOrReplaceEntityResponse InsertOrReplaceEntity<TEntity>(string tableName, TEntity entity)
+            where TEntity : ITableEntity, new()
+        {
+            var request = new InsertOrReplaceEntityRequest<TEntity>(_account, tableName, entity);
+            var response = request.Execute(_optionalRetryPolicy);
+            return response.Payload;
+        }
+
+        public async Task<InsertOrReplaceEntityResponse> InsertOrReplaceEntityAsync<TEntity>(string tableName, TEntity entity) 
+            where TEntity : ITableEntity, new()
+        {
+            var request = new InsertOrReplaceEntityRequest<TEntity>(_account, tableName, entity);
             var result = await request.ExecuteAsync(_optionalRetryPolicy);
             return result.Payload;
         }

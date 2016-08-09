@@ -332,6 +332,105 @@ namespace Basic.Azure.Storage.Tests.Integration.TableServiceClientTests
 
             // expects exception
         }
+
+
+        // delete goes here
+
+
+        [Test]
+        public void InsertOrReplaceEntity_ValidTable_InsertsEntityInTable()
+        {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
+            var tableName = _util.GenerateSampleTableName();
+            _util.CreateTable(tableName);
+            var sampleEntity = new SampleEntity()
+            {
+                PartitionKey = "1",
+                RowKey = "A"
+            };
+
+            client.InsertOrReplaceEntity(tableName, sampleEntity);
+
+            _util.AssertEntityExists(tableName, sampleEntity);
+        }
+        [Test]
+        public async Task InsertOrReplaceEntityAsync_ValidTable_InsertsEntityInTable()
+        {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
+            var tableName = _util.GenerateSampleTableName();
+            _util.CreateTable(tableName);
+            var sampleEntity = new SampleEntity()
+            {
+                PartitionKey = "1",
+                RowKey = "A"
+            };
+
+            await client.InsertOrReplaceEntityAsync(tableName, sampleEntity);
+
+            _util.AssertEntityExists(tableName, sampleEntity);
+        }
+
+        [Test]
+        public void InsertOrReplaceEntity_ExistingEntity_UpdatesEntityInTable()
+        {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
+            var tableName = _util.GenerateSampleTableName();
+            _util.CreateTable(tableName);
+            var sampleEntity = new SampleEntity()
+            {
+                PartitionKey = "1",
+                RowKey = "A",
+                ExtraValue = "Extra"
+            };
+            _util.InsertTableEntity(tableName, sampleEntity.PartitionKey, sampleEntity.RowKey);
+
+            client.InsertOrReplaceEntity(tableName, sampleEntity);
+
+            _util.AssertEntityExists(tableName, sampleEntity);
+            var entity = _util.GetEntity<SampleMSEntity>(tableName, sampleEntity.PartitionKey, sampleEntity.RowKey);
+            Assert.AreEqual(sampleEntity.ExtraValue, entity.ExtraValue);
+        }
+        [Test]
+        public async Task InsertOrReplaceEntityAsync_ExistingEntity_UpdatesEntityInTable()
+        {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
+            var tableName = _util.GenerateSampleTableName();
+            _util.CreateTable(tableName);
+            var sampleEntity = new SampleEntity()
+            {
+                PartitionKey = "1",
+                RowKey = "A",
+                ExtraValue = "Extra"
+            };
+            _util.InsertTableEntity(tableName, sampleEntity.PartitionKey, sampleEntity.RowKey);
+
+            await client.InsertOrReplaceEntityAsync(tableName, sampleEntity);
+
+            _util.AssertEntityExists(tableName, sampleEntity);
+            var entity = _util.GetEntity<SampleMSEntity>(tableName, sampleEntity.PartitionKey, sampleEntity.RowKey);
+            Assert.AreEqual(sampleEntity.ExtraValue, entity.ExtraValue);
+        }
+
+        [Test]
+        [ExpectedException(typeof(TableNotFoundAzureException))]
+        public void InsertOrReplaceEntity_InvalidTable_ExpectsException()
+        {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
+            var tableName = _util.GenerateSampleTableName();
+            var sampleEntity = new SampleEntity()
+            {
+                PartitionKey = "1",
+                RowKey = "A",
+                ExtraValue = "Extra"
+            };
+
+            client.InsertOrReplaceEntity(tableName, sampleEntity);
+
+            // expects exception
+        }
+
+
+
         #endregion
     }
 }
