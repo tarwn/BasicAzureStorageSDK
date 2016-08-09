@@ -80,7 +80,18 @@ namespace Basic.Azure.Storage.Tests.Integration.TableServiceClientTests
             return result.Etag;
         }
 
+
         #endregion
+
+        public T GetEntity<T>(string tableName, string partitionKey, string rowKey)
+            where T :  ITableEntity, new()
+        {
+            var client = _storageAccount.CreateCloudTableClient();
+            var table = client.GetTableReference(tableName);
+            var operation = TableOperation.Retrieve<T>(partitionKey, rowKey);
+            var result = table.Execute(operation);
+            return (T)result.Result;
+        }
 
     }
 }

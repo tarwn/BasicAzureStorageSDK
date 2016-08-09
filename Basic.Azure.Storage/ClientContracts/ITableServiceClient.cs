@@ -39,6 +39,11 @@ namespace Basic.Azure.Storage.ClientContracts
         Task<UpdateEntityResponse> UpdateEntityAsync<TEntity>(string tableName, TEntity sampleEntity, string etag = null)
             where TEntity : ITableEntity, new();
 
+        MergeEntityResponse MergeEntity<TEntity>(string tableName, TEntity sampleEntity, string etag = null)
+            where TEntity : ITableEntity, new();
+        Task<MergeEntityResponse> MergeEntityAsync<TEntity>(string tableName, TEntity sampleEntity, string etag = null)
+            where TEntity : ITableEntity, new();
+        
         #endregion
 
 

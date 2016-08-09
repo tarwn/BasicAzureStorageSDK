@@ -270,7 +270,7 @@ Entity Operations
 - Query Entities - No
 - Insert Entity - Yes
 - Update Entity - Yes
-- Merge Entity - No
+- Merge Entity - Yes
 - Delete Entity - No
 - Insert or Replace Entity - No
 - Insert or Merge Entity - No

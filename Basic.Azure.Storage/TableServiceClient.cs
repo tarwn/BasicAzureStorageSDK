@@ -88,6 +88,23 @@ namespace Basic.Azure.Storage
             var result = await request.ExecuteAsync(_optionalRetryPolicy);
             return result.Payload;
         }
+
+        public MergeEntityResponse MergeEntity<TEntity>(string tableName, TEntity entity, string etag = null)
+            where TEntity : ITableEntity, new()
+        {
+            var request = new MergeEntityRequest<TEntity>(_account, tableName, entity, etag);
+            var response = request.Execute(_optionalRetryPolicy);
+            return response.Payload;
+        }
+
+        public async Task<MergeEntityResponse> MergeEntityAsync<TEntity>(string tableName, TEntity entity, string etag = null)
+            where TEntity : ITableEntity, new()
+        {
+            var request = new MergeEntityRequest<TEntity>(_account, tableName, entity, etag);
+            var result = await request.ExecuteAsync(_optionalRetryPolicy);
+            return result.Payload;
+        }
+
         #endregion
 
 
