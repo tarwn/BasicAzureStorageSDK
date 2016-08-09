@@ -191,10 +191,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TableServiceExceptions.tt</DependentUpon>
     </Compile>
+    <Compile Include="Communications\ServiceExceptions\UnexpectedContentTypeException.cs" />
     <Compile Include="Communications\ServiceExceptions\UnidentifiedAzureException.cs" />
     <Compile Include="Communications\ServiceExceptions\UnrecognizedAzureException.cs" />
     <Compile Include="Communications\TableService\EntityOperations\InsertEntityRequest.cs" />
+    <Compile Include="Communications\TableService\TableOperations\QueryTablesRequest.cs" />
     <Compile Include="Communications\TableService\TableOperations\CreateTableRequest.cs" />
+    <Compile Include="Communications\TableService\TableOperations\QueryTablesResponse.cs" />
     <Compile Include="Communications\TableService\TableOperations\CreateTableResponse.cs" />
     <Compile Include="Communications\TableService\Interfaces\ITableEntity.cs" />
     <Compile Include="Communications\TableService\MetadataPreference.cs" />

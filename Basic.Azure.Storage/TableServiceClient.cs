@@ -29,6 +29,19 @@ namespace Basic.Azure.Storage
 
         #region Table Operations
 
+        public QueryTablesResponse QueryTables()
+        {
+            var request = new QueryTablesRequest(_account);
+            var response = request.Execute();
+            return response.Payload;
+        }
+        public async Task<QueryTablesResponse> QueryTablesAsync()
+        {
+            var request = new QueryTablesRequest(_account);
+            var response = await request.ExecuteAsync();
+            return response.Payload;
+        }
+
         public CreateTableResponse CreateTable(string tableName, MetadataPreference? metadataPreference = null)
         {
             var request = new CreateTableRequest(_account, tableName, metadataPreference);

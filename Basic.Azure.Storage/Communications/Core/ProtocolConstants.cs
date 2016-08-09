@@ -24,6 +24,7 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string ContentLength = "Content-Length";
             public const string ContentMD5 = "Content-MD5";
             public const string ContentType = "Content-Type";
+            public const string ContinuationNextTableName = "x-ms-continuation-NextTableName";
             public const string CopyCompletionTime = "x-ms-copy-completion-time";
             public const string CopyId = "x-ms-copy-id";
             public const string CopyProgress = "x-ms-copy-progress";

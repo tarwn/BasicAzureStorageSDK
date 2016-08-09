@@ -30,6 +30,29 @@ namespace Basic.Azure.Storage.Tests.Integration.TableServiceClientTests
         #region Table Operations
 
         [Test]
+        public void QueryTables_LessThan1000Tables_ReturnsList()
+        {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
+            var tableList = new List<string>();
+            for (int i = 0; i < 10; i++)
+            {
+                var name = _util.GenerateSampleTableName();
+                tableList.Add(name);
+                _util.CreateTable(name);
+            }
+
+            var response = client.QueryTables();
+
+            int numExpectedTablesInResponse = 0;
+            foreach (var expectedTable in tableList)
+            {
+                if (response.TableList.Contains(expectedTable))
+                    numExpectedTablesInResponse++;
+            }
+            Assert.AreEqual(tableList.Count, numExpectedTablesInResponse);
+        }
+
+        [Test]
         public void CreateTable_RequiredArgsOnly_CreatesTable()
         {
             ITableServiceClient client = new TableServiceClient(_accountSettings);

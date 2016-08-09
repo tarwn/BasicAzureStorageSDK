@@ -259,7 +259,7 @@ Account Operations
 
 Table Operations
 
-- Query Tables - No
+- Query Tables - Basic (no OData support yet)
 - Create Table - Yes
 - Delete Table - No
 - Get Table ACL - No

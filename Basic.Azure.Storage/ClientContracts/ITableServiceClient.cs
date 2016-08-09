@@ -18,6 +18,9 @@ namespace Basic.Azure.Storage.ClientContracts
 
         #region Table Operations
 
+        QueryTablesResponse QueryTables();
+        Task<QueryTablesResponse> QueryTablesAsync();
+
         CreateTableResponse CreateTable(string tableName, MetadataPreference? metadataPreference = null);
         Task<CreateTableResponse> CreateTableAsync(string tableName, MetadataPreference? metadataPreference = null);
 
@@ -30,6 +33,7 @@ namespace Basic.Azure.Storage.ClientContracts
 
         #endregion
 
-        
+
+
     }
 }
