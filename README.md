@@ -213,9 +213,9 @@ Implemented Methods
 This section will list all of the available methods from the documentation, as of 2014-10-13, and whether they have
 been implemented yet.
 
-- Queue is done for 2012-02-12
-- Table is barely started
-- Blob is started
+- Queue is mostly done - 15/17 operations
+- Table is started - 7.5/16 operations
+- Blob is pretty far - 20/31 operations
 - File is not present at all
 
 Queue Service - 15/17 - QueueServiceClient: IQueueServiceClient
@@ -247,7 +247,7 @@ Message Operations
 - Clear Messages - Yes - Does not auto-retry the 500 Operation Timeout yet
 - Update Message - Yes
 
-Table Service - 1/16 - TableServiceClient: ITableServiceClient
+Table Service - 7.5/16 - TableServiceClient: ITableServiceClient
 -----------------------------------------------------------
 
 Account Operations
@@ -271,7 +271,7 @@ Entity Operations
 - Insert Entity - Yes
 - Update Entity - Yes
 - Merge Entity - Yes
-- Delete Entity - No
+- Delete Entity - Yes
 - Insert or Replace Entity - Yes
 - Insert or Merge Entity - Yes
 
