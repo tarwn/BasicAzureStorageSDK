@@ -6,6 +6,7 @@ namespace Basic.Azure.Storage.Communications.Core
     {
         public static class Headers
         {
+            public const string Accept = "Accept";
             public const string ApproximateMessagesCount = "x-ms-approximate-messages-count";
             public const string Authorization = "Authorization";
             public const string BlobCacheControl = "x-ms-blob-cache-control";
@@ -24,6 +25,9 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string ContentLength = "Content-Length";
             public const string ContentMD5 = "Content-MD5";
             public const string ContentType = "Content-Type";
+            public const string ContinuationNextTableName = "x-ms-continuation-NextTableName";
+            public const string ContinuationNextPartitionKey = "x-ms-continuation-NextPartitionKey";
+            public const string ContinuationNextRowKey = "x-ms-continuation-NextRowKey";
             public const string CopyCompletionTime = "x-ms-copy-completion-time";
             public const string CopyId = "x-ms-copy-id";
             public const string CopyProgress = "x-ms-copy-progress";
@@ -32,6 +36,7 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string CopyStatusDescription = "x-ms-copy-status-description";
             public const string Date = "x-ms-date";
             public const string ETag = "ETag";
+            public const string IfMatch = "If-Match";
             public const string LastModified = "Last-Modified";
             public const string LeaseAction = "x-ms-lease-action";
             public const string LeaseBreakPeriod = "x-ms-lease-break-period";
@@ -43,11 +48,14 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string OperationDate = "Date";
             public const string ProposedLeaseId = "x-ms-proposed-lease-id";
             public const string PopReceipt = "x-ms-popreceipt";
+            public const string Prefer = "Prefer";
             public const string PreferenceApplied = "Preference-Applied";
             public const string RequestId = "x-ms-request-id";
             public const string StorageVersion = "x-ms-version";
             public const string UserAgent = "User-Agent";
             public const string Version = "x-ms-version";
+
+            
         }
 
         public static class HeaderValues

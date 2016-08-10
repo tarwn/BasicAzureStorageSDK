@@ -7,14 +7,14 @@ no internal methods.
 
 Because "use a real storage account" is not good advice and "400 Bad Request" is not a suitable error message.
 
-Current Supported API Version: 2012-02-12 - This will be caught up after I have finished the current round of
+Current Supported API Version: 2013-08-15 - This will be caught up after I have finished the current round of
 additions.
 
 Status:
 
-- Queue Service - 15/15
-- Table Service - 1/14
-- Blob Service - 15/30
+- Queue Service - 15/17
+- Table Service - 7 + 2 halves/16
+- Blob Service - 20/31
 - File Service - 0/19
 
 (Does not include service preflight and stats operations)
@@ -213,9 +213,9 @@ Implemented Methods
 This section will list all of the available methods from the documentation, as of 2014-10-13, and whether they have
 been implemented yet.
 
-- Queue is done for 2012-02-12
-- Table is barely started
-- Blob is started
+- Queue is mostly done - 15/17 operations
+- Table is started - 7 + 2 halves/16 operations
+- Blob is pretty far - 20/31 operations
 - File is not present at all
 
 Queue Service - 15/17 - QueueServiceClient: IQueueServiceClient
@@ -247,7 +247,7 @@ Message Operations
 - Clear Messages - Yes - Does not auto-retry the 500 Operation Timeout yet
 - Update Message - Yes
 
-Table Service - 1/16 - TableServiceClient: ITableServiceClient
+Table Service - 7 + 2 halves/16 - TableServiceClient: ITableServiceClient
 -----------------------------------------------------------
 
 Account Operations
@@ -259,7 +259,7 @@ Account Operations
 
 Table Operations
 
-- Query Tables - No
+- Query Tables - Basic (no OData support yet)
 - Create Table - Yes
 - Delete Table - No
 - Get Table ACL - No
@@ -267,13 +267,14 @@ Table Operations
 
 Entity Operations
 
-- Query Entities - No
-- Insert Entity - No
-- Update Entity - No
-- Merge Entity - No
-- Delete Entity - No
-- Insert or Replace Entity - No
-- Insert or Merge Entity - No
+- Query Entities - Flavor A (QueryEntity by PartKey/RowKey) - Yes
+- Query Entities - Flavor B (QueryEntities by OData $filter) - No
+- Insert Entity - Yes
+- Update Entity - Yes
+- Merge Entity - Yes
+- Delete Entity - Yes
+- Insert or Replace Entity - Yes
+- Insert or Merge Entity - Yes
 
 Blob Service - 20/31 - BlobServiceClient: IBlobServiceClient
 -----------------------------------------------------------

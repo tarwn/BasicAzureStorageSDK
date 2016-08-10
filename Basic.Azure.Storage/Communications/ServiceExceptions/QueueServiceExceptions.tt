@@ -64,7 +64,8 @@ public static class QueueServiceAzureExceptions
 		#>
 		}
 
-		switch(statusDescription)
+		var shortStatusDescription = statusDescription.Split('\n')[0];
+		switch(shortStatusDescription)
 		{
 			<#
 			foreach(var errorCode in ErrorCodeList)

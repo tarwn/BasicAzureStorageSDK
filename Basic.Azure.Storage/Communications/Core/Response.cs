@@ -27,8 +27,9 @@ namespace Basic.Azure.Storage.Communications.Core
         public async Task ProcessResponseStreamAsync(HttpWebResponse httpWebResponse)
         {
             _responseStreamToDisposeOf = httpWebResponse.GetResponseStream();
+            string contentType = httpWebResponse.ContentType;
             if (ExpectsResponseBody)
-                await ((IReceiveDataWithResponse)_payload).ParseResponseBodyAsync(_responseStreamToDisposeOf);
+                await ((IReceiveDataWithResponse)_payload).ParseResponseBodyAsync(_responseStreamToDisposeOf, contentType);
             else
                 await ReadResponseToNull(_responseStreamToDisposeOf);
         }

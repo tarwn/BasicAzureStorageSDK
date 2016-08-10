@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Basic.Azure.Storage.Communications.TableService
+namespace Basic.Azure.Storage.Communications.TableService.TableOperations
 {
     public class CreateTableResponse : IResponsePayload, IReceiveAdditionalHeadersWithResponse, IReceiveDataWithResponse
     {
@@ -32,7 +32,7 @@ namespace Basic.Azure.Storage.Communications.TableService
 
         }
 
-        public async Task ParseResponseBodyAsync(System.IO.Stream responseStream)
+        public async Task ParseResponseBodyAsync(System.IO.Stream responseStream, string contentType)
         {
             using (StreamReader sr = new StreamReader(responseStream))
             {

@@ -29,7 +29,7 @@ namespace Basic.Azure.Storage.Communications.QueueService.AccountOperations
             Version = response.Headers[ProtocolConstants.Headers.Version];
         }
 
-        public async Task ParseResponseBodyAsync(Stream responseStream)
+        public async Task ParseResponseBodyAsync(Stream responseStream, string contentType)
         {
             Properties = new StorageServiceProperties();
 
@@ -76,41 +76,79 @@ namespace Basic.Azure.Storage.Communications.QueueService.AccountOperations
                                 }
                             }
                         }
-                        else if (topField.Name.LocalName.Equals("Metrics", StringComparison.InvariantCultureIgnoreCase))
+                        else if (topField.Name.LocalName.Equals("HourMetrics", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            foreach (var field in topField.Elements())
+                            PopulateMetrics(Properties.HourMetrics, topField);
+                        }
+                        else if (topField.Name.LocalName.Equals("MinuteMetrics", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            PopulateMetrics(Properties.MinuteMetrics, topField);
+                        }
+                        else if (topField.Name.LocalName.Equals("Cors", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            foreach(var corsRuleFields in topField.Elements())
                             {
-                                switch (field.Name.LocalName)
+                                var corsRule = new StorageServiceCorsRule();
+                                foreach (var field in corsRuleFields.Elements())
                                 {
-                                    case "Version":
-                                        Properties.Metrics.Version = StorageAnalyticsVersionNumber.v1_0;
-                                        break;
-                                    case "Enabled":
-                                        Properties.Metrics.Enabled = field.Value.Equals("true");
-                                        break;
-                                    case "IncludeAPIs":
-                                        Properties.Metrics.IncludeAPIs = field.Value.Equals("true");
-                                        break;
-                                    case "RetentionPolicy":
-                                        foreach (var retentionField in field.Elements())
-                                        {
-                                            switch (retentionField.Name.LocalName)
-                                            {
-                                                case "Enabled":
-                                                    Properties.Metrics.RetentionPolicyEnabled = retentionField.Value.Equals("true");
-                                                    break;
-                                                case "Days":
-                                                    Properties.Metrics.RetentionPolicyNumberOfDays = int.Parse(retentionField.Value);
-                                                    break;
-                                            }
-                                        }
-                                        break;
+                                    switch (field.Name.LocalName)
+                                    {
+                                        case "AllowedOrigins":
+                                            corsRule.AllowedOrigins = field.Value.Split(',').ToList();
+                                            break;
+                                        case "AllowedMethods":
+                                            corsRule.AllowedMethods = field.Value.Split(',').ToList();
+                                            break;
+                                        case "MaxAgeInSeconds":
+                                            corsRule.MaxAgeInSeconds = int.Parse(field.Value);
+                                            break;
+                                        case "ExposedHeaders":
+                                            corsRule.ExposedHeaders = field.Value.Split(',').ToList();
+                                            break;
+                                        case "AllowedHeaders":
+                                            corsRule.AllowedHeaders = field.Value.Split(',').ToList();
+                                            break;
+                                    }
                                 }
+                                Properties.Cors.Add(corsRule);
                             }
                         }
                     }
 
                     
+                }
+            }
+        }
+
+        private void PopulateMetrics(StorageServiceMetricsProperties metricsProperty, XElement topField)
+        {
+            foreach (var field in topField.Elements())
+            {
+                switch (field.Name.LocalName)
+                {
+                    case "Version":
+                        metricsProperty.Version = StorageAnalyticsVersionNumber.v1_0;
+                        break;
+                    case "Enabled":
+                        metricsProperty.Enabled = field.Value.Equals("true");
+                        break;
+                    case "IncludeAPIs":
+                        metricsProperty.IncludeAPIs = field.Value.Equals("true");
+                        break;
+                    case "RetentionPolicy":
+                        foreach (var retentionField in field.Elements())
+                        {
+                            switch (retentionField.Name.LocalName)
+                            {
+                                case "Enabled":
+                                    metricsProperty.RetentionPolicyEnabled = retentionField.Value.Equals("true");
+                                    break;
+                                case "Days":
+                                    metricsProperty.RetentionPolicyNumberOfDays = int.Parse(retentionField.Value);
+                                    break;
+                            }
+                        }
+                        break;
                 }
             }
         }

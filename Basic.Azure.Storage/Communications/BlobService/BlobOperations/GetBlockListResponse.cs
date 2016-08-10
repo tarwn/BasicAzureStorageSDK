@@ -43,7 +43,7 @@ namespace Basic.Azure.Storage.Communications.BlobService.BlobOperations
             BlobContentLength = Convert.ToInt32(response.Headers[ProtocolConstants.Headers.BlobContentLength]);
         }
 
-        public async Task ParseResponseBodyAsync(Stream responseStream)
+        public async Task ParseResponseBodyAsync(Stream responseStream, string contentType)
         {
             using (var sr = new StreamReader(responseStream))
             {
