@@ -194,9 +194,16 @@
     <Compile Include="Communications\ServiceExceptions\UnexpectedContentTypeException.cs" />
     <Compile Include="Communications\ServiceExceptions\UnidentifiedAzureException.cs" />
     <Compile Include="Communications\ServiceExceptions\UnrecognizedAzureException.cs" />
+    <Compile Include="Communications\TableService\EntityOperations\QueryEntitiesRequest.cs" />
+    <Compile Include="Communications\TableService\EntityOperations\DeleteEntityRequest.cs" />
+    <Compile Include="Communications\TableService\EntityOperations\InsertOrMergeEntityRequest.cs" />
+    <Compile Include="Communications\TableService\EntityOperations\InsertOrReplaceEntityRequest.cs" />
+    <Compile Include="Communications\TableService\EntityOperations\InsertOrMergeEntityResponse.cs" />
+    <Compile Include="Communications\TableService\EntityOperations\InsertOrReplaceEntityResponse.cs" />
     <Compile Include="Communications\TableService\EntityOperations\MergeEntityRequest.cs" />
     <Compile Include="Communications\TableService\EntityOperations\UpdateEntityRequest.cs" />
     <Compile Include="Communications\TableService\EntityOperations\MergeEntityResponse.cs" />
+    <Compile Include="Communications\TableService\EntityOperations\QueryEntitiesResponse.cs" />
     <Compile Include="Communications\TableService\EntityOperations\UpdateEntityResponse.cs" />
     <Compile Include="Communications\TableService\EntityOperations\InsertEntityResponse.cs" />
     <Compile Include="Communications\TableService\EntityOperations\InsertEntityRequest.cs" />
