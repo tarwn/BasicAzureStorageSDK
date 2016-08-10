@@ -13,7 +13,7 @@ additions.
 Status:
 
 - Queue Service - 15/17
-- Table Service - 7.5/16
+- Table Service - 7 + 2 halves/16
 - Blob Service - 20/31
 - File Service - 0/19
 
@@ -214,7 +214,7 @@ This section will list all of the available methods from the documentation, as o
 been implemented yet.
 
 - Queue is mostly done - 15/17 operations
-- Table is started - 7.5/16 operations
+- Table is started - 7 + 2 halves/16 operations
 - Blob is pretty far - 20/31 operations
 - File is not present at all
 
@@ -247,7 +247,7 @@ Message Operations
 - Clear Messages - Yes - Does not auto-retry the 500 Operation Timeout yet
 - Update Message - Yes
 
-Table Service - 7.5/16 - TableServiceClient: ITableServiceClient
+Table Service - 7 + 2 halves/16 - TableServiceClient: ITableServiceClient
 -----------------------------------------------------------
 
 Account Operations
@@ -267,7 +267,8 @@ Table Operations
 
 Entity Operations
 
-- Query Entities - No
+- Query Entities - Flavor A (QueryEntity by PartKey/RowKey) - Yes
+- Query Entities - Flavor B (QueryEntities by OData $filter) - No
 - Insert Entity - Yes
 - Update Entity - Yes
 - Merge Entity - Yes

@@ -19,7 +19,13 @@ namespace Basic.Azure.Storage.ClientContracts
 
         #region Table Operations
 
+        /// <summary>
+        /// Partial Implementation - No support for continuation yet
+        /// </summary>
         QueryTablesResponse QueryTables();
+        /// <summary>
+        /// Partial Implementation - No support for continuation yet
+        /// </summary>
         Task<QueryTablesResponse> QueryTablesAsync();
 
         CreateTableResponse CreateTable(string tableName, MetadataPreference? metadataPreference = null);
@@ -28,6 +34,20 @@ namespace Basic.Azure.Storage.ClientContracts
         #endregion
 
         #region Entity Operations
+
+        /// <summary>
+        /// Partial implementation - currently only supports query for a specific Partition Key and Row Key, filter/select not
+        /// yet supported
+        /// </summary>
+        QueryEntitiesResponse<TEntity> QueryEntities<TEntity>(string tableName, string partitionKey, string rowKey)
+            where TEntity : ITableEntity, new();
+        /// <summary>
+        /// Partial implementation - currently only supports query for a specific Partition Key and Row Key, filter/select not
+        /// yet supported
+        /// </summary>
+        Task<QueryEntitiesResponse<TEntity>> QueryEntitiesAsync<TEntity>(string tableName, string partitionKey, string rowKey)
+            where TEntity : ITableEntity, new();
+
 
         InsertEntityResponse InsertEntity<TEntity>(string tableName, TEntity entity)
             where TEntity : ITableEntity, new();
@@ -64,6 +84,7 @@ namespace Basic.Azure.Storage.ClientContracts
 
 
 
-        
+
+
     }
 }

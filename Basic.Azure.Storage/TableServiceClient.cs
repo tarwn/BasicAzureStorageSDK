@@ -59,6 +59,21 @@ namespace Basic.Azure.Storage
 
         #region Entity Operations
 
+        public QueryEntitiesResponse<TEntity> QueryEntities<TEntity>(string tableName, string partitionKey, string rowKey)
+            where TEntity : ITableEntity, new()
+        {
+            var request = new QueryEntitiesRequest<TEntity>(_account, tableName, partitionKey, rowKey);
+            var response = request.Execute(_optionalRetryPolicy);
+            return response.Payload;
+        }
+        public async Task<QueryEntitiesResponse<TEntity>> QueryEntitiesAsync<TEntity>(string tableName, string partitionKey, string rowKey)
+            where TEntity : ITableEntity, new()
+        {
+            var request = new QueryEntitiesRequest<TEntity>(_account, tableName, partitionKey, rowKey);
+            var response = await request.ExecuteAsync(_optionalRetryPolicy);
+            return response.Payload;
+        }
+
         public InsertEntityResponse InsertEntity<TEntity>(string tableName, TEntity entity)
             where TEntity : ITableEntity, new()
         {

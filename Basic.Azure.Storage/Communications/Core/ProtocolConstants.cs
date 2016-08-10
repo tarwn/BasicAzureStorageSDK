@@ -26,6 +26,8 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string ContentMD5 = "Content-MD5";
             public const string ContentType = "Content-Type";
             public const string ContinuationNextTableName = "x-ms-continuation-NextTableName";
+            public const string ContinuationNextPartitionKey = "x-ms-continuation-NextPartitionKey";
+            public const string ContinuationNextRowKey = "x-ms-continuation-NextRowKey";
             public const string CopyCompletionTime = "x-ms-copy-completion-time";
             public const string CopyId = "x-ms-copy-id";
             public const string CopyProgress = "x-ms-copy-progress";
@@ -52,6 +54,8 @@ namespace Basic.Azure.Storage.Communications.Core
             public const string StorageVersion = "x-ms-version";
             public const string UserAgent = "User-Agent";
             public const string Version = "x-ms-version";
+
+            
         }
 
         public static class HeaderValues

@@ -17,10 +17,6 @@ namespace Basic.Azure.Storage.Tests.Integration.Fakes
 
     public class SampleMSEntity : Microsoft.WindowsAzure.Storage.Table.TableEntity
     {
-        public string PartitionKey { get; set; }
-
-        public string RowKey { get; set; }
-
         public string ExtraValue { get; set; }
     }
 }

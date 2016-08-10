@@ -27,8 +27,71 @@ namespace Basic.Azure.Storage.Tests.Integration.TableServiceClientTests
             _util.Cleanup();
         }
 
-        #region Entity Operations
+        [Test]
+        public void QueryEntities_PartitionAndRowKey_ReturnsSingleEntity()
+        {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
+            var tableName = _util.GenerateSampleTableName();
+            _util.CreateTable(tableName);
+            string partitionKey = "A";
+            string rowKey = "1";
+            _util.InsertTableEntity(tableName, partitionKey, rowKey);
 
+            var response = client.QueryEntities<SampleEntity>(tableName, partitionKey, rowKey);
+            
+            Assert.AreEqual(1, response.Entities.Count);
+            var entity = response.Entities[0];
+            Assert.AreEqual(partitionKey, entity.PartitionKey);
+            Assert.AreEqual(rowKey, entity.RowKey);
+        }
+        [Test]
+        public async Task QueryEntitiesAsync_PartitionAndRowKey_ReturnsSingleEntity()
+        {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
+            var tableName = _util.GenerateSampleTableName();
+            _util.CreateTable(tableName);
+            string partitionKey = "A";
+            string rowKey = "1";
+            _util.InsertTableEntity(tableName, partitionKey, rowKey);
+
+            var response = await client.QueryEntitiesAsync<SampleEntity>(tableName, partitionKey, rowKey);
+
+            Assert.AreEqual(1, response.Entities.Count);
+            var entity = response.Entities[0];
+            Assert.AreEqual(partitionKey, entity.PartitionKey);
+            Assert.AreEqual(rowKey, entity.RowKey);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ResourceNotFoundAzureException))]
+        public void QueryEntities_NonExistentPartitionAndRowKey_ThrowsNotFound()
+        {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
+            var tableName = _util.GenerateSampleTableName();
+            _util.CreateTable(tableName);
+            string partitionKey = "A";
+            string rowKey = "1";
+
+            var response = client.QueryEntities<SampleEntity>(tableName, partitionKey, rowKey);
+
+            //expects exception rather than empty list
+        }
+
+
+        [Test]
+        [ExpectedException(typeof(TableNotFoundAzureException))]
+        public void QueryEntities_NonExistentTable_ThrowsTableNotFound()
+        {
+            ITableServiceClient client = new TableServiceClient(_accountSettings);
+            var tableName = _util.GenerateSampleTableName();
+            string partitionKey = "A";
+            string rowKey = "1";
+
+            var response = client.QueryEntities<SampleEntity>(tableName, partitionKey, rowKey);
+
+            //expects exception
+        }
+        
         [Test]
         public void InsertEntity_ValidTable_InsertsEntityInTable()
         {
@@ -596,7 +659,5 @@ namespace Basic.Azure.Storage.Tests.Integration.TableServiceClientTests
             // expects exception
         }
 
-
-        #endregion
     }
 }
