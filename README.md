@@ -66,12 +66,12 @@ All methods have both a synchronous and Async version, so this can also be writt
 
 	await client.DeleteMessageAsync("myawesomequeue", response.Messages[1].Id, response.Messages[1].PopReceipt);
 
-The methods in the QueueServiceClient match the (API documentation for the Queue service)[http://msdn.microsoft.com/en-us/library/azure/dd179363.aspx] closely.
+The methods in the QueueServiceClient match the [API documentation for the Queue service](http://msdn.microsoft.com/en-us/library/azure/dd179363.aspx) closely.
 
 ## StorageAccountSettings
 
-You can define the storage account settings with either the constructor or by feeding in an (Azure Storage 
-connection string)[https://azure.microsoft.com/en-us/documentation/articles/storage-configure-connection-string/] like you would the official SDK:
+You can define the storage account settings with either the constructor or by feeding in an [Azure Storage 
+connection string](https://azure.microsoft.com/en-us/documentation/articles/storage-configure-connection-string/) like you would the official SDK:
 
 	// some examples with connection strings
 	var accountSettings = StorageAccountSettings.Parse("UseDevelopmentStorage=true");
@@ -85,7 +85,7 @@ connection string)[https://azure.microsoft.com/en-us/documentation/articles/stor
 Support is included for changing HTTP/HTTPS, providing alternate blob/table/queue endpoints, and address suffixes 
 other than "core.windows.net". 
 
-(See (StorageAccountSettingsTests)[] for test examples of the different connection strings that can be parsed).
+(See [StorageAccountSettingsTests](https://github.com/tarwn/BasicAzureStorageSDK/blob/master/Basic.Azure.Storage.Tests/StorageAccountSettingsTests.cs) for test examples of the different connection strings that can be parsed).
 
 
 Using the library
@@ -95,7 +95,7 @@ There is not a published NuGet package for this librray currently (coming soon).
 
 To add this to a project:
 
-* Clone the Download (NuGet.exe)[https://dist.nuget.org/index.html]
+* Clone the Download [NuGet.exe](https://dist.nuget.org/index.html)
 * Build the project in Release mode
 * Run `nuget.exe pack`
 * Copy the resulting nuget package to a folder in your solution and add that folder as a nuget repository
