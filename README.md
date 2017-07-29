@@ -79,8 +79,8 @@ connection string](https://azure.microsoft.com/en-us/documentation/articles/stor
 	var accountSettings = StorageAccountSettings.Parse("AccountName=some-account-name;AccountKey=some-account-key;");
 
 	// or the constructor
-	var accountSettings = StorageAccountSettings.Parse("devstoreaccount1", "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==");
-	var accountSettings = StorageAccountSettings.Parse("some-account-name", "some-account-key");
+	var accountSettings = new StorageAccountSettings("devstoreaccount1", "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==");
+	var accountSettings = new StorageAccountSettings("some-account-name", "some-account-key");
 
 Support is included for changing HTTP/HTTPS, providing alternate blob/table/queue endpoints, and address suffixes 
 other than "core.windows.net". 
@@ -91,7 +91,7 @@ other than "core.windows.net".
 Using the library
 ====================
 
-There is not a published NuGet package for this librray currently (coming soon).
+There is not a published NuGet package for this library (coming soon).
 
 To add this to a project:
 
