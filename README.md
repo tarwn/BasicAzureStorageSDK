@@ -1,91 +1,104 @@
 BasicAzureStorageSDK
 ====================
 
-This is a .Net SDK designed to closely match the Azure Storage API. The operations align with the API documentation,
-it supports only features that can be tested locally against the storage emulator, and provides interfaces and
-no internal methods.
+This is a .Net SDK designed to closely match the Azure Storage API, focused mostly on Queue and Blob storage 
+(with limited support for Table). The operations align with the API documentation, it supports only features 
+that can be tested locally against the storage emulator, and provides interfaces and no internal methods.
 
-Because "use a real storage account" is not good advice and "400 Bad Request" is not a suitable error message.
+* .Net Framework Version: 4.5 or newer
+* Azure Storage API Version: 2013-08-15
+* NuGet Dependencies: Netwonsoft.Json, TransientFaultHandling.Core
 
-Current Supported API Version: 2013-08-15 - This will be caught up after I have finished the current round of
-additions.
+Supported Operations:
 
-Status:
+* Queue Service - 15/17 (missing preflight + service stats)
+* Blob Service - 20/31 (missing account-level calls, page, append-only)
+* Table Service - 7 + 2 halves/16
+* File Service - 0/19
 
-- Queue Service - 15/17
-- Table Service - 7 + 2 halves/16
-- Blob Service - 20/31
-- File Service - 0/19
+The library includes:
 
-(Does not include service preflight and stats operations)
+* Interfaces or overridable methods, for easier unit testing
+* Built-in Retry Policies
+* Strongly-typed Exceptions for all service errors, ex: BlobNotFoundAzureException
+* Service clients (blob, queue, table) that closely match the Storage API Documentation
+* Helper methods for automatically managing large block blobs
+* Sync and Async implementations of every method
+* Unit and Integration tests for every service method (verified against the Storage SDK)
 
 License
 ====================
 
 See LICENSE.txt
 
-Motivation
+Getting Started
 ====================
 
-<blockquote>Ask me about the Azure Storage SDK...</blockquote>
+There are 2 key ingredients in every call to Azure Storage, the StorageAccountSettings and a ServiceClient.
 
-As I watched (and lived through, and tried to figure out) the evolution of the official
-Azure Storage SDK for .Net, I've continued to be annoyed by several things:
+Here's a demo of creating a queue, adding an item to it, and reading that item:
 
-1) Pseudo-State: The attempted object-ification of a REST service (adding state where there is none)
+	var accountSettings = StorageAccountSettings.Parse("UseDevelopmentStorage=true");
+	var client = new QueueServiceClient(accountSettings);
 
-2) Dueling Documentation: The mismatch in terminology and operations between the API and SDK
+	client.CreateQueue("myawesomequeue");
 
-3) Emulator Support: The inclusion of features that cannot be used for local development due to
-   lack of support in the emulator
+	client.PutMessage("myawesomequeue", "my test message!");
 
-4) Information: The generic way exceptions are handled and thrown compared to the detail available from the API
-   _Note: There is extended info in the Storage SDK exception, you just have to dig to find it and it has moved
-          a couple times_
+	var response = client.GetMessages("myawesomequeue", 1);
 
-5) Information: The lack of information about failed retries
+	//do something with response.Messages[1]
 
-6) Readability.
+	client.DeleteMessage("myawesomequeue", response.Messages[1].Id, response.Messages[1].PopReceipt);
 
-7) Testability: There is not a clear interface to mock or fake for tests.
+All methods have both a synchronous and Async version, so this can also be written like so:
 
-8) Testability: The internal tests for the SDK use logic to mangle HTTP requests, are long and rambling, and have
-   been removed from some versions (3.0).
+	var accountSettings = StorageAccountSettings.Parse("UseDevelopmentStorage=true");
+	var client = new QueueServiceClient(accountSettings);
 
-Some of these have improved with the later versions and with some of the tracing methods in later versions, but
-some have remained underlying concepts (such as trying to use stateful objects to represent a service).
+	await client.CreateQueueAsync("myawesomequeue");
 
-I've written an implementation of the Azure API before, but I wanted to start writing one that:
+	await client.PutMessageAsync("myawesomequeue", "my test message!");
 
-1) Matches the API. The documentation should exist only to describe the naming gap between the two, the few
-   places where the local library diverges from the API, how to setup things like the storage settings and error
-   handling, and how exceptions map to the API.
+	var response = await client.GetMessagesAsync("myawesomequeue", 1);
 
-2) Treats the service as a service. If you want to consume the service and add some pseudo form of state, do so.
-   The SDK should not force that on you.
+	//do something with response.Messages[1]
 
-3) Provides every scrap of error information possible to help the developer or maintainer do their job.
+	await client.DeleteMessageAsync("myawesomequeue", response.Messages[1].Id, response.Messages[1].PopReceipt);
 
-4) Provides underlying information about retry rates and retries that were later succesful
+The methods in the QueueServiceClient match the (API documentation for the Queue service)[http://msdn.microsoft.com/en-us/library/azure/dd179363.aspx] closely.
 
-5) Matches the API internally as well. Finding the implementation details of an API operation should not require
-   opening 15 files.
+## StorageAccountSettings
 
-6) Has a clear set of tests that serves almost as a bullet point list of how the API works for each operation
+You can define the storage account settings with either the constructor or by feeding in an (Azure Storage 
+connection string)[https://azure.microsoft.com/en-us/documentation/articles/storage-configure-connection-string/] like you would the official SDK:
 
-7) Is easily mockable for unit testing code that interacts with the library.
+	// some examples with connection strings
+	var accountSettings = StorageAccountSettings.Parse("UseDevelopmentStorage=true");
+	var accountSettings = StorageAccountSettings.Parse("AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;");
+	var accountSettings = StorageAccountSettings.Parse("AccountName=some-account-name;AccountKey=some-account-key;");
 
-8) Does not force you to use asynchronous patterns throughout your codebase (except where the API requires them)
-   _Note: The standard Storage SDK doesn't force this, but many other libraries these days use only Async methods,
-          assuming that converting an entire existing application to async/await is an easy process_
+	// or the constructor
+	var accountSettings = StorageAccountSettings.Parse("devstoreaccount1", "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==");
+	var accountSettings = StorageAccountSettings.Parse("some-account-name", "some-account-key");
 
-9) Requires no magic. There are no exposed properties that are only correct after another call is made, no
-   enumerated values that are not enums, no properties that actually call the API behind the scenes,  and when a
-   parameter has character or length restrictions, the library should be smart enough to tell you about them.
+Support is included for changing HTTP/HTTPS, providing alternate blob/table/queue endpoints, and address suffixes 
+other than "core.windows.net". 
 
-Currently retries are only communicated upward at the end of a failed operation rather than providing hooks to
-gather information on each individual failed retry. Restrictions on length and character usage have also not been
-added yet.
+(See (StorageAccountSettingsTests)[] for test examples of the different connection strings that can be parsed).
+
+
+Using the library
+====================
+
+There is not a published NuGet package for this librray currently (coming soon).
+
+To add this to a project:
+
+* Clone the Download (NuGet.exe)[https://dist.nuget.org/index.html]
+* Build the project in Release mode
+* Run `nuget.exe pack`
+* Copy the resulting nuget package to a folder in your solution and add that folder as a nuget repository
 
 Geography
 ====================
@@ -247,35 +260,6 @@ Message Operations
 - Clear Messages - Yes - Does not auto-retry the 500 Operation Timeout yet
 - Update Message - Yes
 
-Table Service - 7 + 2 halves/16 - TableServiceClient: ITableServiceClient
------------------------------------------------------------
-
-Account Operations
-
-- Set Table Service Properties - No
-- Get Table Service Properties - No
-- Preflight Table Request - No
-- Get Table Service Stats - No
-
-Table Operations
-
-- Query Tables - Basic (no OData support yet)
-- Create Table - Yes
-- Delete Table - No
-- Get Table ACL - No
-- Set Table ACL - No
-
-Entity Operations
-
-- Query Entities - Flavor A (QueryEntity by PartKey/RowKey) - Yes
-- Query Entities - Flavor B (QueryEntities by OData $filter) - No
-- Insert Entity - Yes
-- Update Entity - Yes
-- Merge Entity - Yes
-- Delete Entity - Yes
-- Insert or Replace Entity - Yes
-- Insert or Merge Entity - Yes
-
 Blob Service - 20/31 - BlobServiceClient: IBlobServiceClient
 -----------------------------------------------------------
 
@@ -328,6 +312,36 @@ Append Blob Operations
 
 - Append Block - No
 
+
+Table Service - 7 + 2 halves/16 - TableServiceClient: ITableServiceClient
+-----------------------------------------------------------
+
+Account Operations
+
+- Set Table Service Properties - No
+- Get Table Service Properties - No
+- Preflight Table Request - No
+- Get Table Service Stats - No
+
+Table Operations
+
+- Query Tables - Basic (no OData support yet)
+- Create Table - Yes
+- Delete Table - No
+- Get Table ACL - No
+- Set Table ACL - No
+
+Entity Operations
+
+- Query Entities - Flavor A (QueryEntity by PartKey/RowKey) - Yes
+- Query Entities - Flavor B (QueryEntities by OData $filter) - No
+- Insert Entity - Yes
+- Update Entity - Yes
+- Merge Entity - Yes
+- Delete Entity - Yes
+- Insert or Replace Entity - Yes
+- Insert or Merge Entity - Yes
+
 File Service - 0/19 - N/A
 -----------------------------------------------------------
 
@@ -362,18 +376,66 @@ File Operations
 - Set File Metadata - No
 - Delete File - No
 
-Horizantal ToDo List
-======================
 
-On top of finishing the operations above, there are several horizantal tasks I want to complete as well:
+Motivation
+====================
 
-- Guard statements in every request, especially the ones with format restrictions (ie, strings that look like Guids, integers with specific valid ranges)
-- Expose the Retry policy
-- Method to automatically retry 500 Operation Timeout errors for Clear Queue request (large queues timeout and should be retried, per documentation)
-- Method to automatically download all continuations via marker for operations like List Queues and List Blobs
+<blockquote>Ask me about the Azure Storage SDK...</blockquote>
 
-And then less necessary features that seem like a good idea:
+As I watched (and lived through, and tried to figure out) the evolution of the official
+Azure Storage SDK for .Net, I've continued to be annoyed by several things:
 
-- Expose method to collect/log all requests and responses (all, any operation with 1 or more retries, only failed operations)
-- Expose ability to set timeout and client id values for outgoing requests
-- Evaluate performance of current XML LINQ parsing for responses vs alteratives and switch
+1) Pseudo-State: The attempted object-ification of a REST service (adding state where there is none)
+
+2) Dueling Documentation: The mismatch in terminology and operations between the API and SDK
+
+3) Emulator Support: The inclusion of features that cannot be used for local development due to
+   lack of support in the emulator
+
+4) Information: The generic way exceptions are handled and thrown compared to the detail available from the API
+   _Note: There is extended info in the Storage SDK exception, you just have to dig to find it and it has moved
+          a couple times_
+
+5) Information: The lack of information about failed retries
+
+6) Readability.
+
+7) Testability: There is not a clear interface to mock or fake for tests.
+
+8) Testability: The internal tests for the SDK use logic to mangle HTTP requests, are long and rambling, and have
+   been removed from some versions (3.0).
+
+Some of these have improved with the later versions and with some of the tracing methods in later versions, but
+some have remained underlying concepts (such as trying to use stateful objects to represent a service).
+
+I've written an implementation of the Azure API before, but I wanted to start writing one that:
+
+1) Matches the API. The documentation should exist only to describe the naming gap between the two, the few
+   places where the local library diverges from the API, how to setup things like the storage settings and error
+   handling, and how exceptions map to the API.
+
+2) Treats the service as a service. If you want to consume the service and add some pseudo form of state, do so.
+   The SDK should not force that on you.
+
+3) Provides every scrap of error information possible to help the developer or maintainer do their job.
+
+4) Provides underlying information about retry rates and retries that were later succesful
+
+5) Matches the API internally as well. Finding the implementation details of an API operation should not require
+   opening 15 files.
+
+6) Has a clear set of tests that serves almost as a bullet point list of how the API works for each operation
+
+7) Is easily mockable for unit testing code that interacts with the library.
+
+8) Does not force you to use asynchronous patterns throughout your codebase (except where the API requires them)
+   _Note: The standard Storage SDK doesn't force this, but many other libraries these days use only Async methods,
+          assuming that converting an entire existing application to async/await is an easy process_
+
+9) Requires no magic. There are no exposed properties that are only correct after another call is made, no
+   enumerated values that are not enums, no properties that actually call the API behind the scenes,  and when a
+   parameter has character or length restrictions, the library should be smart enough to tell you about them.
+
+Currently retries are only communicated upward at the end of a failed operation rather than providing hooks to
+gather information on each individual failed retry. Restrictions on length and character usage have also not been
+added yet.
