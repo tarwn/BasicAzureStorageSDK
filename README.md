@@ -47,9 +47,9 @@ Here's a demo of creating a queue, adding an item to it, and reading that item:
 
 	var response = client.GetMessages("myawesomequeue", 1);
 
-	//do something with response.Messages[1]
+	//do something with response.Messages[0]
 
-	client.DeleteMessage("myawesomequeue", response.Messages[1].Id, response.Messages[1].PopReceipt);
+	client.DeleteMessage("myawesomequeue", response.Messages[0].Id, response.Messages[0].PopReceipt);
 
 All methods have both a synchronous and Async version, so this can also be written like so:
 
@@ -62,9 +62,9 @@ All methods have both a synchronous and Async version, so this can also be writt
 
 	var response = await client.GetMessagesAsync("myawesomequeue", 1);
 
-	//do something with response.Messages[1]
+	//do something with response.Messages[0]
 
-	await client.DeleteMessageAsync("myawesomequeue", response.Messages[1].Id, response.Messages[1].PopReceipt);
+	await client.DeleteMessageAsync("myawesomequeue", response.Messages[0].Id, response.Messages[0].PopReceipt);
 
 The methods in the QueueServiceClient match the [API documentation for the Queue service](http://msdn.microsoft.com/en-us/library/azure/dd179363.aspx) closely.
 
