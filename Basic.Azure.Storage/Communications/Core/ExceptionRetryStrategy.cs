@@ -35,7 +35,10 @@ namespace Basic.Azure.Storage.Communications.Core
                 exceptionToReview = ex.InnerException;
 
             return exceptionToReview is InternalErrorAzureException
-                || exceptionToReview is ServerBusyAzureException
+                || exceptionToReview is ServerBusyRetryAzureException
+                || exceptionToReview is ServerBusyIngressLimitAzureException
+                || exceptionToReview is ServerBusyEgressLimitAzureException
+                || exceptionToReview is ServerBusyOperationsPerSecondLimitAzureException
                 || exceptionToReview is OperationTimedOutAzureException
                 /* || ex is "TableErrorCodeStrings.TableServerOutOfMemory" */
                 || exceptionToReview is TimeoutException

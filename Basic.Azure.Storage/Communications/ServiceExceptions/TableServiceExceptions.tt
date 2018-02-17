@@ -10,10 +10,9 @@
 // http://msdn.microsoft.com/en-us/library/windowsazure/dd179438.aspx
 //
 // To regenerate list below, copy from web page table and:
-//		Replace: ([A-Za-z]+)[\r\n]+[A-Za-z ]+\((\d+)\)[\r\n]+([A-Za-z \d\-\.\,\/\(\)]+)[\r\n]+
-//		With: { "\1", "\3" },\n
-
-// we need both so we can try to failover to the second one on HEAD requests
+//		Replace: ([A-Za-z]+)\s+[A-Za-z ]+\((\d+)\)\s+([A-Za-z \d\-\.\,\/\(\)\']+)[\r\n]+
+//		With: { "$1", "$3" },\n
+//	comment out UpdateConditionNotSatisfied, duplicates a Commmon error
 
 var ErrorCodeList = new Dictionary<string,string>(){
 	{ "DuplicatePropertiesSpecified", "A property is specified more than one time." },
