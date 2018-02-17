@@ -17,7 +17,7 @@ namespace Basic.Azure.Storage.Communications.Core
         // Versioning for Azure Storage Services doc:
         //      https://docs.microsoft.com/en-us/rest/api/storageservices/versioning-for-the-azure-storage-services
 
-        public const string TargetStorageVersion = "2015-02-21";
+        public const string TargetStorageVersion = "2015-07-08";
 
         private readonly StorageAccountSettings _settings;
 
