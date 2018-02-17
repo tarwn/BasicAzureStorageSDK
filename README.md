@@ -100,6 +100,30 @@ To add this to a project:
 * Run `nuget.exe pack`
 * Copy the resulting nuget package to a folder in your solution and add that folder as a nuget repository
 
+Upgrading and Additions
+========================
+
+Feel free to make upgrades and additions.
+
+1. Create a Github issue so we can talk ahead of time (it may not require much, or there
+may be somethign non-obvious I can point out)
+
+2. Make the change and send a PR for review: As long as the commit messages are descriptive
+and include the issue #, we're good, this isnt' a highly trafficked library.
+
+Upgrading workflow
+----------------------
+
+To upgrade the version of the storage API:
+
+1. Locate the version string in the MSDN docs
+
+2. Update the value in Basic/Azure.Storage/Communications/Core/RequestBase, ln 17
+
+3. Run all the tests, make fixes as necessary to support changes in the API (stick to their terminology and structure as much as possible)
+
+4. Update the 4 error TT files in ServceExceptions and regenerate them (instructions present in each file, should be mostly copy/paste/replace/paste some more).
+
 Geography
 ====================
 

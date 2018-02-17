@@ -71,8 +71,10 @@ namespace Basic.Azure.Storage.Communications.Core
                     String.Join("\n", queryStrings);
             canonicalizedResource = canonicalizedResource.TrimEnd(new char[] { '\n' });
 
+            // 2015-02-21: Report 0-length content as empty string from now on
+            //  Old version: include 0 for content length on POST, PUT, DELETE
             string contentLength = "";
-            if (request.Method == "POST" || request.Method == "PUT" || request.Method == "DELETE")
+            if (request.ContentLength > 0 &&(request.Method == "POST" || request.Method == "PUT" || request.Method == "DELETE"))
                 contentLength = request.ContentLength.ToString();
 
             string stringToSign = String.Format(
@@ -89,7 +91,7 @@ namespace Basic.Azure.Storage.Communications.Core
                 /* If-Unmodified-Since */ + "{10}\n"
                 /* Range */ + "{11}\n"
                 /* Canonicalized Headers */ + "{12}\n"
-                /* Canonicalilzed Resource */ + "{13}",
+                /* Canonicalized Resource */ + "{13}",
                 request.Method,
                 request.Headers[ProtocolConstants.Headers.ContentEncoding],
                 request.Headers[ProtocolConstants.Headers.ContentLanguage],

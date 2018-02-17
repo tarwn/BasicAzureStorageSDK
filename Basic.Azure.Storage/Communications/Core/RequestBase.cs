@@ -14,7 +14,10 @@ namespace Basic.Azure.Storage.Communications.Core
     public abstract class RequestBase<TPayload>
         where TPayload : IResponsePayload, new()
     {
-        public const string TargetStorageVersion = "2013-08-15";
+        // Versioning for Azure Storage Services doc:
+        //      https://docs.microsoft.com/en-us/rest/api/storageservices/versioning-for-the-azure-storage-services
+
+        public const string TargetStorageVersion = "2015-02-21";
 
         private readonly StorageAccountSettings _settings;
 
