@@ -922,6 +922,20 @@ namespace Basic.Azure.Storage.Tests.Integration.BlobServiceClientTests
         }
 
         [Test]
+        public void PutBlockBlob_EmptyBlog_UploadsBlobSuccessfully()
+        {
+            var containerName = _util.GenerateSampleContainerName(_runId);
+            var blobName = _util.GenerateSampleBlobName(_runId);
+            _util.CreateContainer(containerName);
+            IBlobServiceClient client = new BlobServiceClient(AccountSettings);
+            var data = Encoding.UTF8.GetBytes(String.Empty);
+
+            client.PutBlockBlob(containerName, blobName, data);
+
+            _util.AssertBlobExists(containerName, blobName, BlobType.BlockBlob);
+        }
+
+        [Test]
         public void PutBlockBlob_LeasedBlobWithCorrectLeaseIdSpecified_UploadsBlobSuccessfully()
         {
             var containerName = _util.GenerateSampleContainerName(_runId);

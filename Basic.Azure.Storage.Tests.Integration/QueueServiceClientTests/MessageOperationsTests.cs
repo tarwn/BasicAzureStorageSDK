@@ -54,6 +54,20 @@ namespace Basic.Azure.Storage.Tests.Integration.QueueServiceClientTests
             _util.AssertQueueHasMessage(queueName);
         }
 
+
+        [Test]
+        public void PutMessage_EmptyMessage_AddsMessageToQueue()
+        {
+            IQueueServiceClient client = new QueueServiceClient(_accountSettings);
+            var queueName = GenerateSampleQueueName();
+            _util.CreateQueue(queueName);
+            string message = String.Empty;
+
+            client.PutMessage(queueName, message);
+
+            _util.AssertQueueHasMessage(queueName);
+        }
+
         [Test]
         public void PutMessage_InvalidXMLCharacters_DoesNotThrowException()
         {

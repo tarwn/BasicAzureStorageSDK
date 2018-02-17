@@ -49,11 +49,6 @@ namespace Basic.Azure.Storage.Communications.QueueService.MessageOperations
 
         private static byte[] PrepareContent(string content)
         {
-            if (string.IsNullOrEmpty(content))
-            {
-                return new byte[] { };
-            }
-
             var messageWithEnvelopeBuilder =
                 new XElement("QueueMessage",
                     new XElement("MessageText", content));
